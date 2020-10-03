@@ -40,41 +40,7 @@ CreateOrganizerPalette[] := With[{
     Module[{paletteContents, existingNB, margins},
         paletteContents = Column[
             {
-                Grid[
-                    {{
-                        Button[
-                            Style["New Project", 20],
-                            handleStartNewProject[],
-                            Method -> "Queued",
-                            Background -> Green
-                        ],
-                        Button[Style["Refresh", 20],
-                            (* Note: This (..)& is a Function so that Return[] works within it. *)
-                            (
-                                If[!MemberQ[$Packages, "Organizer`"],
-                                    If[!DirectoryQ[organizerPacletPath],
-                                        MessageDialog[StringForm[
-                                            "Embedded path to the Organizer paclet is no longer a directory: ``",
-                                            organizerPacletPath
-                                        ]];
-                                        Return[$Failed];
-                                    ];
-                                    PacletDirectoryLoad[organizerPacletPath];
-                                    Needs["Organizer`"];
-                                    If[!MemberQ[$Packages, "Organizer`"],
-                                        MessageDialog[Row[{Style["Error:", Red], " Organizer` could not be loaded."}] ];
-                                    ];
-                                    Return[];
-                                ];
-                                Organizer`CreateOrganizerPalette[]
-                            )&[],
-                            Method -> "Queued",
-                            Background -> LightBlue
-                        ]
-                    }},
-                    ItemSize -> {{Scaled[0.6], Scaled[0.4]}},
-                    Spacings -> 0
-                ],
+                mainBar[organizerPacletPath],
                 Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}]
             }
             ,
@@ -104,6 +70,41 @@ CreateOrganizerPalette[] := With[{
     ];
 ]
 
+mainBar[organizerPacletPath_?StringQ] := Grid[
+    {{
+        Button[
+            Style["New Project", 20],
+            handleStartNewProject[],
+            Method -> "Queued",
+            Background -> Green
+        ],
+        Button[Style["Refresh", 20],
+            (* Note: This (..)& is a Function so that Return[] works within it. *)
+            (
+                If[!MemberQ[$Packages, "Organizer`"],
+                    If[!DirectoryQ[organizerPacletPath],
+                        MessageDialog[StringForm[
+                            "Embedded path to the Organizer paclet is no longer a directory: ``",
+                            organizerPacletPath
+                        ] ];
+                        Return[$Failed];
+                    ];
+                    PacletDirectoryLoad[organizerPacletPath];
+                    Needs["Organizer`"];
+                    If[!MemberQ[$Packages, "Organizer`"],
+                        MessageDialog[Row[{Style["Error:", Red], " Organizer` could not be loaded."}] ];
+                    ];
+                    Return[];
+                ];
+                Organizer`CreateOrganizerPalette[]
+            )&[],
+            Method -> "Queued",
+            Background -> LightBlue
+        ]
+    }},
+    ItemSize -> {{Scaled[0.6], Scaled[0.4]}},
+    Spacings -> 0
+]
 
 getListOfActiveProjects[] := Map[
     FileNameTake[#, -1] &,
