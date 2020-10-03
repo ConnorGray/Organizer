@@ -87,7 +87,7 @@ fGetDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 		Throw["Cannot get dragged link on non-MacOSX platforms."];
 	];
 
-	path = Echo@FileNameJoin[{$HomeDirectory, "Desktop/dragged_link.html"}];
+	path = FileNameJoin[{$HomeDirectory, "Desktop/dragged_link.html"}];
 	CreateFile[path];
 	RunProcess[{"open", "-a", "TextEdit", path}];
 

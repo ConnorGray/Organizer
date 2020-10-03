@@ -8,7 +8,7 @@ CreateOrganizerPalette
 
 PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = None;
 
-If[!DirectoryQ[Echo@PersistentValue["CG:Organizer:Directory", "Local"]],
+If[!DirectoryQ[PersistentValue["CG:Organizer:Directory", "Local"]],
 	dir = SystemDialogInput[
 		"Directory",
 		FileNameDrop[PacletObject["Organizer"]["Location"], -1]
