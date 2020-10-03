@@ -35,6 +35,7 @@ CreateOrganizerPalette[] := With[{
                         Background -> Green
                     ],
                     Button[Style["Refresh", 20],
+                        (* Note: This (..)& is a Function so that Return[] works within it. *)
                         (
                             If[!MemberQ[$Packages, "Organizer`"],
                                 If[!DirectoryQ[organizerPacletPath],
