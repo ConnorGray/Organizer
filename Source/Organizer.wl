@@ -6,7 +6,7 @@ BeginPackage["Organizer`"]
 
 CreateOrganizerPalette
 
-PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = None;
+(* PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = None; *)
 
 If[!DirectoryQ[PersistentValue["CG:Organizer:Directory", "Local"]],
 	dir = SystemDialogInput[

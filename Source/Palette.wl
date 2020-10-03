@@ -70,12 +70,28 @@ CreateOrganizerPalette[] := With[{
     Module[{paletteContents, existingNB, margins},
         paletteContents = Column[
             {
-                mainBar[organizerPacletPath],
-                Button[
-                    Style["New Project", 20],
-                    handleStartNewProject[],
-                    Method -> "Queued",
-                    Background -> Green
+                (* mainBar[organizerPacletPath], *)
+                Grid[
+                    {{
+                        Button[
+                            Style["New Project", 20],
+                            handleStartNewProject[],
+                            Method -> "Queued",
+                            Background -> Green,
+                            ImageSize -> Full
+                        ],
+                        Button[
+                            Style[Global`\[CloverLeaf], 25],
+                            CreateWindow[PaletteNotebook@mainBar[organizerPacletPath]],
+                            Method -> "Queued",
+                            Active -> False,
+                            Alignment -> Center,
+                            Background -> Lighter@Orange,
+                            ImageSize -> Full
+                        ]
+                    }},
+                    ItemSize -> {{Scaled[0.75], Scaled[0.25]}},
+                    Spacings -> {0, 0}
                 ],
                 Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}]
             }
@@ -119,8 +135,8 @@ mainBar[organizerPacletPath_?StringQ] := Grid[
         },
             ActionMenu[
                 "Workspace ...",
-                choices,
-                ImageSize -> Full
+                choices
+                (* ImageSize -> Full *)
             ]
         ],
         Button[Style["Refresh", 20],
@@ -147,7 +163,7 @@ mainBar[organizerPacletPath_?StringQ] := Grid[
             Background -> LightBlue
         ]
     }},
-    ItemSize -> {{Scaled[0.6], Scaled[0.4]}},
+    (* ItemSize -> {{Scaled[0.6], Scaled[0.4]}}, *)
     Spacings -> 0
 ]
 
