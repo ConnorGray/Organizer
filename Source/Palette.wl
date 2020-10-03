@@ -35,70 +35,70 @@ CreateOrganizerPalette[] := With[{
     ];
 
     Module[{paletteContents, existingNB, margins},
-    paletteContents = Column[
-        {
-            Grid[
-                {{
-                    Button[
-                        Style["New Project", 20],
-                        handleStartNewProject[],
-                        Method -> "Queued",
-                        Background -> Green
-                    ],
-                    Button[Style["Refresh", 20],
-                        (* Note: This (..)& is a Function so that Return[] works within it. *)
-                        (
-                            If[!MemberQ[$Packages, "Organizer`"],
-                                If[!DirectoryQ[organizerPacletPath],
-                                    MessageDialog[StringForm[
-                                        "Embedded path to the Organizer paclet is no longer a directory: ``",
-                                        organizerPacletPath
-                                    ]];
-                                    Return[$Failed];
-                                ];
-                                PacletDirectoryLoad[organizerPacletPath];
-                                Needs["Organizer`"];
+        paletteContents = Column[
+            {
+                Grid[
+                    {{
+                        Button[
+                            Style["New Project", 20],
+                            handleStartNewProject[],
+                            Method -> "Queued",
+                            Background -> Green
+                        ],
+                        Button[Style["Refresh", 20],
+                            (* Note: This (..)& is a Function so that Return[] works within it. *)
+                            (
                                 If[!MemberQ[$Packages, "Organizer`"],
-                                    MessageDialog[Row[{Style["Error:", Red], " Organizer` could not be loaded."}] ];
+                                    If[!DirectoryQ[organizerPacletPath],
+                                        MessageDialog[StringForm[
+                                            "Embedded path to the Organizer paclet is no longer a directory: ``",
+                                            organizerPacletPath
+                                        ]];
+                                        Return[$Failed];
+                                    ];
+                                    PacletDirectoryLoad[organizerPacletPath];
+                                    Needs["Organizer`"];
+                                    If[!MemberQ[$Packages, "Organizer`"],
+                                        MessageDialog[Row[{Style["Error:", Red], " Organizer` could not be loaded."}] ];
+                                    ];
+                                    Return[];
                                 ];
-                                Return[];
-                            ];
-                            Organizer`CreateOrganizerPalette[]
-                        )&[],
-                        Method -> "Queued",
-                        Background -> LightBlue
-                    ]
-                }},
-                ItemSize -> {{Scaled[0.6], Scaled[0.4]}},
-                Spacings -> 0
-            ],
-            Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}]
-        }
-        ,
-        Spacings -> 0.15
+                                Organizer`CreateOrganizerPalette[]
+                            )&[],
+                            Method -> "Queued",
+                            Background -> LightBlue
+                        ]
+                    }},
+                    ItemSize -> {{Scaled[0.6], Scaled[0.4]}},
+                    Spacings -> 0
+                ],
+                Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}]
+            }
+            ,
+            Spacings -> 0.15
+        ];
+
+        paletteContents = Pane[paletteContents, ImageSize -> 220];
+
+        existingNB = PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"];
+
+        If[MatchQ[existingNB, NotebookObject[__] ],
+            Module[{opts},
+                opts = Options[existingNB];
+                (* Check that existingNBObj is still actually open. If not, reset the global
+                palette NB object. *)
+                If[FailureQ @ opts,
+                    PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
+                    Return[];
+                ];
+                margins = Association[Options[existingNB] ][WindowMargins];
+                CreatePalette[paletteContents, existingNB];
+                SetOptions[existingNB, WindowMargins -> margins];
+            ]
+            ,
+            PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
+        ];
     ];
-
-    paletteContents = Pane[paletteContents, ImageSize -> 220];
-
-    existingNB = PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"];
-
-    If[MatchQ[existingNB, NotebookObject[__] ],
-        Module[{opts},
-            opts = Options[existingNB];
-            (* Check that existingNBObj is still actually open. If not, reset the global
-               palette NB object. *)
-            If[FailureQ @ opts,
-                PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
-                Return[];
-            ];
-            margins = Association[Options[existingNB] ][WindowMargins];
-            CreatePalette[paletteContents, existingNB];
-            SetOptions[existingNB, WindowMargins -> margins];
-        ]
-        ,
-        PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
-    ];
-];
 ]
 
 
