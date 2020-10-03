@@ -1,0 +1,412 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     15979,        404]
+NotebookOptionsPosition[     13276,        350]
+NotebookOutlinePosition[     13748,        367]
+CellTagsIndexPosition[     13705,        364]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Organizer Palette", "Title",
+ CellChangeTimes->{{3.808650797088188*^9, 
+  3.808650799232052*^9}},ExpressionUUID->"12ff18ed-4859-4af1-8a92-\
+c04b2e108f69"],
+
+Cell[CellGroupData[{
+
+Cell["File-system state", "Subsection",
+ CellChangeTimes->{{3.808650167332602*^9, 
+  3.808650170259995*^9}},ExpressionUUID->"0e7e0ff7-42b9-4779-8579-\
+57264cf6ece0"],
+
+Cell["This palette expects a directory structure like:", "Text",
+ CellChangeTimes->{{3.8086501732761297`*^9, 
+  3.808650192115543*^9}},ExpressionUUID->"2abd3054-428d-4a18-9e6f-\
+d0a68779365c"],
+
+Cell["\<\
+Notebooks/WRI/
+\tProjects/
+\t\tActive/
+\t\t\t<Project Name>/
+\t\t\t\tLog.nb  (Previously called TODOs.nb)
+\t\tCompleted/
+\tMeetingNotes/
+\t\t2020-Q1/
+\t\t\t<3-letter Month>-<Day>-<Project-Name or one-off description>-<Serial \
+Number>.nb
+\t\t2020-Q2
+\t\t2020-Q3
+\t\t2020-Q4
+\t\t...
+\tProposals/
+\tReports/
+\t\
+\>", "Program",
+ CellChangeTimes->{{3.8086501991309977`*^9, 3.808650295231195*^9}, {
+  3.8086503461485577`*^9, 3.808650458287333*^9}, {3.8086504953187237`*^9, 
+  3.808650497781514*^9}, {3.808650559027314*^9, 3.808650570858531*^9}, {
+  3.808650613928956*^9, 3.808650626119932*^9}, {3.808652178488312*^9, 
+  3.808652208638176*^9}},ExpressionUUID->"040a8308-8124-4b03-8ebe-\
+e3a9be89c962"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Palette design", "Subsection",
+ CellChangeTimes->{{3.808650783728978*^9, 
+  3.808650789536415*^9}},ExpressionUUID->"777688f6-e353-4ffd-bbd2-\
+59fc94b6f289"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+I need a place to put \[OpenCurlyDoubleQuote]random\[CloseCurlyDoubleQuote] \
+NBs / other files which get shared during meeting or which are used to \
+kick-off projects. Some of these can just go in Project folders?\
+\>", "Item",
+ CellChangeTimes->{{3.808650720172208*^9, 
+  3.808650757593725*^9}},ExpressionUUID->"2aea2c88-849c-4ebd-823a-\
+490a9d2affab"],
+
+Cell["\<\
+The main organizer palette should have a list of projects, scrapped from the \
+folder names in the Notebooks/WRI/Projects folder. \
+\>", "Item",
+ CellChangeTimes->{{3.80865076654891*^9, 
+  3.8086508352167177`*^9}},ExpressionUUID->"419d23ce-e462-4af0-8a21-\
+e3d311e675ee"],
+
+Cell["\<\
+Each element in the column listing should have a button to open the Log.nb \
+for that project, and a button to open the file-system folder in Finder.\
+\>", "Subitem",
+ CellChangeTimes->{{3.808650835844472*^9, 
+  3.808650859349319*^9}},ExpressionUUID->"5c9d3426-4412-4d76-9a2e-\
+2d20cae3f30f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Questions", "Subsubsection",
+ CellChangeTimes->{{3.808660675912656*^9, 
+  3.808660679192068*^9}},ExpressionUUID->"02c6ca9b-a031-48ca-b30d-\
+a74bdc4be5b4"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Maybe MeetingNotes should be a chapter in the Log.nb, not \
+it\[CloseCurlyQuote]s own separate folder? This would make it far easier to \
+collate and distill information and action items across meetings.\
+\>", "Item",
+ CellChangeTimes->{{3.8086606811198483`*^9, 
+  3.808660734783331*^9}},ExpressionUUID->"c1077401-ae28-435f-851c-\
+71322539a381"],
+
+Cell["\<\
+The MeetingNotes folder could hang around, but maybe would only be used for \
+random one-off meetings? But then shouldn\[CloseCurlyQuote]t those meetings \
+be connected to a project?\
+\>", "Subitem",
+ CellChangeTimes->{{3.808660738516746*^9, 3.808660768214436*^9}, {
+  3.810665878421702*^9, 
+  3.8106658796851263`*^9}},ExpressionUUID->"07c6535e-02cc-4c08-9977-\
+1013c48b8f7d"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Code", "Chapter",
+ CellChangeTimes->{{3.808650793104528*^9, 
+  3.808650793536351*^9}},ExpressionUUID->"30e124fa-d2e9-4ac8-88ff-\
+a20c81386dc9"],
+
+Cell[BoxData["Exit"], "Input",
+ CellChangeTimes->{{3.8087771046290627`*^9, 3.8087771049862633`*^9}, {
+  3.8106694046711493`*^9, 3.810669405283889*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"d42b1d45-37e6-4cb3-9295-1a02d6dfe049"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"PacletDirectoryLoad", "[", "\"\<~/Dropbox\>\"", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"PersistentValue", "[", 
+    RowBox[{"\"\<CG:Organizer\>\"", ",", "\"\<FrontEndSession\>\""}], "]"}], 
+   "=", "None"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Needs", "[", "\"\<Organizer`\>\"", "]"}]}], "Input",
+ CellChangeTimes->{{3.8106542083739233`*^9, 3.8106542198312263`*^9}, 
+   3.8106543341102343`*^9, {3.810670031828972*^9, 3.8106700349592*^9}, {
+   3.810686015610629*^9, 3.8106860280053463`*^9}, 3.810687871667713*^9, {
+   3.8107277473021183`*^9, 3.810727747469252*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"2ef0957b-ec2e-4995-a284-8a5f95c2f204"],
+
+Cell[BoxData[
+ RowBox[{"CreateOrganizerPalette", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.810654410016924*^9, 3.810654413938298*^9}, {
+  3.8106692636717367`*^9, 3.810669264158304*^9}},
+ CellLabel->"In[4]:=",ExpressionUUID->"e75f707a-8dab-42ac-a2f2-ebea6c97c955"],
+
+Cell[CellGroupData[{
+
+Cell["Update existing NB\[CloseCurlyQuote]s DockedCells", "Subsection",
+ CellChangeTimes->{{3.808777016052597*^9, 
+  3.8087770219240227`*^9}},ExpressionUUID->"a5004bda-5563-4841-8274-\
+1055fdb4860c"],
+
+Cell["\<\
+This function is meant to be called manually whenever there is a change to \
+the standard set of docked cells.\
+\>", "Text",
+ CellChangeTimes->{{3.808777001955613*^9, 
+  3.8087770347478657`*^9}},ExpressionUUID->"23ee3a3d-fc5d-430a-bb1f-\
+0fb9dc7eafb3"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Organizer`LogNotebookRuntime`\>\"", 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.8107260190925503`*^9, 3.8107260264105673`*^9}},
+ CellLabel->"In[5]:=",ExpressionUUID->"0bd4f514-46dc-4b89-98d6-21df16d65a7b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"updateDockedCells", "[", "]"}], " ", ":=", " ", 
+  RowBox[{"Scan", "[", "\n", "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"fInstallLogNotebookDockedCells", "[", 
+      RowBox[{
+       RowBox[{"NotebookOpen", "[", "#", "]"}], ",", " ", 
+       RowBox[{
+        RowBox[{"FileNameSplit", "[", "#", "]"}], "[", 
+        RowBox[{"[", 
+         RowBox[{"-", "2"}], "]"}], "]"}]}], "]"}], " ", "&"}], ",", "\n", 
+    "\t", 
+    RowBox[{"FileNames", "[", 
+     RowBox[{"\"\<Log*.nb\>\"", ",", " ", 
+      RowBox[{
+      "{", "\"\</Users/connorgray/Dropbox/Notebooks/WRI/Projects\>\"", "}"}], 
+      ",", " ", "Infinity"}], "]"}]}], "\n", "]"}]}]], "Input",
+ CellChangeTimes->{{3.8087765049612503`*^9, 3.808776536814767*^9}, {
+  3.8087765934381943`*^9, 3.8087766381828213`*^9}, {3.8087766763953667`*^9, 
+  3.808776685915091*^9}, {3.808776760263177*^9, 3.808776896136056*^9}, {
+  3.808776982926063*^9, 3.8087769954695263`*^9}, {3.8091661915747957`*^9, 
+  3.80916619198971*^9}},
+ CellLabel->"In[6]:=",ExpressionUUID->"90c8aa03-a8ca-4f47-9c1f-e103731e2745"],
+
+Cell[BoxData[
+ RowBox[{"updateDockedCells", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.809096077625051*^9, 3.809096080598474*^9}},
+ CellLabel->"In[7]:=",ExpressionUUID->"bddddd51-1d2b-4f94-bb17-2a316b1e9eae"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Unused", "Subsection",
+ CellChangeTimes->{{3.808650014476637*^9, 
+  3.808650015187192*^9}},ExpressionUUID->"7911b3b0-c407-4d4e-a0bd-\
+5ab6731fa8f9"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"SetAuthorUserNameDialog", "[", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{"authorusername", ",", "authorDialog"}], "\[IndentingNewLine]", 
+      "}"}], ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"$AuthorUserName", "=", 
+       RowBox[{"If", "[", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"StringQ", "@", "authorusername"}], "&&", 
+          RowBox[{"Not", "@", 
+           RowBox[{"StringMatchQ", "[", 
+            RowBox[{"authorusername", ",", 
+             RowBox[{"\"\<\>\"", "|", "Whitespace"}]}], "]"}]}]}], ",", 
+         "authorusername", ",", "\[IndentingNewLine]", "$UserName"}], 
+        "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"SetSelectedNotebook", "[", "#", "]"}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"FrontEnd`MoveCursorToInputField", "[", 
+           RowBox[{"#", ",", "\"\<authorusername\>\""}], "]"}]}], ")"}], 
+        "&"}], "[", 
+       RowBox[{"NotebookPut", "@", 
+        RowBox[{"Notebook", "[", 
+         RowBox[{
+          RowBox[{"{", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"Cell", "[", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"BoxData", "[", 
+               RowBox[{"InputFieldBox", "[", 
+                RowBox[{
+                 RowBox[{"Dynamic", "[", "DocuTools`$AuthorUserName", "]"}], 
+                 ",", "String", ",", 
+                 RowBox[{"FieldSize", "\[Rule]", 
+                  RowBox[{"{", 
+                   RowBox[{"30", ",", 
+                    RowBox[{"{", 
+                    RowBox[{"1", ",", "Infinity"}], "}"}]}], "}"}]}], ",", 
+                 RowBox[{"ContinuousAction", "\[Rule]", "True"}], ",", 
+                 RowBox[{"BoxID", "\[Rule]", "\"\<authorusername\>\""}]}], 
+                "]"}], "]"}], ",", 
+              RowBox[{"CellMargins", "\[Rule]", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"{", 
+                  RowBox[{"8", ",", "10"}], "}"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"10", ",", "10"}], "}"}]}], "}"}]}]}], 
+             "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+            RowBox[{"Cell", "[", "\[IndentingNewLine]", 
+             RowBox[{"BoxData", "@", 
+              RowBox[{"ToBoxes", "@", 
+               RowBox[{"Grid", "[", 
+                RowBox[{"{", 
+                 RowBox[{"{", "\[IndentingNewLine]", 
+                  RowBox[{
+                   RowBox[{"Button", "[", 
+                    RowBox[{"\"\<OK\>\"", ",", "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"Needs", "[", "\"\<DocuTools`\>\"", "]"}], ";", 
+                    RowBox[{"DocuTools`SetAuthorUserName", "[", "]"}]}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"Method", "\[Rule]", "\"\<Queued\>\""}]}], 
+                    "\[IndentingNewLine]", "]"}], ",", 
+                   RowBox[{"Button", "[", 
+                    RowBox[{"\"\<Clear\>\"", ",", 
+                    RowBox[{
+                    RowBox[{"Needs", "[", "\"\<DocuTools`\>\"", "]"}], ";", 
+                    RowBox[{"DocuTools`ClearAuthorUserName", "[", "]"}], ";", 
+                    
+                    RowBox[{"NotebookClose", "[", "]"}]}], ",", 
+                    RowBox[{"Method", "\[Rule]", "\"\<Queued\>\""}]}], "]"}], 
+                   ",", 
+                   RowBox[{"Button", "[", 
+                    RowBox[{"\"\<Close\>\"", ",", 
+                    RowBox[{"NotebookClose", "[", "]"}]}], "]"}]}], "}"}], 
+                 "}"}], "]"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+           "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"ShowCellBracket", "\[Rule]", "False"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"WindowSize", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{"430", ",", "90"}], "}"}]}], ",", "\[IndentingNewLine]", 
+          RowBox[{"WindowMargins", "\[Rule]", "Automatic"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{
+          "WindowTitle", "\[Rule]", "\"\<Project TODOs Notebook Name\>\""}], 
+          ",", "\[IndentingNewLine]", 
+          RowBox[{"WindowFrame", "\[Rule]", "\"\<Palette\>\""}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"WindowFloating", "\[Rule]", "False"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"WindowElements", "\[Rule]", 
+           RowBox[{"{", "}"}]}], ",", "\[IndentingNewLine]", 
+          RowBox[{"WindowFrameElements", "\[Rule]", 
+           RowBox[{"{", "\"\<CloseBox\>\"", "}"}]}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Saveable", "\[Rule]", "False"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"NotebookEventActions", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{"\"\<ReturnKeyDown\>\"", "\[RuleDelayed]", 
+             RowBox[{"DocuTools`SetAuthorUserName", "[", "]"}]}], 
+            "\[IndentingNewLine]", "}"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+       "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.807707683268878*^9, 3.807707753158141*^9}, {
+  3.8077077945910683`*^9, 3.807707799223687*^9}, {3.80770793396133*^9, 
+  3.807707997780716*^9}},ExpressionUUID->"c033ee37-f396-433e-b981-\
+441fa15a7a05"]
+}, Closed]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{853, 1166},
+WindowMargins->{{117, Automatic}, {Automatic, 169}},
+TaggingRules->{"SaveDialogDataSavesBlog" -> False, "TryRealOnly" -> False},
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0c43c386-dfec-4984-b6b5-e94c217a9730"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 160, 3, 98, "Title",ExpressionUUID->"12ff18ed-4859-4af1-8a92-c04b2e108f69"],
+Cell[CellGroupData[{
+Cell[765, 29, 165, 3, 54, "Subsection",ExpressionUUID->"0e7e0ff7-42b9-4779-8579-57264cf6ece0"],
+Cell[933, 34, 192, 3, 35, "Text",ExpressionUUID->"2abd3054-428d-4a18-9e6f-d0a68779365c"],
+Cell[1128, 39, 706, 24, 305, "Program",ExpressionUUID->"040a8308-8124-4b03-8ebe-e3a9be89c962"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1871, 68, 162, 3, 54, "Subsection",ExpressionUUID->"777688f6-e353-4ffd-bbd2-59fc94b6f289"],
+Cell[CellGroupData[{
+Cell[2058, 75, 365, 7, 53, "Item",ExpressionUUID->"2aea2c88-849c-4ebd-823a-490a9d2affab"],
+Cell[2426, 84, 281, 6, 53, "Item",ExpressionUUID->"419d23ce-e462-4af0-8a21-e3d311e675ee"],
+Cell[2710, 92, 302, 6, 45, "Subitem",ExpressionUUID->"5c9d3426-4412-4d76-9a2e-2d20cae3f30f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3049, 103, 160, 3, 45, "Subsubsection",ExpressionUUID->"02c6ca9b-a031-48ca-b30d-a74bdc4be5b4"],
+Cell[CellGroupData[{
+Cell[3234, 110, 355, 7, 53, "Item",ExpressionUUID->"c1077401-ae28-435f-851c-71322539a381"],
+Cell[3592, 119, 386, 8, 45, "Subitem",ExpressionUUID->"07c6535e-02cc-4c08-9977-1013c48b8f7d"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4039, 134, 149, 3, 69, "Chapter",ExpressionUUID->"30e124fa-d2e9-4ac8-88ff-a20c81386dc9"],
+Cell[4191, 139, 229, 3, 30, "Input",ExpressionUUID->"d42b1d45-37e6-4cb3-9295-1a02d6dfe049"],
+Cell[4423, 144, 717, 14, 73, "Input",ExpressionUUID->"2ef0957b-ec2e-4995-a284-8a5f95c2f204"],
+Cell[5143, 160, 265, 4, 30, "Input",ExpressionUUID->"e75f707a-8dab-42ac-a2f2-ebea6c97c955"],
+Cell[CellGroupData[{
+Cell[5433, 168, 199, 3, 54, "Subsection",ExpressionUUID->"a5004bda-5563-4841-8274-1055fdb4860c"],
+Cell[5635, 173, 262, 6, 35, "Text",ExpressionUUID->"23ee3a3d-fc5d-430a-bb1f-0fb9dc7eafb3"],
+Cell[5900, 181, 245, 4, 30, "Input",ExpressionUUID->"0bd4f514-46dc-4b89-98d6-21df16d65a7b"],
+Cell[6148, 187, 1081, 24, 94, "Input",ExpressionUUID->"90c8aa03-a8ca-4f47-9c1f-e103731e2745"],
+Cell[7232, 213, 209, 3, 30, "Input",ExpressionUUID->"bddddd51-1d2b-4f94-bb17-2a316b1e9eae"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7478, 221, 154, 3, 54, "Subsection",ExpressionUUID->"7911b3b0-c407-4d4e-a0bd-5ab6731fa8f9"],
+Cell[7635, 226, 5601, 119, 696, "Input",ExpressionUUID->"c033ee37-f396-433e-b981-441fa15a7a05"]
+}, Closed]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
