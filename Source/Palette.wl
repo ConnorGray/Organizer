@@ -37,6 +37,13 @@ CreateOrganizerPalette[] := With[{
                     Button[Style["Refresh", 20],
                         (
                             If[!MemberQ[$Packages, "Organizer`"],
+                                If[!DirectoryQ[organizerPacletPath],
+                                    MessageDialog[StringForm[
+                                        "Embedded path to the Organizer paclet is no longer a directory: ``",
+                                        organizerPacletPath
+                                    ]];
+                                    Return[$Failed];
+                                ];
                                 PacletDirectoryLoad[organizerPacletPath];
                                 Needs["Organizer`"];
                                 If[!MemberQ[$Packages, "Organizer`"],
