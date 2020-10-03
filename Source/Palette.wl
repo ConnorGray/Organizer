@@ -80,7 +80,7 @@ CreateOrganizerPalette[] := With[{
 
     paletteContents = Pane[paletteContents, ImageSize -> 220];
 
-    existingNB = PersistentValue["CG:Organizer", "FrontEndSession"];
+    existingNB = PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"];
 
     If[MatchQ[existingNB, NotebookObject[__] ],
         Module[{opts},
@@ -88,7 +88,7 @@ CreateOrganizerPalette[] := With[{
             (* Check that existingNBObj is still actually open. If not, reset the global
                palette NB object. *)
             If[FailureQ @ opts,
-                PersistentValue["CG:Organizer", "FrontEndSession"] = CreatePalette[paletteContents];
+                PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
                 Return[];
             ];
             margins = Association[Options[existingNB] ][WindowMargins];
@@ -96,7 +96,7 @@ CreateOrganizerPalette[] := With[{
             SetOptions[existingNB, WindowMargins -> margins];
         ]
         ,
-        PersistentValue["CG:Organizer", "FrontEndSession"] = CreatePalette[paletteContents];
+        PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
     ];
 ];
 ]
