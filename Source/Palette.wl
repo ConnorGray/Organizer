@@ -17,6 +17,36 @@ NotebooksDirectory[] := Module[{dir},
     dir
 ]
 
+(* Get the directory for the currently selected Workspace. *)
+WorkspaceDirectory[] := Module[{name, dir},
+    name = PersistentValue["CG:Organizer:Workspace", "Local"];
+    If[!StringQ[name],
+        name = ChoiceDialog[
+            "No Workspace is selected. Please choose one.",
+            Map[(# -> #)&, Workspaces[]]
+        ];
+        PersistentValue["CG:Organizer:Workspace", "Local"] = name;
+        (* Throw[StringForm[
+            "Error: no valid Workspace is selected: ``",
+            name
+        ]]; *)
+    ];
+
+    dir = FileNameJoin[{NotebooksDirectory[], name}];
+    If[!DirectoryQ[dir],
+        Throw[StringForm[
+            "Error: saved Workspace name does not exist in the Notebooks directory: ``",
+            dir
+        ]];
+    ];
+    dir
+];
+
+Workspaces[] := Map[
+    FileNameTake[#, -1]&,
+    Select[FileNames[All, NotebooksDirectory[] ], DirectoryQ]
+]
+
 (**************************************)
 (* Interface Building Code            *)
 (**************************************)
@@ -41,6 +71,12 @@ CreateOrganizerPalette[] := With[{
         paletteContents = Column[
             {
                 mainBar[organizerPacletPath],
+                Button[
+                    Style["New Project", 20],
+                    handleStartNewProject[],
+                    Method -> "Queued",
+                    Background -> Green
+                ],
                 Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}]
             }
             ,
@@ -72,11 +108,20 @@ CreateOrganizerPalette[] := With[{
 
 mainBar[organizerPacletPath_?StringQ] := Grid[
     {{
-        Button[
-            Style["New Project", 20],
-            handleStartNewProject[],
-            Method -> "Queued",
-            Background -> Green
+        With[{
+            choices = Map[
+                # :> (
+                    PersistentValue["CG:Organizer:Workspace", "Local"] = #;
+                    Organizer`CreateOrganizerPalette[]
+                )&,
+                Workspaces[]
+            ]
+        },
+            ActionMenu[
+                "Workspace ...",
+                choices,
+                ImageSize -> Full
+            ]
         ],
         Button[Style["Refresh", 20],
             (* Note: This (..)& is a Function so that Return[] works within it. *)
@@ -111,7 +156,7 @@ getListOfActiveProjects[] := Map[
     Select[
         FileNames[
             All,
-            FileNameJoin[{NotebooksDirectory[], "WRI", "Projects", "Active"}]
+            FileNameJoin[{WorkspaceDirectory[], "Projects", "Active"}]
         ],
         DirectoryQ
     ]
@@ -128,7 +173,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
     Map[
         Function[proj,
             With[{
-                path = FileNameJoin[{NotebooksDirectory[], "WRI", "Projects", "Active", proj, "Log.nb"}]
+                path = FileNameJoin[{WorkspaceDirectory[], "Projects", "Active", proj, "Log.nb"}]
             },
                 If[FileExistsQ[path],
                     {
