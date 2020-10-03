@@ -17,6 +17,9 @@ NotebooksDirectory[] := Module[{dir},
     dir
 ]
 
+(**************************************)
+(* Interface Building Code            *)
+(**************************************)
 
 (*
     Statefully create or refresh the global Organizer palette.
@@ -102,51 +105,6 @@ CreateOrganizerPalette[] := With[{
 ]
 
 
-handleStartNewProject[] := Module[{
-    projNameSpaces, projName, dirPath, logNB
-},
-    projNameSpaces = InputString[];
-    If[!StringQ[projNameSpaces],
-        If[projNameSpaces === $Canceled,
-            Return[];
-        ];
-        Throw[StringForm["Invalid project name: ``", projNameSpaces] ];
-    ];
-    projName = StringReplace[projNameSpaces, " " -> "-"];
-
-    dirPath = FileNameJoin[{NotebooksDirectory[], "WRI", "Projects", "Active", projName}];
-    If[FileExistsQ[dirPath],
-        Throw[StringForm["File exists at path ``", dirPath] ];
-    ];
-
-    CreateDirectory[dirPath];
-
-    logNB = CreateNotebook[];
-
-    NotebookWrite[logNB, Cell[projNameSpaces, "Title"] ];
-    NotebookWrite[
-        logNB,
-        Cell[
-            "Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day"}],
-            "Subtitle"
-        ]
-    ];
-
-    NotebookWrite[logNB, Cell["Context", "Chapter"] ];
-
-    NotebookWrite[logNB, Cell["Daily", "Chapter"] ];
-    NotebookWrite[logNB, Cell[DateString[Now, {"MonthName", " ", "Year"}], "Subsection"] ];
-    NotebookWrite[logNB, Cell[DateString[Now, {"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"] ];
-
-    NotebookWrite[logNB, Cell["Queue", "Chapter"] ];
-
-    fInstallLogNotebookDockedCells[logNB, projNameSpaces];
-
-    (* TODO: Set DockedCells *)
-
-    NotebookSave[logNB, FileNameJoin[{dirPath, "Log.nb"}] ];
-]
-
 getListOfActiveProjects[] := Map[
     FileNameTake[#, -1] &,
     Select[
@@ -194,6 +152,55 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
         ],
         activeProjs
     ]
+]
+
+(**************************************)
+(* UI Event Handlers                  *)
+(**************************************)
+
+handleStartNewProject[] := Module[{
+    projNameSpaces, projName, dirPath, logNB
+},
+    projNameSpaces = InputString[];
+    If[!StringQ[projNameSpaces],
+        If[projNameSpaces === $Canceled,
+            Return[];
+        ];
+        Throw[StringForm["Invalid project name: ``", projNameSpaces] ];
+    ];
+    projName = StringReplace[projNameSpaces, " " -> "-"];
+
+    dirPath = FileNameJoin[{NotebooksDirectory[], "WRI", "Projects", "Active", projName}];
+    If[FileExistsQ[dirPath],
+        Throw[StringForm["File exists at path ``", dirPath] ];
+    ];
+
+    CreateDirectory[dirPath];
+
+    logNB = CreateNotebook[];
+
+    NotebookWrite[logNB, Cell[projNameSpaces, "Title"] ];
+    NotebookWrite[
+        logNB,
+        Cell[
+            "Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day"}],
+            "Subtitle"
+        ]
+    ];
+
+    NotebookWrite[logNB, Cell["Context", "Chapter"] ];
+
+    NotebookWrite[logNB, Cell["Daily", "Chapter"] ];
+    NotebookWrite[logNB, Cell[DateString[Now, {"MonthName", " ", "Year"}], "Subsection"] ];
+    NotebookWrite[logNB, Cell[DateString[Now, {"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"] ];
+
+    NotebookWrite[logNB, Cell["Queue", "Chapter"] ];
+
+    fInstallLogNotebookDockedCells[logNB, projNameSpaces];
+
+    (* TODO: Set DockedCells *)
+
+    NotebookSave[logNB, FileNameJoin[{dirPath, "Log.nb"}] ];
 ]
 
 handleNewMeetingNotes[] := Module[{nameSpaces, nameHyphens},
