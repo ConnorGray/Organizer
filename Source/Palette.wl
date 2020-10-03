@@ -119,7 +119,7 @@ getListOfActiveProjects[] := Map[
 buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
     activeProjs = getListOfActiveProjects[];
 
-      (* Extremely janky way of making the Tasks and Bugs projects come first in the palette. *)
+    (* Extremely janky way of making the Tasks and Bugs projects come first in the palette. *)
 
     activeProjs = Replace[activeProjs, {head__, "Bugs", tail__} :> {"Bugs", head, tail}];
     activeProjs = Replace[activeProjs, {head__, "Tasks", tail__} :> {"Tasks", head, tail}];
