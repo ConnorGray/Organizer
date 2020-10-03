@@ -6,6 +6,17 @@ BeginPackage["Organizer`Palette`", {
 
 Begin["`Private`"]
 
+NotebooksDirectory[] := Module[{dir},
+    dir = PersistentValue["CG:Organizer:Directory", "Local"];
+    If[!DirectoryQ[dir],
+        Throw[StringForm[
+            "Error: saved organizer notebooks directory is not DirectoryQ: ``",
+            dir
+        ]];
+    ];
+    dir
+]
+
 
 (*
     Statefully create or refresh the global Organizer palette.
@@ -103,7 +114,7 @@ handleStartNewProject[] := Module[{
     ];
     projName = StringReplace[projNameSpaces, " " -> "-"];
 
-    dirPath = FileNameJoin[{$MyNotebooksDirectory, "WRI", "Projects", "Active", projName}];
+    dirPath = FileNameJoin[{NotebooksDirectory[], "WRI", "Projects", "Active", projName}];
     If[FileExistsQ[dirPath],
         Throw[StringForm["File exists at path ``", dirPath] ];
     ];
@@ -141,7 +152,7 @@ getListOfActiveProjects[] := Map[
     Select[
         FileNames[
             All,
-            FileNameJoin[{$MyNotebooksDirectory, "WRI", "Projects", "Active"}]
+            FileNameJoin[{NotebooksDirectory[], "WRI", "Projects", "Active"}]
         ],
         DirectoryQ
     ]
@@ -158,7 +169,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
     Map[
         Function[proj,
             With[{
-                path = FileNameJoin[{$MyNotebooksDirectory, "WRI", "Projects", "Active", proj, "Log.nb"}]
+                path = FileNameJoin[{NotebooksDirectory[], "WRI", "Projects", "Active", proj, "Log.nb"}]
             },
                 If[FileExistsQ[path],
                     {
