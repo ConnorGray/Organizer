@@ -232,7 +232,7 @@ handleStartNewProject[] := Module[{
     ];
     projName = StringReplace[projNameSpaces, " " -> "-"];
 
-    dirPath = FileNameJoin[{NotebooksDirectory[], "WRI", "Projects", "Active", projName}];
+    dirPath = FileNameJoin[{WorkspaceDirectory[], "Projects", "Active", projName}];
     If[FileExistsQ[dirPath],
         Throw[StringForm["File exists at path ``", dirPath] ];
     ];
