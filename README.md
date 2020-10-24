@@ -22,7 +22,7 @@ Needs["Organizer`];
 > directory the system uses, you do so by evaluating:
 >
 > ```wolfram
-> PersistentValue["CG:Organizer:Directory", "Local"] = SystemDialogInput["Directory"];
+> PersistentValue["CG:Organizer:RootDirectory", "Local"] = SystemDialogInput["Directory"];
 > ```
 
 Once you've chosen a root directory, you may open the palette by evaluating:

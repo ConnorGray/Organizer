@@ -8,7 +8,7 @@ CreateOrganizerPalette
 
 (* PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = None; *)
 
-If[!DirectoryQ[PersistentValue["CG:Organizer:Directory", "Local"]],
+If[!DirectoryQ[PersistentValue["CG:Organizer:RootDirectory", "Local"]],
 	dir = SystemDialogInput[
 		"Directory",
 		FileNameDrop[PacletObject["Organizer"]["Location"], -1]
@@ -21,7 +21,7 @@ If[!DirectoryQ[PersistentValue["CG:Organizer:Directory", "Local"]],
         Throw[StringForm["Invalid project name: ``", dir] ];
     ];
 
-	PersistentValue["CG:Organizer:Directory", "Local"] = dir;
+	PersistentValue["CG:Organizer:RootDirectory", "Local"] = dir;
 ];
 
 

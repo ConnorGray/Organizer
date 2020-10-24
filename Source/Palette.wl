@@ -7,7 +7,7 @@ BeginPackage["Organizer`Palette`", {
 Begin["`Private`"]
 
 NotebooksDirectory[] := Module[{dir},
-    dir = PersistentValue["CG:Organizer:Directory", "Local"];
+    dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
     If[!DirectoryQ[dir],
         Throw[StringForm[
             "Error: saved organizer notebooks directory is not DirectoryQ: ``",
@@ -201,7 +201,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
                                 _ -> LightBlue
                             }]
                         ],
-                        Button[Style["./", 16, Bold], 
+                        Button[Style["./", 16, Bold],
                             RunProcess[{"open", FileNameDrop[path, -1]}],
                             Method -> "Queued",
                             Background -> Lighter@Orange,
