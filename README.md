@@ -24,3 +24,12 @@ Needs["Organizer`];
 > ```wolfram
 > PersistentValue["CG:Organizer:Directory", "Local"] = SystemDialogInput["Directory"];
 > ```
+
+Once you've chosen a root directory, you may open the palette by evaluating:
+
+```wolfram
+CreateOrganizerPalette[]
+```
+
+This should open a new empty palette window. New projects may be added by clicking the
+"New Project" button and entering a name in the dialog window.
