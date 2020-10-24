@@ -183,6 +183,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
 
     (* Extremely janky way of making the Tasks and Bugs projects come first in the palette. *)
 
+    activeProjs = Replace[activeProjs, {head__, "Ideas", tail__} :> {"Ideas", head, tail}];
     activeProjs = Replace[activeProjs, {head__, "Bugs", tail__} :> {"Bugs", head, tail}];
     activeProjs = Replace[activeProjs, {head__, "Tasks", tail__} :> {"Tasks", head, tail}];
 
@@ -196,7 +197,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
                         Button[Style[proj, 16], NotebookOpen[path],
                             Method -> "Queued",
                             Background -> Replace[proj, {
-                                "Bugs" | "Tasks" -> Lighter@Lighter@Lighter@Blue,
+                                "Ideas" | "Bugs" | "Tasks" -> Lighter@Lighter@Lighter@Blue,
                                 _ -> LightBlue
                             }]
                         ],
