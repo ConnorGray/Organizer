@@ -6,6 +6,17 @@ BeginPackage["Organizer`Palette`", {
 
 Begin["`Private`"]
 
+(*
+    With[..] is used to embed this expression directly within the palette expression. This
+    ensures that the check does not rely on any function from the Organizer` paclet itself.
+*)
+heldLoadOrFail = Hold[
+    If[FailureQ @ PacletObject["Organizer"] || FailureQ @ Needs["Organizer`"],
+        MessageDialog["The Organizer` paclet is either not installed, or failed to load."];
+        Abort[];
+    ];
+]
+
 NotebooksDirectory[] := Module[{dir},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
     If[!DirectoryQ[dir],
@@ -55,18 +66,8 @@ Workspaces[] := Map[
     Statefully create or refresh the global Organizer palette.
 *)
 CreateOrganizerPalette[] := With[{
-    (* This variable needs to be embeded using a With so that it's embeded in the held
-       "Refresh" Button below. *)
-    organizerPacletPath = FileNameDrop[PacletObject["Organizer"]["Location"], -1]
+    loadOrFail = heldLoadOrFail
 },
-    If[!DirectoryQ[organizerPacletPath],
-        MessageDialog[StringForm[
-            "Saved path to the Organizer paclet is no longer a directory: ``",
-            organizerPacletPath
-        ]];
-        Return[$Failed];
-    ];
-
     Module[{paletteContents, existingNB, margins},
         paletteContents = Column[
             {
@@ -75,14 +76,20 @@ CreateOrganizerPalette[] := With[{
                     {{
                         Button[
                             Style["New Project", 20],
-                            handleStartNewProject[],
+                            (
+                                ReleaseHold[loadOrFail];
+                                handleStartNewProject[];
+                            ),
                             Method -> "Queued",
                             Background -> Green,
                             ImageSize -> Full
                         ],
                         Button[
                             Style[Global`\[CloverLeaf], 25],
-                            CreateWindow[PaletteNotebook@mainBar[organizerPacletPath]],
+                            (
+                                ReleaseHold[loadOrFail];
+                                CreateWindow[PaletteNotebook@mainBar[]];
+                            ),
                             Method -> "Queued",
                             Active -> False,
                             Alignment -> Center,
@@ -122,49 +129,45 @@ CreateOrganizerPalette[] := With[{
     ];
 ]
 
-mainBar[organizerPacletPath_?StringQ] := Grid[
-    {{
-        With[{
-            choices = Map[
-                # :> (
-                    PersistentValue["CG:Organizer:Workspace", "Local"] = #;
+mainBar[] := With[{
+    loadOrFail = heldLoadOrFail
+},
+    Grid[
+        {{
+            With[{
+                choices = Map[
+                    # :> (
+                        ReleaseHold[loadOrFail];
+
+                        PersistentValue["CG:Organizer:Workspace", "Local"] = #;
+                        Organizer`CreateOrganizerPalette[]
+                    )&,
+                    Workspaces[]
+                ]
+            },
+                ActionMenu[
+                    "Workspace ...",
+                    choices
+                    (* ImageSize -> Full *)
+                ]
+            ],
+            Button[Style["Refresh", 20],
+                (
+                    ReleaseHold[loadOrFail];
+
+                    Assert[MemberQ[$Packages, "Organizer`"]];
+
+                    (* CreateOrganizerPalette[] automatically overwrites the already-open
+                    organizer. *)
                     Organizer`CreateOrganizerPalette[]
-                )&,
-                Workspaces[]
+                ),
+                Method -> "Queued",
+                Background -> LightBlue
             ]
-        },
-            ActionMenu[
-                "Workspace ...",
-                choices
-                (* ImageSize -> Full *)
-            ]
-        ],
-        Button[Style["Refresh", 20],
-            (* Note: This (..)& is a Function so that Return[] works within it. *)
-            (
-                If[!MemberQ[$Packages, "Organizer`"],
-                    If[!DirectoryQ[organizerPacletPath],
-                        MessageDialog[StringForm[
-                            "Embedded path to the Organizer paclet is no longer a directory: ``",
-                            organizerPacletPath
-                        ] ];
-                        Return[$Failed];
-                    ];
-                    PacletDirectoryLoad[organizerPacletPath];
-                    Needs["Organizer`"];
-                    If[!MemberQ[$Packages, "Organizer`"],
-                        MessageDialog[Row[{Style["Error:", Red], " Organizer` could not be loaded."}] ];
-                    ];
-                    Return[];
-                ];
-                Organizer`CreateOrganizerPalette[]
-            )&[],
-            Method -> "Queued",
-            Background -> LightBlue
-        ]
-    }},
-    (* ItemSize -> {{Scaled[0.6], Scaled[0.4]}}, *)
-    Spacings -> 0
+        }},
+        (* ItemSize -> {{Scaled[0.6], Scaled[0.4]}}, *)
+        Spacings -> 0
+    ]
 ]
 
 getListOfActiveProjects[] := Map[
@@ -190,11 +193,16 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
     Map[
         Function[proj,
             With[{
+                loadOrFail = heldLoadOrFail,
                 path = FileNameJoin[{WorkspaceDirectory[], "Projects", "Active", proj, "Log.nb"}]
             },
                 If[FileExistsQ[path],
                     {
-                        Button[Style[proj, 16], NotebookOpen[path],
+                        Button[Style[proj, 16],
+                            (
+                                ReleaseHold[loadOrFail];
+                                NotebookOpen[path];
+                            ),
                             Method -> "Queued",
                             Background -> Replace[proj, {
                                 "Ideas" | "Bugs" | "Tasks" -> Lighter@Lighter@Lighter@Blue,
@@ -202,7 +210,10 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
                             }]
                         ],
                         Button[Style["./", 16, Bold],
-                            RunProcess[{"open", FileNameDrop[path, -1]}],
+                            (
+                                ReleaseHold[loadOrFail];
+                                RunProcess[{"open", FileNameDrop[path, -1]}];
+                            ),
                             Method -> "Queued",
                             Background -> Lighter@Orange,
                             ImageSize -> {30, 30}
