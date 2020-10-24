@@ -4,11 +4,13 @@ This paclet provides a palette and notebook organizer system.
 
 ## First-time setup
 
-Begin by cloning this paclet to your local computer. Next, use `PacletInstall` to
-install it to your system.
+Begin by cloning this paclet to your local computer. Next, use `CreatePacletArchive` and
+`PacletInstall` to install it to your system.
 
 ```wolfram
-PacletInstall["/path/to/Organizer"];
+CreatePacletArchive["/path/to/Organizer"];
+
+PacletInstall["/path/to/Organizer-0.1.0.paclet"];
 ```
 
 Next, evaluate `` Needs["Organizer`"] ``. If this is your first time setting up the system,
