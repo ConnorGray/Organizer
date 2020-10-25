@@ -233,7 +233,7 @@ fCreateHyperlinkCell[] := Module[{filepath, label},
 	]
 ]
 
-fInsertLinkAfterSelection[] := Module[{newCell, nb},
+insertLinkAfterSelection[] := Module[{newCell, nb},
 	newCell = fCreateHyperlinkCell[];
 	If[FailureQ @ newCell,
 		Return[$Failed];
@@ -347,7 +347,7 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 
 	newFileLinkButton = Button[
 		"File Link",
-		fInsertLinkAfterSelection[],
+		insertLinkAfterSelection[],
 		buttonOptions,
 		Method -> "Queued"
 	];
