@@ -341,7 +341,10 @@ iconButtonContent[icon_, tooltip_?StringQ] := Tooltip[
 	TooltipDelay -> 0.333
 ]
 
-installLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
+installLogNotebookDockedCells[nbObj_, projName_?StringQ] := With[{
+	loadOrFail = $HeldLoadOrFail
+},
+Module[{
 	buttonOptions, newTODObutton,
 	newTodayTodoButton,
 	newTodoAtTopOfQueueButton,
@@ -362,13 +365,19 @@ installLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 
 	newTODObutton = Button[
 		iconButtonContent[$iconPlus, "Insert new TODO after current selection"],
-		insertTodoAfterSelection[],
+		(
+			ReleaseHold[loadOrFail];
+			insertTodoAfterSelection[];
+		),
 		buttonBarOptions
 	];
 
 	newTodayTodoButton = Button[
 		iconButtonContent[$iconCalendarWithPlus, "Insert new TODO item for today"],
-		insertTodoForToday[SelectedNotebook[]],
+		(
+			ReleaseHold[loadOrFail];
+			insertTodoForToday[SelectedNotebook[]];
+		),
 		buttonBarOptions
 	];
 
@@ -377,20 +386,29 @@ installLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 			$iconUnfinishedTodoList,
 			"Insert new TODO item at the top of the Queue"
 		],
-		insertTodoAtTopOfQueue[SelectedNotebook[]],
+		(
+			ReleaseHold[loadOrFail];
+			insertTodoAtTopOfQueue[SelectedNotebook[]];
+		),
 		buttonBarOptions
 	];
 
 	newFileLinkButton = Button[
 		"File Link",
-		insertLinkAfterSelection[],
+		(
+			ReleaseHold[loadOrFail];
+			insertLinkAfterSelection[];
+		),
 		buttonOptions,
 		Method -> "Queued"
 	];
 
 	newDraggedLinkButton = Button[
 		"Dragged Link",
-		insertDraggedHyperlink[],
+		(
+			ReleaseHold[loadOrFail];
+			insertDraggedHyperlink[];
+		),
 		buttonOptions,
 		Method -> "Queued"
 	];
@@ -426,6 +444,7 @@ installLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 	];
 
 	SetOptions[nbObj, DockedCells->{cell}]
+]
 ]
 
 
