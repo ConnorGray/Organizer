@@ -284,7 +284,7 @@ fGetDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 ]
 
 
-fInsertDraggedHyperlink[] := Module[{newCell, nb},
+insertDraggedHyperlink[] := Module[{newCell, nb},
 	newCell = fGetDraggedHyperlink[];
 
 	nb = SelectedNotebook[];
@@ -354,7 +354,7 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 
 	newDraggedLinkButton = Button[
 		"Dragged Link",
-		fInsertDraggedHyperlink[],
+		insertDraggedHyperlink[],
 		buttonOptions,
 		Method -> "Queued"
 	];
