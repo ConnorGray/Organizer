@@ -60,7 +60,6 @@ CreateOrganizerPalette[] := With[{
     Module[{paletteContents, existingNB, margins},
         paletteContents = Column[
             {
-                (* mainBar[organizerPacletPath], *)
                 Grid[
                     {{
                         Button[
@@ -77,7 +76,7 @@ CreateOrganizerPalette[] := With[{
                             Style[Global`\[CloverLeaf], 25],
                             (
                                 ReleaseHold[loadOrFail];
-                                CreateWindow[PaletteNotebook@mainBar[]];
+                                CreateWindow[PaletteNotebook@commandDropdown[]];
                             ),
                             Method -> "Queued",
                             Active -> False,
@@ -118,7 +117,7 @@ CreateOrganizerPalette[] := With[{
     ];
 ]
 
-mainBar[] := With[{
+commandDropdown[] := With[{
     loadOrFail = $HeldLoadOrFail
 },
     Grid[
