@@ -242,7 +242,7 @@ fGetDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 fInsertDraggedHyperlink[] := Module[{newCell, nb},
 	newCell = fGetDraggedHyperlink[];
 
-	nb = EvaluationNotebook[];
+	nb = SelectedNotebook[];
 	SelectionMove[nb, After, Cell];
 	NotebookWrite[nb, newCell];
 ]
@@ -279,7 +279,7 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 			"Insert a new TODO item for today",
 			TooltipDelay -> 0.333
 		],
-		insertTodoForToday[EvaluationNotebook[]],
+		insertTodoForToday[SelectedNotebook[]],
 		buttonOptions
 	];
 
