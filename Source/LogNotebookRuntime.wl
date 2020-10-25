@@ -340,7 +340,7 @@ iconButtonContent[icon_, tooltip_?StringQ] := Tooltip[
 	TooltipDelay -> 0.333
 ]
 
-fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
+installLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 	buttonOptions, newTODObutton,
 	newTodayTodoButton,
 	newTodoAtTopOfQueueButton,
