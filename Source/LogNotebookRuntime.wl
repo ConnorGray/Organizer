@@ -12,6 +12,22 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 	"Organizer`"
 }]
 
+(*********)
+(* Icons *)
+(*********)
+
+LoadIcons[] := (
+	$iconCalendarWithPlus;
+)
+
+(* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
+   value. *)
+$iconCalendarWithPlus := $iconCalendarWithPlus = ResourceFunction["SVGImport"][
+	FileNameJoin[{
+		PacletObject["Organizer"]["AssetLocation", "Icons"],
+		"CalendarWithPlus.svg"
+	}]
+]
 
 (* ::Text:: *)
 
@@ -43,6 +59,93 @@ fInsertTodoAfterSelection[] := Module[{newCell, nb},
 	NotebookWrite[nb, newCell];
 ]
 
+insertTodoForToday[nb_NotebookObject] := Module[{
+	dailyChapterCell,
+	todaySectionCell,
+	monthSectionCell,
+	cellsAfterThisMonth
+},
+	dailyChapterCell = SelectFirst[
+		Cells[nb, CellStyle -> "Chapter"],
+		MatchQ[
+			NotebookRead[#],
+			Cell["Daily", "Chapter", ___]
+		] &
+	];
+
+	If[!MatchQ[dailyChapterCell, CellObject[___]],
+		MessageDialog[StringForm[
+			"Organizer`.`: Unable to insert new TODO cell: no 'Daily' chapter exists in specified notebook: ``",
+			Information[nb]["WindowTitle"]
+		]];
+		Return[$Failed];
+	];
+
+	(*
+		Check if the current notebook contains a Subsection for the current month.
+	*)
+
+	monthSectionCell = SelectFirst[
+		Cells[nb, CellStyle -> "Subsection"],
+		MatchQ[
+			NotebookRead[#],
+			Cell[DateString[{"MonthName", " ", "Year"}], "Subsection", ___]
+		] &
+	];
+
+	If[MissingQ[monthSectionCell],
+		SelectionMove[dailyChapterCell, After, CellGroup, 2];
+		(* 3rd arg `All` is used so that the written cell is selected. *)
+		NotebookWrite[nb, Cell[DateString[{"MonthName", " ", "Year"}], "Subsection"], All];
+
+		(* Get the cell we just wrote/selected. *)
+		monthSectionCell = Replace[SelectedCells[], {
+			{cell_CellObject} :> cell,
+			_ :> Throw["Expected NotebookWrite[] / SelectedCells[] to result in the cell which was written"]
+		}];
+		SelectionMove[nb, After, Cell]
+
+		Assert[MatchQ[NotebookRead[monthSectionCell], Cell[_, "Subsection"]]]
+	];
+
+	(* Get all the cells which come *after* `monthSectionCell` in `nb`. This is necessary
+	   because otherwise our search for the subsubsection cell which corresponds to the
+	   current day might accidentally grab a cell which is from a previous year. This is
+	   fairly unlikely, but we might as well do this right. *)
+	cellsAfterThisMonth = Module[{cells},
+		cells = Cells[nb];
+		(* Drop all the cells before `monthSectionCell`. *)
+		Drop[cells, LengthWhile[cells, # =!= monthSectionCell &]]
+	];
+
+	Assert[ListQ[cellsAfterThisMonth]];
+
+	(*
+		Check if the current notebook contains a Subsubsection which matches the current date.
+	*)
+
+	todaySectionCell = SelectFirst[
+		(* Only check the cells which come after the `monthSectionCell`. *)
+		cellsAfterThisMonth,
+		MatchQ[
+			NotebookRead[#],
+			Cell[DateString[{"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection", ___]
+		] &
+	];
+
+	If[MissingQ[todaySectionCell],
+		(* Insert a subsubsection for the current date, and insert a new TODO cell inside it. *)
+		SelectionMove[monthSectionCell, After, CellGroup, 2];
+		NotebookWrite[nb, Cell[DateString[{"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"]];
+		NotebookWrite[nb, fCreateTodoCell[]];
+
+		Return[];
+	];
+
+	(* Insert a new TODO cell at the end of the existing subsubsection for the current day. *)
+	SelectionMove[todaySectionCell, After, CellGroup, 2];
+	NotebookWrite[nb, fCreateTodoCell[]];
+]
 
 (* ::Subsubsection:: *)
 (*Links*)
@@ -134,7 +237,7 @@ fInsertDraggedHyperlink[] := Module[{newCell, nb},
 
 
 fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
-	buttonOptions, newTODObutton, newFileLinkButton, newDraggedLinkButton,
+	buttonOptions, newTODObutton, newTodayTodoButton, newFileLinkButton, newDraggedLinkButton,
 	openFolderButton, row, cell
 },
 	(* Options shared by all buttons in the toolbar *)
@@ -142,12 +245,25 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 		Background -> Blend[{Darker@Orange,Red}],
 		ContentPadding -> None,
 		ImageMargins -> {{10,10},{10,10}},
-		FrameMargins -> 10
+		FrameMargins -> 7
 	];
 
 	newTODObutton = Button[
 		"New TODO",
 		fInsertTodoAfterSelection[],
+		buttonOptions
+	];
+
+	newTodayTodoButton = Button[
+		Tooltip[
+			Show[
+				$iconCalendarWithPlus,
+				ImageSize -> 20
+			],
+			"Insert a new TODO item for today",
+			TooltipDelay -> 0.333
+		],
+		insertTodoForToday[EvaluationNotebook[]],
 		buttonOptions
 	];
 
@@ -181,6 +297,7 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 	row = Row[{
 		Style[Pane[projName, ImageMargins -> 10], "Subchapter", White],
 		newTODObutton,
+		newTodayTodoButton,
 		newFileLinkButton,
 		newDraggedLinkButton,
 		openFolderButton

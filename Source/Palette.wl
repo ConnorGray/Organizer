@@ -249,6 +249,9 @@ handleStartNewProject[] := Module[{
         Throw[StringForm["File exists at path ``", dirPath] ];
     ];
 
+    (* Make sure the icons are loaded *before* we modify the filesystem. *)
+    LoadIcons[];
+
     CreateDirectory[dirPath];
 
     logNB = CreateNotebook[];
