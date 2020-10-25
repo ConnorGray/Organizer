@@ -94,7 +94,8 @@ insertTodoForToday[nb_NotebookObject] := Module[{
 	];
 
 	If[MissingQ[monthSectionCell],
-		SelectionMove[dailyChapterCell, After, CellGroup, 2];
+		moveSelectionToEndOfSection[dailyChapterCell];
+
 		(* 3rd arg `All` is used so that the written cell is selected. *)
 		NotebookWrite[nb, Cell[DateString[{"MonthName", " ", "Year"}], "Subsection"], All];
 
@@ -135,7 +136,7 @@ insertTodoForToday[nb_NotebookObject] := Module[{
 
 	If[MissingQ[todaySectionCell],
 		(* Insert a subsubsection for the current date, and insert a new TODO cell inside it. *)
-		SelectionMove[monthSectionCell, After, CellGroup, 2];
+		moveSelectionToEndOfSection[monthSectionCell];
 		NotebookWrite[nb, Cell[DateString[{"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"]];
 		NotebookWrite[nb, fCreateTodoCell[]];
 
@@ -143,8 +144,24 @@ insertTodoForToday[nb_NotebookObject] := Module[{
 	];
 
 	(* Insert a new TODO cell at the end of the existing subsubsection for the current day. *)
-	SelectionMove[todaySectionCell, After, CellGroup, 2];
+	moveSelectionToEndOfSection[todaySectionCell];
 	NotebookWrite[nb, fCreateTodoCell[]];
+]
+
+(* Thanks Dad for contributing this. *)
+moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
+	SelectionMove[heading, All, CellGroup];
+	cells = SelectedCells[];
+	(* Hacky way of checking if `heading` is the head of a CellGroup. *)
+	If[First[cells] === heading,
+		(* Use SelectedNotebook[] because the current situation is that multiple cells are
+		   selected, and `heading` is the first cell in that group. We want to move to the
+		   end of that set of selected cells. If we used `heading` here, we would only be
+		   moving to the cell immediately after `heading`, which won't be at the end of
+		   the group. *)
+		SelectionMove[SelectedNotebook[], After, Cell],
+		SelectionMove[heading, After, Cell]
+	];
 ]
 
 (* ::Subsubsection:: *)
