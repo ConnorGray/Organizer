@@ -70,7 +70,7 @@ fCreateTodoCell[] := Module[{input, row},
 ]
 
 
-fInsertTodoAfterSelection[] := Module[{newCell, nb},
+insertTodoAfterSelection[] := Module[{newCell, nb},
 	newCell = fCreateTodoCell[];
 	nb = SelectedNotebook[];
 	SelectionMove[nb, After, Cell];
@@ -326,7 +326,7 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 
 	newTODObutton = Button[
 		iconButtonContent[$iconPlus, "Insert new TODO after current selection"],
-		fInsertTodoAfterSelection[],
+		insertTodoAfterSelection[],
 		buttonBarOptions
 	];
 
