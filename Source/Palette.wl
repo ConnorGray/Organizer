@@ -72,11 +72,13 @@ CreateOrganizerPalette[] := With[{
                             Background -> Green,
                             ImageSize -> Full
                         ],
+                        commandDropdown[]
+                        (*
                         Button[
                             Style[Global`\[CloverLeaf], 25],
                             (
                                 ReleaseHold[loadOrFail];
-                                CreateWindow[PaletteNotebook@commandDropdown[]];
+                                openCommandDropdown[];
                             ),
                             Method -> "Queued",
                             Active -> False,
@@ -84,6 +86,7 @@ CreateOrganizerPalette[] := With[{
                             Background -> Lighter@Orange,
                             ImageSize -> Full
                         ]
+                        *)
                     }},
                     ItemSize -> {{Scaled[0.75], Scaled[0.25]}},
                     Spacings -> {0, 0}
@@ -117,6 +120,75 @@ CreateOrganizerPalette[] := With[{
     ];
 ]
 
+commandDropdown[] := With[{
+    loadOrFail = $HeldLoadOrFail
+},
+    attachedPopupMenu[
+        Style["\[CloverLeaf]", 25],
+        Function[close,
+            ToBoxes @ Column[{
+                Button["Close", close[] ],
+                Button["Print", Print["Hello"] ]
+            }]
+        ]
+    ]
+]
+
+attachedPopupMenu[
+    label_,
+    contentsFunction_,
+    parentPosition_ : {2, {Left, Top}},
+    childPosition_ : {Right, Top},
+    buttonOpts : OptionsPattern[]
+] := DynamicModule[{cell = Null},
+    Button[
+        label,
+        makePopupAttachedCell[
+            Dynamic[cell],
+            contentsFunction[(NotebookDelete[cell]; cell = Null) &],
+            parentPosition,
+            childPosition
+        ],
+        Method -> "Preemptive",
+        Alignment -> Center,
+        Background -> Lighter@Orange,
+        ImageSize -> Full
+    ]
+]
+
+makePopupAttachedCell[Dynamic[cell_], contents_, parentPosition_, childPosition_] := With[{
+    parent = EvaluationBox[]
+},
+    If[cell =!= Null,
+        NotebookDelete[cell];
+        cell = Null;
+
+        Return[];
+    ];
+
+    cell = FrontEndExecute[FrontEnd`AttachCell[
+        (*thing you're attaching to*)
+        parent,
+        (* cell expression *)
+        Cell[
+            BoxData @ ToBoxes @ DynamicModule[{},
+                RawBoxes[contents],
+                (* Hack needed to trigger Deinitialization *)
+                Initialization :> (2 + 2),
+                Deinitialization :> (cell = Null)
+            ],
+            "DialogLabelText",
+            Background -> GrayLevel[0.9]
+        ],
+        (* distance, position on parent *)
+        parentPosition,
+        (* position on child *)
+        childPosition,
+        "ClosingActions" -> {"EvaluatorQuit", "OutsideMouseClick", "ParentChanged"}
+    ]];
+];
+
+(*
 commandDropdown[] := With[{
     loadOrFail = $HeldLoadOrFail
 },
@@ -157,6 +229,7 @@ commandDropdown[] := With[{
         Spacings -> 0
     ]
 ]
+*)
 
 getListOfActiveProjects[] := Map[
     FileNameTake[#, -1] &,
