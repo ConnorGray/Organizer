@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     17139,        437]
-NotebookOptionsPosition[     14309,        380]
-NotebookOutlinePosition[     14781,        397]
-CellTagsIndexPosition[     14738,        394]
+NotebookDataLength[     13782,        351]
+NotebookOptionsPosition[     11582,        304]
+NotebookOutlinePosition[     12054,        321]
+CellTagsIndexPosition[     12011,        318]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -139,7 +139,7 @@ a20c81386dc9"],
 
 Cell[BoxData["Exit"], "Input",
  CellChangeTimes->{{3.810733068277445*^9, 3.81073306897093*^9}},
- CellLabel->"In[4]:=",ExpressionUUID->"e38b32c3-e2f0-4f93-8703-70da27b5c952"],
+ CellLabel->"In[7]:=",ExpressionUUID->"e38b32c3-e2f0-4f93-8703-70da27b5c952"],
 
 Cell[BoxData[{
  RowBox[{
@@ -165,87 +165,11 @@ Cell[BoxData[{
    3.810733533803013*^9, {3.8125518468226423`*^9, 3.8125518472457952`*^9}},
  CellLabel->"In[1]:=",ExpressionUUID->"2ef0957b-ec2e-4995-a284-8a5f95c2f204"],
 
-Cell[CellGroupData[{
-
 Cell[BoxData[
  RowBox[{"CreateOrganizerPalette", "[", "]"}]], "Input",
  CellChangeTimes->{{3.810654410016924*^9, 3.810654413938298*^9}, {
   3.8106692636717367`*^9, 3.810669264158304*^9}},
  CellLabel->"In[3]:=",ExpressionUUID->"e75f707a-8dab-42ac-a2f2-ebea6c97c955"],
-
-Cell[BoxData[
- RowBox[{"Hold", "[", 
-  RowBox[{
-   RowBox[{"If", "[", 
-    RowBox[{
-     RowBox[{
-      RowBox[{"FailureQ", "[", 
-       RowBox[{"PacletObject", "[", "\<\"Organizer\"\>", "]"}], "]"}], "||", 
-      RowBox[{"FailureQ", "[", 
-       RowBox[{"Needs", "[", "\<\"Organizer`\"\>", "]"}], "]"}]}], ",", 
-     RowBox[{
-      RowBox[{
-      "MessageDialog", 
-       "[", "\<\"The Organizer` paclet is either not installed, or failed to \
-load.\"\>", "]"}], ";", 
-      RowBox[{"Abort", "[", "]"}], ";"}]}], "]"}], ";"}], "]"}]], "Echo",
- CellChangeTimes->{
-  3.812553309130842*^9},ExpressionUUID->"dc5de3a1-bc78-4bb4-b75e-\
-893f96b592c4"]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell["Update existing NB\[CloseCurlyQuote]s DockedCells", "Subsection",
- CellChangeTimes->{{3.808777016052597*^9, 
-  3.8087770219240227`*^9}},ExpressionUUID->"a5004bda-5563-4841-8274-\
-1055fdb4860c"],
-
-Cell["\<\
-This function is meant to be called manually whenever there is a change to \
-the standard set of docked cells.\
-\>", "Text",
- CellChangeTimes->{{3.808777001955613*^9, 
-  3.8087770347478657`*^9}},ExpressionUUID->"23ee3a3d-fc5d-430a-bb1f-\
-0fb9dc7eafb3"],
-
-Cell[BoxData[
- RowBox[{"Needs", "[", "\"\<Organizer`LogNotebookRuntime`\>\"", 
-  "]"}]], "Input",
- CellChangeTimes->{{3.8107260190925503`*^9, 3.8107260264105673`*^9}},
- CellLabel->"In[5]:=",ExpressionUUID->"0bd4f514-46dc-4b89-98d6-21df16d65a7b"],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"updateDockedCells", "[", "]"}], " ", ":=", " ", 
-  RowBox[{"Scan", "[", "\n", "\t", 
-   RowBox[{
-    RowBox[{
-     RowBox[{"fInstallLogNotebookDockedCells", "[", 
-      RowBox[{
-       RowBox[{"NotebookOpen", "[", "#", "]"}], ",", " ", 
-       RowBox[{
-        RowBox[{"FileNameSplit", "[", "#", "]"}], "[", 
-        RowBox[{"[", 
-         RowBox[{"-", "2"}], "]"}], "]"}]}], "]"}], " ", "&"}], ",", "\n", 
-    "\t", 
-    RowBox[{"FileNames", "[", 
-     RowBox[{"\"\<Log*.nb\>\"", ",", " ", 
-      RowBox[{
-      "{", "\"\</Users/connorgray/Dropbox/Notebooks/WRI/Projects\>\"", "}"}], 
-      ",", " ", "Infinity"}], "]"}]}], "\n", "]"}]}]], "Input",
- CellChangeTimes->{{3.8087765049612503`*^9, 3.808776536814767*^9}, {
-  3.8087765934381943`*^9, 3.8087766381828213`*^9}, {3.8087766763953667`*^9, 
-  3.808776685915091*^9}, {3.808776760263177*^9, 3.808776896136056*^9}, {
-  3.808776982926063*^9, 3.8087769954695263`*^9}, {3.8091661915747957`*^9, 
-  3.80916619198971*^9}},
- CellLabel->"In[6]:=",ExpressionUUID->"90c8aa03-a8ca-4f47-9c1f-e103731e2745"],
-
-Cell[BoxData[
- RowBox[{"updateDockedCells", "[", "]"}]], "Input",
- CellChangeTimes->{{3.809096077625051*^9, 3.809096080598474*^9}},
- CellLabel->"In[7]:=",ExpressionUUID->"bddddd51-1d2b-4f94-bb17-2a316b1e9eae"]
-}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -422,20 +346,10 @@ Cell[CellGroupData[{
 Cell[4039, 134, 149, 3, 69, "Chapter",ExpressionUUID->"30e124fa-d2e9-4ac8-88ff-a20c81386dc9"],
 Cell[4191, 139, 173, 2, 30, "Input",ExpressionUUID->"e38b32c3-e2f0-4f93-8703-70da27b5c952"],
 Cell[4367, 143, 1124, 22, 94, "Input",ExpressionUUID->"2ef0957b-ec2e-4995-a284-8a5f95c2f204"],
+Cell[5494, 167, 265, 4, 30, "Input",ExpressionUUID->"e75f707a-8dab-42ac-a2f2-ebea6c97c955"],
 Cell[CellGroupData[{
-Cell[5516, 169, 265, 4, 30, "Input",ExpressionUUID->"e75f707a-8dab-42ac-a2f2-ebea6c97c955"],
-Cell[5784, 175, 645, 18, 63, "Echo",ExpressionUUID->"dc5de3a1-bc78-4bb4-b75e-893f96b592c4"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[6466, 198, 199, 3, 54, "Subsection",ExpressionUUID->"a5004bda-5563-4841-8274-1055fdb4860c"],
-Cell[6668, 203, 262, 6, 35, "Text",ExpressionUUID->"23ee3a3d-fc5d-430a-bb1f-0fb9dc7eafb3"],
-Cell[6933, 211, 245, 4, 30, "Input",ExpressionUUID->"0bd4f514-46dc-4b89-98d6-21df16d65a7b"],
-Cell[7181, 217, 1081, 24, 94, "Input",ExpressionUUID->"90c8aa03-a8ca-4f47-9c1f-e103731e2745"],
-Cell[8265, 243, 209, 3, 30, "Input",ExpressionUUID->"bddddd51-1d2b-4f94-bb17-2a316b1e9eae"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[8511, 251, 154, 3, 54, "Subsection",ExpressionUUID->"7911b3b0-c407-4d4e-a0bd-5ab6731fa8f9"],
-Cell[8668, 256, 5601, 119, 696, "Input",ExpressionUUID->"c033ee37-f396-433e-b981-441fa15a7a05"]
+Cell[5784, 175, 154, 3, 54, "Subsection",ExpressionUUID->"7911b3b0-c407-4d4e-a0bd-5ab6731fa8f9"],
+Cell[5941, 180, 5601, 119, 696, "Input",ExpressionUUID->"c033ee37-f396-433e-b981-441fa15a7a05"]
 }, Closed]]
 }, Open  ]]
 }, Open  ]]
