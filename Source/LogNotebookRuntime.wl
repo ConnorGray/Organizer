@@ -54,6 +54,11 @@ $iconPlus := $iconPlus = ResourceFunction["SVGImport"][
 (*TODOs*)
 
 
+(* NOTE:
+	Old createTodoCell[] implementation. I used this for about two years, but it had
+	serious flaws, not least of which being that it would sporadically crash the front end
+	when cutting / pasting the TODO cells.
+
 createTodoCell[] := Module[{input, row},
 	input = InputField["", String,
 		Appearance -> "Frameless",
@@ -68,13 +73,43 @@ createTodoCell[] := Module[{input, row},
 
 	Cell[BoxData @ ToBoxes @ row, "Text", CellMargins -> {{66, 0}, {0, 1}}]
 ]
+*)
 
+createTodoCell[] := Cell[
+	BoxData[FormBox[
+		RowBox[{ToBoxes@Checkbox[1, {1, 2, 3}], ToBoxes@Placeholder["Empty TODO"]}],
+		"Text"
+	]],
+	"Text",
+	CellMargins -> {{66, 0}, {0, 1}}
+]
 
-insertTodoAfterSelection[] := Module[{newCell, nb},
-	newCell = createTodoCell[];
+writeTodoAndSelect[nb_NotebookObject] := (
+	(* NOTE:
+		The `Placeholder` here does NOT refer to the \[SelectionPlaceholder] used
+		immediately previous — it refered to the Placeholder["Empty TODO"] value from
+		createTodoCell[]. The two different placeholders are entirely unrelated.
+		\[SelectionPlaceholder is part of how NotebookApply works. Ideally, we'd be able
+		to do just:
+
+			NotebookWrite[nb, createTodoCell[], Placeholder]
+
+		and not even involve NotebookApply. This seems like it should work per
+		NotebookWrite's documentation, but it doesn't.
+	*)
+	NotebookWrite[nb, createTodoCell[], All];
+	NotebookApply[nb, "\[SelectionPlaceholder]", Placeholder];
+)
+
+(**************************************)
+(* TODO Insertion                     *)
+(**************************************)
+
+insertTodoAfterSelection[] := Module[{nb},
 	nb = SelectedNotebook[];
 	SelectionMove[nb, After, Cell];
-	NotebookWrite[nb, newCell];
+
+	writeTodoAndSelect[nb]
 ]
 
 insertTodoForToday[nb_NotebookObject] := Module[{
@@ -156,14 +191,14 @@ insertTodoForToday[nb_NotebookObject] := Module[{
 		(* Insert a subsubsection for the current date, and insert a new TODO cell inside it. *)
 		moveSelectionToEndOfSection[monthSectionCell];
 		NotebookWrite[nb, Cell[DateString[{"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"]];
-		NotebookWrite[nb, createTodoCell[]];
+		writeTodoAndSelect[nb];
 
 		Return[];
 	];
 
 	(* Insert a new TODO cell at the end of the existing subsubsection for the current day. *)
 	moveSelectionToEndOfSection[todaySectionCell];
-	NotebookWrite[nb, createTodoCell[]];
+	writeTodoAndSelect[nb];
 ]
 
 (* The Queue is for Last-in first-out (LIFO) style tasks. Anything which is a bit
@@ -190,7 +225,7 @@ insertTodoAtTopOfQueue[nb_NotebookObject] := Module[{
 	];
 
 	SelectionMove[queueChapterCell, After, Cell];
-	NotebookWrite[nb, createTodoCell[]];
+	writeTodoAndSelect[nb];
 ]
 
 (* Thanks Dad for contributing this. *)
