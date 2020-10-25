@@ -54,7 +54,7 @@ fCreateTodoCell[] := Module[{input, row},
 
 fInsertTodoAfterSelection[] := Module[{newCell, nb},
 	newCell = fCreateTodoCell[];
-	nb = EvaluationNotebook[];
+	nb = SelectedNotebook[];
 	SelectionMove[nb, After, Cell];
 	NotebookWrite[nb, newCell];
 ]
@@ -188,14 +188,13 @@ fCreateHyperlinkCell[] := Module[{filepath, label},
 	]
 ]
 
-
 fInsertLinkAfterSelection[] := Module[{newCell, nb},
 	newCell = fCreateHyperlinkCell[];
 	If[FailureQ @ newCell,
 		Return[$Failed];
 	];
 
-	nb = EvaluationNotebook[];
+	nb = SelectedNotebook[];
 	SelectionMove[nb, After, Cell];
 	NotebookWrite[nb, newCell];
 ]
