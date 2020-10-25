@@ -9,7 +9,8 @@
 
 
 BeginPackage["Organizer`LogNotebookRuntime`", {
-	"Organizer`"
+	"Organizer`",
+	"Organizer`Utils`"
 }]
 
 (*********)

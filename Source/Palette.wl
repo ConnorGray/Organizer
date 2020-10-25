@@ -1,21 +1,10 @@
 BeginPackage["Organizer`Palette`", {
     "Organizer`",
+    "Organizer`Utils`",
     "Organizer`LogNotebookRuntime`"
 }]
 
-
 Begin["`Private`"]
-
-(*
-    With[..] is used to embed this expression directly within the palette expression. This
-    ensures that the check does not rely on any function from the Organizer` paclet itself.
-*)
-heldLoadOrFail = Hold[
-    If[FailureQ @ PacletObject["Organizer"] || FailureQ @ Needs["Organizer`"],
-        MessageDialog["The Organizer` paclet is either not installed, or failed to load."];
-        Abort[];
-    ];
-]
 
 NotebooksDirectory[] := Module[{dir},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
@@ -66,7 +55,7 @@ Workspaces[] := Map[
     Statefully create or refresh the global Organizer palette.
 *)
 CreateOrganizerPalette[] := With[{
-    loadOrFail = heldLoadOrFail
+    loadOrFail = $HeldLoadOrFail
 },
     Module[{paletteContents, existingNB, margins},
         paletteContents = Column[
@@ -130,7 +119,7 @@ CreateOrganizerPalette[] := With[{
 ]
 
 mainBar[] := With[{
-    loadOrFail = heldLoadOrFail
+    loadOrFail = $HeldLoadOrFail
 },
     Grid[
         {{
@@ -193,7 +182,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
     Map[
         Function[proj,
             With[{
-                loadOrFail = heldLoadOrFail,
+                loadOrFail = $HeldLoadOrFail,
                 path = FileNameJoin[{WorkspaceDirectory[], "Projects", "Active", proj, "Log.nb"}]
             },
                 If[FileExistsQ[path],
