@@ -54,7 +54,7 @@ $iconPlus := $iconPlus = ResourceFunction["SVGImport"][
 (*TODOs*)
 
 
-fCreateTodoCell[] := Module[{input, row},
+createTodoCell[] := Module[{input, row},
 	input = InputField["", String,
 		Appearance -> "Frameless",
 		ImageSize -> {600, Automatic},
@@ -71,7 +71,7 @@ fCreateTodoCell[] := Module[{input, row},
 
 
 insertTodoAfterSelection[] := Module[{newCell, nb},
-	newCell = fCreateTodoCell[];
+	newCell = createTodoCell[];
 	nb = SelectedNotebook[];
 	SelectionMove[nb, After, Cell];
 	NotebookWrite[nb, newCell];
@@ -156,14 +156,14 @@ insertTodoForToday[nb_NotebookObject] := Module[{
 		(* Insert a subsubsection for the current date, and insert a new TODO cell inside it. *)
 		moveSelectionToEndOfSection[monthSectionCell];
 		NotebookWrite[nb, Cell[DateString[{"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"]];
-		NotebookWrite[nb, fCreateTodoCell[]];
+		NotebookWrite[nb, createTodoCell[]];
 
 		Return[];
 	];
 
 	(* Insert a new TODO cell at the end of the existing subsubsection for the current day. *)
 	moveSelectionToEndOfSection[todaySectionCell];
-	NotebookWrite[nb, fCreateTodoCell[]];
+	NotebookWrite[nb, createTodoCell[]];
 ]
 
 (* The Queue is for Last-in first-out (LIFO) style tasks. Anything which is a bit
@@ -190,7 +190,7 @@ insertTodoAtTopOfQueue[nb_NotebookObject] := Module[{
 	];
 
 	SelectionMove[queueChapterCell, After, Cell];
-	NotebookWrite[nb, fCreateTodoCell[]];
+	NotebookWrite[nb, createTodoCell[]];
 ]
 
 (* Thanks Dad for contributing this. *)
