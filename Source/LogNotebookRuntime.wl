@@ -280,7 +280,7 @@ insertLinkAfterSelection[] := Module[{newCell, nb},
 ]
 
 
-fGetDraggedHyperlink[] := Module[{path, res, data, hyperlink},
+getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 	(* TODO: Make path cross-platform. *)
 	If[$SystemID =!= "MacOSX-x86-64",
 		Throw["Cannot get dragged link on non-MacOSX platforms."];
@@ -320,7 +320,7 @@ fGetDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 
 
 insertDraggedHyperlink[] := Module[{newCell, nb},
-	newCell = fGetDraggedHyperlink[];
+	newCell = getDraggedHyperlink[];
 
 	nb = SelectedNotebook[];
 	SelectionMove[nb, After, Cell];
