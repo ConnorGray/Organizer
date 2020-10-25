@@ -312,24 +312,28 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 	newFileLinkButton, newDraggedLinkButton,
 	openFolderButton, row, cell
 },
-	(* Options shared by all buttons in the toolbar *)
-	buttonOptions = Sequence[
+	buttonBarOptions = Sequence[
 		Background -> Blend[{Darker@Orange,Red}],
 		ContentPadding -> None,
-		ImageMargins -> {{10,10},{10,10}},
 		FrameMargins -> 7
+	];
+
+	(* Options shared by all buttons in the toolbar *)
+	buttonOptions = Sequence[
+		buttonBarOptions,
+		ImageMargins -> {{10,10},{10,10}}
 	];
 
 	newTODObutton = Button[
 		iconButtonContent[$iconPlus, "Insert new TODO after current selection"],
 		fInsertTodoAfterSelection[],
-		buttonOptions
+		buttonBarOptions
 	];
 
 	newTodayTodoButton = Button[
 		iconButtonContent[$iconCalendarWithPlus, "Insert new TODO item for today"],
 		insertTodoForToday[SelectedNotebook[]],
-		buttonOptions
+		buttonBarOptions
 	];
 
 	newTodoAtTopOfQueueButton = Button[
@@ -338,7 +342,7 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 			"Insert new TODO item at the top of the Queue"
 		],
 		insertTodoAtTopOfQueue[SelectedNotebook[]],
-		buttonOptions
+		buttonBarOptions
 	];
 
 	newFileLinkButton = Button[
@@ -370,9 +374,11 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 
 	row = Row[{
 		Style[Pane[projName, ImageMargins -> 10], "Subchapter", White],
-		newTODObutton,
-		newTodayTodoButton,
-		newTodoAtTopOfQueueButton,
+		Row[{
+			newTODObutton,
+			newTodayTodoButton,
+			newTodoAtTopOfQueueButton
+		}, ImageMargins -> 10],
 		newFileLinkButton,
 		newDraggedLinkButton,
 		openFolderButton
