@@ -19,6 +19,7 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 LoadIcons[] := (
 	$iconCalendarWithPlus;
 	$iconUnfinishedTodoList;
+	$iconPlus;
 )
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
@@ -36,6 +37,13 @@ $iconUnfinishedTodoList := $iconUnfinishedTodoList = ResourceFunction["SVGImport
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		"UnfinishedTodoList.svg"
+	}]
+]
+
+$iconPlus := $iconPlus = ResourceFunction["SVGImport"][
+	FileNameJoin[{
+		PacletObject["Organizer"]["AssetLocation", "Icons"],
+		"Plus.svg"
 	}]
 ]
 
@@ -288,6 +296,14 @@ fInsertDraggedHyperlink[] := Module[{newCell, nb},
 (* ::Chapter:: *)
 (*New NB setup*)
 
+iconButtonContent[icon_, tooltip_?StringQ] := Tooltip[
+	Show[
+		icon,
+		ImageSize -> 20
+	],
+	tooltip,
+	TooltipDelay -> 0.333
+]
 
 fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 	buttonOptions, newTODObutton,
@@ -305,32 +321,21 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 	];
 
 	newTODObutton = Button[
-		"New TODO",
+		iconButtonContent[$iconPlus, "Insert new TODO after current selection"],
 		fInsertTodoAfterSelection[],
 		buttonOptions
 	];
 
 	newTodayTodoButton = Button[
-		Tooltip[
-			Show[
-				$iconCalendarWithPlus,
-				ImageSize -> 20
-			],
-			"Insert a new TODO item for today",
-			TooltipDelay -> 0.333
-		],
+		iconButtonContent[$iconCalendarWithPlus, "Insert new TODO item for today"],
 		insertTodoForToday[SelectedNotebook[]],
 		buttonOptions
 	];
 
 	newTodoAtTopOfQueueButton = Button[
-		Tooltip[
-			Show[
-				$iconUnfinishedTodoList,
-				ImageSize -> 20
-			],
-			"Insert a new TODO item at the top of the Queue",
-			TooltipDelay -> 0.333
+		iconButtonContent[
+			$iconUnfinishedTodoList,
+			"Insert new TODO item at the top of the Queue"
 		],
 		insertTodoAtTopOfQueue[SelectedNotebook[]],
 		buttonOptions
