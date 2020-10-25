@@ -213,7 +213,7 @@ moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
 (*Links*)
 
 
-fCreateHyperlinkCell[] := Module[{filepath, label},
+createHyperlinkCell[] := Module[{filepath, label},
 	filepath = SystemDialogInput["FileOpen"];
 	If[!StringQ[filepath],
 		Throw[StringForm["Invalid file path: ``", filepath]];
@@ -234,7 +234,7 @@ fCreateHyperlinkCell[] := Module[{filepath, label},
 ]
 
 insertLinkAfterSelection[] := Module[{newCell, nb},
-	newCell = fCreateHyperlinkCell[];
+	newCell = createHyperlinkCell[];
 	If[FailureQ @ newCell,
 		Return[$Failed];
 	];
