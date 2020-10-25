@@ -27,7 +27,7 @@ Needs["Organizer`];
 > PersistentValue["CG:Organizer:RootDirectory", "Local"] = SystemDialogInput["Directory"];
 > ```
 >
-> Support for multiple organizer roots is not currently possible. Instead it's suggested
+> Support for multiple organizer roots is not currently implemented. Instead it's suggested
 > that you use the "workspaces" feature to split a single directory into distinct areas.
 
 Once you've chosen a root directory, you may open the palette by evaluating:
