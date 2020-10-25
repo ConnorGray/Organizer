@@ -18,6 +18,7 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 
 LoadIcons[] := (
 	$iconCalendarWithPlus;
+	$iconUnfinishedTodoList;
 )
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
@@ -26,6 +27,15 @@ $iconCalendarWithPlus := $iconCalendarWithPlus = ResourceFunction["SVGImport"][
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		"CalendarWithPlus.svg"
+	}]
+]
+
+(* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
+   value. *)
+$iconUnfinishedTodoList := $iconUnfinishedTodoList = ResourceFunction["SVGImport"][
+	FileNameJoin[{
+		PacletObject["Organizer"]["AssetLocation", "Icons"],
+		"UnfinishedTodoList.svg"
 	}]
 ]
 
@@ -148,6 +158,33 @@ insertTodoForToday[nb_NotebookObject] := Module[{
 	NotebookWrite[nb, fCreateTodoCell[]];
 ]
 
+(* The Queue is for Last-in first-out (LIFO) style tasks. Anything which is a bit
+   longer-term than that should go in another section, e.g. Features. This implies that
+   *most* of the time, we want to insert the new TODO at the *top* of the Queue, so we
+   do just that. *)
+insertTodoAtTopOfQueue[nb_NotebookObject] := Module[{
+	queueChapterCell
+},
+	queueChapterCell = SelectFirst[
+		Cells[nb, CellStyle -> "Chapter"],
+		MatchQ[
+			NotebookRead[#],
+			Cell["Queue", "Chapter", ___]
+		] &
+	];
+
+	If[!MatchQ[queueChapterCell, CellObject[___]],
+		MessageDialog[StringForm[
+			"Organizer`.`: Unable to insert new TODO cell: no 'Queue' chapter exists in specified notebook: ``",
+			Information[nb]["WindowTitle"]
+		]];
+		Return[$Failed];
+	];
+
+	SelectionMove[queueChapterCell, After, Cell];
+	NotebookWrite[nb, fCreateTodoCell[]];
+]
+
 (* Thanks Dad for contributing this. *)
 moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
 	SelectionMove[heading, All, CellGroup];
@@ -253,7 +290,10 @@ fInsertDraggedHyperlink[] := Module[{newCell, nb},
 
 
 fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
-	buttonOptions, newTODObutton, newTodayTodoButton, newFileLinkButton, newDraggedLinkButton,
+	buttonOptions, newTODObutton,
+	newTodayTodoButton,
+	newTodoAtTopOfQueueButton,
+	newFileLinkButton, newDraggedLinkButton,
 	openFolderButton, row, cell
 },
 	(* Options shared by all buttons in the toolbar *)
@@ -280,6 +320,19 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 			TooltipDelay -> 0.333
 		],
 		insertTodoForToday[SelectedNotebook[]],
+		buttonOptions
+	];
+
+	newTodoAtTopOfQueueButton = Button[
+		Tooltip[
+			Show[
+				$iconUnfinishedTodoList,
+				ImageSize -> 20
+			],
+			"Insert a new TODO item at the top of the Queue",
+			TooltipDelay -> 0.333
+		],
+		insertTodoAtTopOfQueue[SelectedNotebook[]],
 		buttonOptions
 	];
 
@@ -314,6 +367,7 @@ fInstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Module[{
 		Style[Pane[projName, ImageMargins -> 10], "Subchapter", White],
 		newTODObutton,
 		newTodayTodoButton,
+		newTodoAtTopOfQueueButton,
 		newFileLinkButton,
 		newDraggedLinkButton,
 		openFolderButton
