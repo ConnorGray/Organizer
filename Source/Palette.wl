@@ -131,43 +131,42 @@ attachedPopupMenu[
     parentPosition_ : {2, {Left, Top}},
     childPosition_ : {Right, Top},
     buttonOpts : OptionsPattern[]
-] := DynamicModule[{cell = Null},
+] := With[{
+    loadOrFail = $HeldLoadOrFail,
+    po = Unevaluated@PersistentValue["CG:Organizer:AttachedCommandDropdown", "FrontEndSession"]
+},
     Button[
         label,
-        makePopupAttachedCell[
-            Dynamic[cell],
-            contentsFunction[(NotebookDelete[cell]; cell = Null) &],
-            parentPosition,
-            childPosition
-        ],
-        Method -> "Preemptive",
+        (
+            ReleaseHold[loadOrFail];
+
+            If[MatchQ[po, _CellObject] && !FailureQ[NotebookRead[po]],
+                NotebookDelete[po];
+                po = None;
+                ,
+                po = Echo@makePopupAttachedCell[
+                    contentsFunction[(NotebookDelete[po]; po = None) &],
+                    parentPosition,
+                    childPosition
+                ];
+            ];
+        ),
+        Method -> "Queued",
         Alignment -> Center,
         Background -> Lighter@Orange,
         ImageSize -> Full
     ]
 ]
 
-makePopupAttachedCell[Dynamic[cell_], contents_, parentPosition_, childPosition_] := With[{
+makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
     parent = EvaluationBox[]
 },
-    If[cell =!= Null,
-        NotebookDelete[cell];
-        cell = Null;
-
-        Return[];
-    ];
-
-    cell = FrontEndExecute[FrontEnd`AttachCell[
+    Echo@FrontEndExecute[FrontEnd`AttachCell[
         (*thing you're attaching to*)
         parent,
         (* cell expression *)
         Cell[
-            BoxData @ ToBoxes @ DynamicModule[{},
-                contents,
-                (* Hack needed to trigger Deinitialization *)
-                Initialization :> (2 + 2),
-                Deinitialization :> (cell = Null)
-            ],
+            BoxData @ ToBoxes @ contents,
             "DialogLabelText",
             Background -> GrayLevel[0.9]
         ],
@@ -176,7 +175,7 @@ makePopupAttachedCell[Dynamic[cell_], contents_, parentPosition_, childPosition_
         (* position on child *)
         childPosition,
         "ClosingActions" -> {"EvaluatorQuit", "OutsideMouseClick", "ParentChanged"}
-    ]];
+    ]]
 ];
 
 commandDropdownContents[close_Function] := With[{
