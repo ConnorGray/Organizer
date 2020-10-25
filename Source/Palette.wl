@@ -188,8 +188,8 @@ makePopupAttachedCell[Dynamic[cell_], contents_, parentPosition_, childPosition_
 commandDropdownContents[close_Function] := With[{
     loadOrFail = $HeldLoadOrFail
 },
-    Grid[
-        {{
+    Column[
+        Reverse @ {
             With[{
                 choices = Map[
                     # :> (
@@ -220,9 +220,7 @@ commandDropdownContents[close_Function] := With[{
                 Method -> "Queued",
                 Background -> LightBlue
             ]
-        }},
-        (* ItemSize -> {{Scaled[0.6], Scaled[0.4]}}, *)
-        Spacings -> 0
+        }
     ]
 ]
 
