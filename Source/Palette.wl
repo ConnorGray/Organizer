@@ -126,10 +126,7 @@ commandDropdown[] := With[{
     attachedPopupMenu[
         Style["\[CloverLeaf]", 25],
         Function[close,
-            ToBoxes @ Column[{
-                Button["Close", close[] ],
-                Button["Print", Print["Hello"] ]
-            }]
+            commandDropdownContents[close]
         ]
     ]
 ]
@@ -172,7 +169,7 @@ makePopupAttachedCell[Dynamic[cell_], contents_, parentPosition_, childPosition_
         (* cell expression *)
         Cell[
             BoxData @ ToBoxes @ DynamicModule[{},
-                RawBoxes[contents],
+                contents,
                 (* Hack needed to trigger Deinitialization *)
                 Initialization :> (2 + 2),
                 Deinitialization :> (cell = Null)
@@ -188,8 +185,7 @@ makePopupAttachedCell[Dynamic[cell_], contents_, parentPosition_, childPosition_
     ]];
 ];
 
-(*
-commandDropdown[] := With[{
+commandDropdownContents[close_Function] := With[{
     loadOrFail = $HeldLoadOrFail
 },
     Grid[
@@ -229,7 +225,6 @@ commandDropdown[] := With[{
         Spacings -> 0
     ]
 ]
-*)
 
 getListOfActiveProjects[] := Map[
     FileNameTake[#, -1] &,
