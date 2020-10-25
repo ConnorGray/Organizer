@@ -72,7 +72,12 @@ CreateOrganizerPalette[] := With[{
                             Background -> Green,
                             ImageSize -> Full
                         ],
-                        commandDropdown[]
+                        attachedPopupMenu[
+                            Style["\[CloverLeaf]", 25],
+                            Function[close,
+                                commandDropdownContents[close]
+                            ]
+                        ]
                         (*
                         Button[
                             Style[Global`\[CloverLeaf], 25],
@@ -118,17 +123,6 @@ CreateOrganizerPalette[] := With[{
             PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
         ];
     ];
-]
-
-commandDropdown[] := With[{
-    loadOrFail = $HeldLoadOrFail
-},
-    attachedPopupMenu[
-        Style["\[CloverLeaf]", 25],
-        Function[close,
-            commandDropdownContents[close]
-        ]
-    ]
 ]
 
 attachedPopupMenu[
