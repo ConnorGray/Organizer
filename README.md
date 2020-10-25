@@ -41,7 +41,7 @@ This should open a new empty palette window. New projects may be added by clicki
 
 ### Credits
 
-The icons [CalendarWithPlus.svg](./resources/icons/CalendarWithPlus.svg) and
-[UnfinishedTodoList.svg](./resources/icons/UnfinishedTodoList.svg) are from
+The icons [CalendarWithPlus.svg](./Icons/CalendarWithPlus.svg) and
+[UnfinishedTodoList.svg](./Icons/UnfinishedTodoList.svg) are from
 [www.onlinewebfonts.com/icon](http://www.onlinewebfonts.com/icon), licensed by
 CC BY 3.0.
