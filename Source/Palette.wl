@@ -60,7 +60,6 @@ CreateOrganizerPalette[] := With[{
     Module[{paletteContents, existingNB, margins},
         paletteContents = Column[
             {
-                (* mainBar[organizerPacletPath], *)
                 Grid[
                     {{
                         Button[
@@ -73,11 +72,18 @@ CreateOrganizerPalette[] := With[{
                             Background -> Green,
                             ImageSize -> Full
                         ],
+                        attachedPopupMenu[
+                            Style["\[CloverLeaf]", 25],
+                            Function[close,
+                                commandDropdownContents[close]
+                            ]
+                        ]
+                        (*
                         Button[
                             Style[Global`\[CloverLeaf], 25],
                             (
                                 ReleaseHold[loadOrFail];
-                                CreateWindow[PaletteNotebook@mainBar[]];
+                                openCommandDropdown[];
                             ),
                             Method -> "Queued",
                             Active -> False,
@@ -85,6 +91,7 @@ CreateOrganizerPalette[] := With[{
                             Background -> Lighter@Orange,
                             ImageSize -> Full
                         ]
+                        *)
                     }},
                     ItemSize -> {{Scaled[0.75], Scaled[0.25]}},
                     Spacings -> {0, 0}
@@ -118,11 +125,64 @@ CreateOrganizerPalette[] := With[{
     ];
 ]
 
-mainBar[] := With[{
+attachedPopupMenu[
+    label_,
+    contentsFunction_,
+    parentPosition_ : {2, {Left, Top}},
+    childPosition_ : {Right, Top},
+    buttonOpts : OptionsPattern[]
+] := With[{
+    loadOrFail = $HeldLoadOrFail,
+    po = Unevaluated@PersistentValue["CG:Organizer:AttachedCommandDropdown", "FrontEndSession"]
+},
+    Button[
+        label,
+        (
+            ReleaseHold[loadOrFail];
+
+            If[MatchQ[po, _CellObject] && !FailureQ[NotebookRead[po]],
+                NotebookDelete[po];
+                po = None;
+                ,
+                po = Echo@makePopupAttachedCell[
+                    contentsFunction[(NotebookDelete[po]; po = None) &],
+                    parentPosition,
+                    childPosition
+                ];
+            ];
+        ),
+        Method -> "Queued",
+        Alignment -> Center,
+        Background -> Lighter@Orange,
+        ImageSize -> Full
+    ]
+]
+
+makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
+    parent = EvaluationBox[]
+},
+    Echo@FrontEndExecute[FrontEnd`AttachCell[
+        (*thing you're attaching to*)
+        parent,
+        (* cell expression *)
+        Cell[
+            BoxData @ ToBoxes @ contents,
+            "DialogLabelText",
+            Background -> GrayLevel[0.9]
+        ],
+        (* distance, position on parent *)
+        parentPosition,
+        (* position on child *)
+        childPosition,
+        "ClosingActions" -> {"EvaluatorQuit", "OutsideMouseClick", "ParentChanged"}
+    ]]
+];
+
+commandDropdownContents[close_Function] := With[{
     loadOrFail = $HeldLoadOrFail
 },
-    Grid[
-        {{
+    Column[
+        Reverse @ {
             With[{
                 choices = Map[
                     # :> (
@@ -153,9 +213,7 @@ mainBar[] := With[{
                 Method -> "Queued",
                 Background -> LightBlue
             ]
-        }},
-        (* ItemSize -> {{Scaled[0.6], Scaled[0.4]}}, *)
-        Spacings -> 0
+        }
     ]
 ]
 
