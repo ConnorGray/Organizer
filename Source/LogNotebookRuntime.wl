@@ -17,6 +17,15 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 (* Icons *)
 (*********)
 
+importSVG[path_?StringQ] := Module[{func},
+	func = ResourceFunction["SVGImport"];
+	If[FailureQ[func],
+		Throw["ResourceFunction[\"SVGImport\"] could not be loaded."];
+	];
+
+	func[path]
+]
+
 LoadIcons[] := (
 	$iconCalendarWithPlus;
 	$iconUnfinishedTodoList;
@@ -25,7 +34,7 @@ LoadIcons[] := (
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
    value. *)
-$iconCalendarWithPlus := $iconCalendarWithPlus = ResourceFunction["SVGImport"][
+$iconCalendarWithPlus := $iconCalendarWithPlus = importSVG[
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		"CalendarWithPlus.svg"
@@ -34,14 +43,14 @@ $iconCalendarWithPlus := $iconCalendarWithPlus = ResourceFunction["SVGImport"][
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
    value. *)
-$iconUnfinishedTodoList := $iconUnfinishedTodoList = ResourceFunction["SVGImport"][
+$iconUnfinishedTodoList := $iconUnfinishedTodoList = importSVG[
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		"UnfinishedTodoList.svg"
 	}]
 ]
 
-$iconPlus := $iconPlus = ResourceFunction["SVGImport"][
+$iconPlus := $iconPlus = importSVG[
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		"Plus.svg"
