@@ -17,6 +17,15 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 (* Icons *)
 (*********)
 
+importSVG[path_?StringQ] := Module[{func},
+	func = ResourceFunction["SVGImport"];
+	If[FailureQ[func],
+		Throw["ResourceFunction[\"SVGImport\"] could not be loaded."];
+	];
+
+	func[path]
+]
+
 LoadIcons[] := (
 	$iconCalendarWithPlus;
 	$iconUnfinishedTodoList;
@@ -25,7 +34,7 @@ LoadIcons[] := (
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
    value. *)
-$iconCalendarWithPlus := $iconCalendarWithPlus = ResourceFunction["SVGImport"][
+$iconCalendarWithPlus := $iconCalendarWithPlus = importSVG[
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		"CalendarWithPlus.svg"
@@ -34,14 +43,14 @@ $iconCalendarWithPlus := $iconCalendarWithPlus = ResourceFunction["SVGImport"][
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
    value. *)
-$iconUnfinishedTodoList := $iconUnfinishedTodoList = ResourceFunction["SVGImport"][
+$iconUnfinishedTodoList := $iconUnfinishedTodoList = importSVG[
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		"UnfinishedTodoList.svg"
 	}]
 ]
 
-$iconPlus := $iconPlus = ResourceFunction["SVGImport"][
+$iconPlus := $iconPlus = importSVG[
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		"Plus.svg"
@@ -76,6 +85,7 @@ createTodoCell[] := Module[{input, row},
 ]
 *)
 
+(*
 createTodoCell[] := Cell[
 	BoxData[FormBox[
 		RowBox[{ToBoxes@Checkbox[1, {1, 2, 3}], ToBoxes@Placeholder["Empty TODO"]}],
@@ -83,6 +93,63 @@ createTodoCell[] := Cell[
 	]],
 	"Text",
 	CellMargins -> {{66, 0}, {0, 1}}
+]
+*)
+
+(*
+	Replace the current EvaluationCell[] with an inert TODO cell, and move the cursor
+	inside of the cell. This happens in response to click or key down event inside a
+	non-inert TODO cell.
+
+	This function must be kept in sync with createTodoCell[].
+*)
+replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
+	cell = Cell[
+		(* This LetterQ check prevents us from putting a non-printable character in the new
+		cell, which can happen if the user types e.g. a down arrow immediately after
+		creating the cell (CurrentValue["EventKey"] would be a non-printable character in
+		that situtation). *)
+		TextData[If[LetterQ[content], content, ""] ]
+		,
+		"Text",
+		CellMargins -> {{66, 0}, {0, 1}},
+		CellFrameLabels -> {{Cell[BoxData@ToBoxes@Checkbox[1, {1, 2, 3}] ], None}, {None, None}},
+		CellFrameLabelMargins -> 0
+	];
+
+	NotebookWrite[EvaluationCell[], cell, All];
+	SelectionMove[SelectedNotebook[], After, CellContents]
+]
+
+(*
+	This function must be kept in sync with replaceWithInertTodoCellAndSelect[]
+*)
+createTodoCell[] := Cell[
+	BoxData @ ToBoxes @ Placeholder["Empty TODO"],
+	"Text",
+	CellMargins -> {{66, 0}, {0, 1}},
+	CellFrameLabels -> {{Cell[BoxData @ ToBoxes @ Checkbox[1, {1, 2, 3}] ], None}, {None, None}},
+	CellFrameLabelMargins -> 0,
+	(* These cell event actions are triggered the first time a user interacts with the
+	   cell. Their purpose is to:
+
+		* Remove the Placeholder[..] BoxData content, and change the cell to be a
+		  TextData[..]-type cell. This is necessary because the FE handles
+		  Cell[BoxData[..]] and Cell[TextData[..]] very differently. Earlier versions of
+		  the TODO cell attempted to combine box data and textual input, but they all had
+		  weird minor issues, like spacing between apostrophes and other input characters
+		  following the auto-whitespace behavior of "Input" cells.
+        * Remove the event handlers themselves, so we're left behind with a very plain,
+		  non-likely-to-crash cell which behaves like any other Text-style cell.
+	*)
+	CellEventActions -> {
+		(* NOTE: "MouseDown" is used instead of "MouseClicked" because "MouseClicked"
+		         is triggered by the click event from the "new todo" button being clicked,
+				 causing the placeholder to be immediately replaced before the user has a
+				 chance to see it. *)
+		"MouseDown" :> replaceWithInertTodoCellAndSelect[""],
+		"KeyDown" :> replaceWithInertTodoCellAndSelect[CurrentValue["EventKey"]]
+	}
 ]
 
 writeTodoAndSelect[nb_NotebookObject] := (

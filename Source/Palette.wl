@@ -144,7 +144,7 @@ attachedPopupMenu[
                 NotebookDelete[po];
                 po = None;
                 ,
-                po = Echo@makePopupAttachedCell[
+                po = makePopupAttachedCell[
                     contentsFunction[(NotebookDelete[po]; po = None) &],
                     parentPosition,
                     childPosition
@@ -161,7 +161,7 @@ attachedPopupMenu[
 makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
     parent = EvaluationBox[]
 },
-    Echo@FrontEndExecute[FrontEnd`AttachCell[
+    FrontEndExecute[FrontEnd`AttachCell[
         (*thing you're attaching to*)
         parent,
         (* cell expression *)
