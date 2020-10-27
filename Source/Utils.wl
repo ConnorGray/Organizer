@@ -30,8 +30,6 @@ AttachedPopupMenu[
     loadOrFail = $HeldLoadOrFail,
     po = Unevaluated@PersistentValue["CG:Organizer:AttachedCommandDropdown", "FrontEndSession"]
 },
-    Print["CALLED AttachedPopupMenu"];
-
     Button[
         label,
         (
