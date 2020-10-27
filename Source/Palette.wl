@@ -72,7 +72,7 @@ CreateOrganizerPalette[] := With[{
                             Background -> Green,
                             ImageSize -> Full
                         ],
-                        attachedPopupMenu[
+                        AttachedPopupMenu[
                             Style["\[CloverLeaf]", 25],
                             Function[close,
                                 commandDropdownContents[close]
@@ -124,59 +124,6 @@ CreateOrganizerPalette[] := With[{
         ];
     ];
 ]
-
-attachedPopupMenu[
-    label_,
-    contentsFunction_,
-    parentPosition_ : {2, {Left, Top}},
-    childPosition_ : {Right, Top},
-    buttonOpts : OptionsPattern[]
-] := With[{
-    loadOrFail = $HeldLoadOrFail,
-    po = Unevaluated@PersistentValue["CG:Organizer:AttachedCommandDropdown", "FrontEndSession"]
-},
-    Button[
-        label,
-        (
-            ReleaseHold[loadOrFail];
-
-            If[MatchQ[po, _CellObject] && !FailureQ[NotebookRead[po]],
-                NotebookDelete[po];
-                po = None;
-                ,
-                po = makePopupAttachedCell[
-                    contentsFunction[(NotebookDelete[po]; po = None) &],
-                    parentPosition,
-                    childPosition
-                ];
-            ];
-        ),
-        Method -> "Queued",
-        Alignment -> Center,
-        Background -> Lighter@Orange,
-        ImageSize -> Full
-    ]
-]
-
-makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
-    parent = EvaluationBox[]
-},
-    FrontEndExecute[FrontEnd`AttachCell[
-        (*thing you're attaching to*)
-        parent,
-        (* cell expression *)
-        Cell[
-            BoxData @ ToBoxes @ contents,
-            "DialogLabelText",
-            Background -> GrayLevel[0.9]
-        ],
-        (* distance, position on parent *)
-        parentPosition,
-        (* position on child *)
-        childPosition,
-        "ClosingActions" -> {"EvaluatorQuit", "OutsideMouseClick", "ParentChanged"}
-    ]]
-];
 
 commandDropdownContents[close_Function] := With[{
     loadOrFail = $HeldLoadOrFail
