@@ -139,7 +139,7 @@ createTodoCell[] := Cell[
 		  the TODO cell attempted to combine box data and textual input, but they all had
 		  weird minor issues, like spacing between apostrophes and other input characters
 		  following the auto-whitespace behavior of "Input" cells.
-        * Remove the event handlers themselves, so we're left behind with a very plain,
+		* Remove the event handlers themselves, so we're left behind with a very plain,
 		  non-likely-to-crash cell which behaves like any other Text-style cell.
 	*)
 	CellEventActions -> {
