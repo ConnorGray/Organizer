@@ -113,13 +113,18 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 		,
 		"Text",
 		CellMargins -> {{66, 0}, {0, 1}},
-		CellFrameLabels -> {{Cell[BoxData@ToBoxes@Checkbox[1, {1, 2, 3}] ], None}, {None, None}},
+		CellFrameLabels -> {
+			{checkboxCell[], None},
+			{None, None}
+		},
 		CellFrameLabelMargins -> 0
 	];
 
 	NotebookWrite[EvaluationCell[], cell, All];
 	SelectionMove[SelectedNotebook[], After, CellContents]
 ]
+
+checkboxCell[] := Cell[BoxData @ ToBoxes @ Checkbox[1, {1, 2, 3}] ]
 
 (*
 	This function must be kept in sync with replaceWithInertTodoCellAndSelect[]
@@ -128,7 +133,7 @@ createTodoCell[] := Cell[
 	BoxData @ ToBoxes @ Placeholder["Empty TODO"],
 	"Text",
 	CellMargins -> {{66, 0}, {0, 1}},
-	CellFrameLabels -> {{Cell[BoxData @ ToBoxes @ Checkbox[1, {1, 2, 3}] ], None}, {None, None}},
+	CellFrameLabels -> {{checkboxCell[], None}, {None, None}},
 	CellFrameLabelMargins -> 0,
 	(* These cell event actions are triggered the first time a user interacts with the
 	   cell. Their purpose is to:
