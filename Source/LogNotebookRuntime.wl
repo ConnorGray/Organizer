@@ -112,13 +112,16 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 		TextData[If[LetterQ[content], content, ""] ]
 		,
 		"Text",
-		CellMargins -> {{66, 0}, {0, 0}},
-		CellFrame -> {{1, 1}, {1, 2}},
+		LineSpacing -> {0.95, 0},
+		CellMargins -> {{66, 0}, {2, 2}},
+		CellFrame -> {{2, 0}, {0, 0}},
+		CellFrameColor -> GrayLevel[0.7],
+		CellFrameMargins -> 5,
 		CellFrameLabels -> {
 			{checkboxCell[], None},
 			{None, None}
 		},
-		CellFrameLabelMargins -> 0
+		CellFrameLabelMargins -> 3
 	];
 
 	NotebookWrite[EvaluationCell[], cell, All];
