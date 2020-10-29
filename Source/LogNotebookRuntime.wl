@@ -13,6 +13,13 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 	"Organizer`Utils`"
 }]
 
+If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
+	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
+		{LightRed, LightGreen, LightBlue},
+		{LightYellow, LightOrange, LightCyan}
+	};
+]
+
 (*********)
 (* Icons *)
 (*********)
@@ -26,36 +33,31 @@ importSVG[path_?StringQ] := Module[{func},
 	func[path]
 ]
 
+importIcon[filename_?StringQ] := importSVG[
+	FileNameJoin[{
+		PacletObject["Organizer"]["AssetLocation", "Icons"],
+		filename
+	}]
+]
+
 LoadIcons[] := (
 	$iconCalendarWithPlus;
 	$iconUnfinishedTodoList;
 	$iconPlus;
+	$iconFileLink;
+	$iconLinkArea;
+	$iconOpenFolder;
 )
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
    value. *)
-$iconCalendarWithPlus := $iconCalendarWithPlus = importSVG[
-	FileNameJoin[{
-		PacletObject["Organizer"]["AssetLocation", "Icons"],
-		"CalendarWithPlus.svg"
-	}]
-]
+$iconCalendarWithPlus   := $iconCalendarWithPlus   = importIcon["CalendarWithPlus.svg"]
+$iconUnfinishedTodoList := $iconUnfinishedTodoList = importIcon["UnfinishedTodoList.svg"]
+$iconPlus               := $iconPlus               = importIcon["Plus.svg"]
+$iconFileLink           := $iconFileLink           = importIcon["FileLink.svg"]
+$iconLinkArea           := $iconLinkArea           = importIcon["LinkArea.svg"]
+$iconOpenFolder         := $iconOpenFolder         = importIcon["OpenFolder.svg"]
 
-(* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
-   value. *)
-$iconUnfinishedTodoList := $iconUnfinishedTodoList = importSVG[
-	FileNameJoin[{
-		PacletObject["Organizer"]["AssetLocation", "Icons"],
-		"UnfinishedTodoList.svg"
-	}]
-]
-
-$iconPlus := $iconPlus = importSVG[
-	FileNameJoin[{
-		PacletObject["Organizer"]["AssetLocation", "Icons"],
-		"Plus.svg"
-	}]
-]
 
 (* ::Text:: *)
 
@@ -112,14 +114,26 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 		TextData[If[LetterQ[content], content, ""] ]
 		,
 		"Text",
-		CellMargins -> {{66, 0}, {0, 1}},
-		CellFrameLabels -> {{Cell[BoxData@ToBoxes@Checkbox[1, {1, 2, 3}] ], None}, {None, None}},
-		CellFrameLabelMargins -> 0
+		LineSpacing -> {0.95, 0},
+		CellMargins -> {{66, 0}, {2, 2}},
+		CellFrame -> {{2, 0}, {0, 0}},
+		CellFrameColor -> GrayLevel[0.7],
+		CellFrameMargins -> 5,
+		CellFrameLabels -> {
+			{checkboxCell[], None},
+			{None, None}
+		},
+		CellFrameLabelMargins -> 3
 	];
 
 	NotebookWrite[EvaluationCell[], cell, All];
 	SelectionMove[SelectedNotebook[], After, CellContents]
 ]
+
+(* NOTE: Setting an explicit `Background -> White` here is required because CellFrameLabels
+         inherit their styling from the parent cell, and we don't want the checkbox cell
+		 to have a colored background. *)
+checkboxCell[] := Cell[BoxData @ ToBoxes @ Checkbox[1, {1, 2, 3}], Background -> White ]
 
 (*
 	This function must be kept in sync with replaceWithInertTodoCellAndSelect[]
@@ -128,7 +142,7 @@ createTodoCell[] := Cell[
 	BoxData @ ToBoxes @ Placeholder["Empty TODO"],
 	"Text",
 	CellMargins -> {{66, 0}, {0, 1}},
-	CellFrameLabels -> {{Cell[BoxData @ ToBoxes @ Checkbox[1, {1, 2, 3}] ], None}, {None, None}},
+	CellFrameLabels -> {{checkboxCell[], None}, {None, None}},
 	CellFrameLabelMargins -> 0,
 	(* These cell event actions are triggered the first time a user interacts with the
 	   cell. Their purpose is to:
@@ -139,7 +153,7 @@ createTodoCell[] := Cell[
 		  the TODO cell attempted to combine box data and textual input, but they all had
 		  weird minor issues, like spacing between apostrophes and other input characters
 		  following the auto-whitespace behavior of "Input" cells.
-        * Remove the event handlers themselves, so we're left behind with a very plain,
+		* Remove the event handlers themselves, so we're left behind with a very plain,
 		  non-likely-to-crash cell which behaves like any other Text-style cell.
 	*)
 	CellEventActions -> {
@@ -408,6 +422,46 @@ iconButtonContent[icon_, tooltip_?StringQ] := Tooltip[
 	TooltipDelay -> 0.333
 ]
 
+setSelectedCellsBackground[color_] := Module[{selectedCells},
+	selectedCells = SelectedCells[];
+	Assert[MatchQ[selectedCells, {___CellObject}]];
+	Map[SetOptions[#, Background -> color] &, selectedCells]
+]
+
+colorPickerButtonGrid[] := With[{
+	loadOrFail = $HeldLoadOrFail
+},
+Module[{colors, grid},
+	colors = PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"];
+
+	If[MissingQ[colors],
+		Throw["No \"CG:Organizer:BackgroundColorPalette\" PersistentValue is set."];
+	];
+
+	If[!MatchQ[colors, {{___RGBColor}..}],
+		Throw["\"CG:Organizer:BackgroundColorPalette\" PersistentValue is not a valid array of colors."]
+	];
+
+	grid = Map[
+		Button[
+			"",
+			(
+				ReleaseHold[loadOrFail];
+				setSelectedCellsBackground[#];
+			),
+			ImageSize -> {20, 20},
+			Background -> #,
+			ImageMargins -> 0,
+			ContentPadding -> None
+		] &,
+		colors,
+		{2}
+	];
+
+	Grid[grid, Spacings -> {0.0, .0}, ItemSize -> All, Frame -> True, FrameStyle -> Thickness[2.5]]
+]
+]
+
 installLogNotebookDockedCells[nbObj_, projName_?StringQ] := With[{
 	loadOrFail = $HeldLoadOrFail
 },
@@ -461,27 +515,36 @@ Module[{
 	];
 
 	newFileLinkButton = Button[
-		"File Link",
+		iconButtonContent[
+			$iconFileLink,
+			"Insert a link to a file chosen from the file system"
+		],
 		(
 			ReleaseHold[loadOrFail];
 			insertLinkAfterSelection[];
 		),
-		buttonOptions,
+		buttonBarOptions,
 		Method -> "Queued"
 	];
 
 	newDraggedLinkButton = Button[
-		"Dragged Link",
+		iconButtonContent[
+			$iconLinkArea,
+			"Insert a link dragged into a popup TextEdit window"
+		],
 		(
 			ReleaseHold[loadOrFail];
 			insertDraggedHyperlink[];
 		),
-		buttonOptions,
+		buttonBarOptions,
 		Method -> "Queued"
 	];
 
 	openFolderButton = Button[
-		"Open Folder",
+		iconButtonContent[
+			$iconOpenFolder,
+			"Open the folder containing the current Log notebook"
+		],
 		Function[
 			Switch[$SystemID,
 				"MacOSX-x86-64",
@@ -500,9 +563,12 @@ Module[{
 			newTodayTodoButton,
 			newTodoAtTopOfQueueButton
 		}, ImageMargins -> 10],
-		newFileLinkButton,
-		newDraggedLinkButton,
-		openFolderButton
+		Row[{
+			newFileLinkButton,
+			newDraggedLinkButton
+		}, ImageMargins -> 10],
+		openFolderButton,
+		colorPickerButtonGrid[]
 	}];
 
 	cell = Cell[
