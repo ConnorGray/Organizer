@@ -273,6 +273,9 @@ handleStartNewProject[] := Module[{
     (* TODO: Set DockedCells *)
 
     NotebookSave[logNB, FileNameJoin[{dirPath, "Log.nb"}] ];
+
+    (* Refresh the organizer palette in-place. *)
+    CreateOrganizerPalette[];
 ]
 
 handleNewMeetingNotes[] := Module[{nameSpaces, nameHyphens},
