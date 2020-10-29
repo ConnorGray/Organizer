@@ -240,7 +240,8 @@ handleStartNewProject[] := Module[{
 
     dirPath = FileNameJoin[{WorkspaceDirectory[], "Projects", "Active", projName}];
     If[FileExistsQ[dirPath],
-        Throw[StringForm["File exists at path ``", dirPath] ];
+        MessageDialog[StringForm["File exists at path ``", dirPath]];
+        Return[$Failed];
     ];
 
     (* Make sure the icons are loaded *before* we modify the filesystem. *)
