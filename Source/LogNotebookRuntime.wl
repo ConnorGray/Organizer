@@ -13,6 +13,13 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 	"Organizer`Utils`"
 }]
 
+If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
+	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
+		{LightRed, LightGreen, LightBlue},
+		{LightYellow, LightOrange, LightCyan}
+	};
+]
+
 (*********)
 (* Icons *)
 (*********)
@@ -128,7 +135,10 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 	SelectionMove[SelectedNotebook[], After, CellContents]
 ]
 
-checkboxCell[] := Cell[BoxData @ ToBoxes @ Checkbox[1, {1, 2, 3}] ]
+(* NOTE: Setting an explicit `Background -> White` here is required because CellFrameLabels
+         inherit their styling from the parent cell, and we don't want the checkbox cell
+		 to have a colored background. *)
+checkboxCell[] := Cell[BoxData @ ToBoxes @ Checkbox[1, {1, 2, 3}], Background -> White ]
 
 (*
 	This function must be kept in sync with replaceWithInertTodoCellAndSelect[]
@@ -417,6 +427,46 @@ iconButtonContent[icon_, tooltip_?StringQ] := Tooltip[
 	TooltipDelay -> 0.333
 ]
 
+setSelectedCellsBackground[color_] := Module[{selectedCells},
+	selectedCells = SelectedCells[];
+	Assert[MatchQ[selectedCells, {___CellObject}]];
+	Map[SetOptions[#, Background -> color] &, selectedCells]
+]
+
+colorPickerButtonGrid[] := With[{
+	loadOrFail = $HeldLoadOrFail
+},
+Module[{colors, grid},
+	colors = PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"];
+
+	If[MissingQ[colors],
+		Throw["No \"CG:Organizer:BackgroundColorPalette\" PersistentValue is set."];
+	];
+
+	If[!MatchQ[colors, {{___RGBColor}..}],
+		Throw["\"CG:Organizer:BackgroundColorPalette\" PersistentValue is not a valid array of colors."]
+	];
+
+	grid = Map[
+		Button[
+			"",
+			(
+				ReleaseHold[loadOrFail];
+				setSelectedCellsBackground[#];
+			),
+			ImageSize -> {20, 20},
+			Background -> #,
+			ImageMargins -> 0,
+			ContentPadding -> None
+		] &,
+		colors,
+		{2}
+	];
+
+	Grid[grid, Spacings -> {0.0, .0}, ItemSize -> All, Frame -> True, FrameStyle -> Thickness[2.5]]
+]
+]
+
 installLogNotebookDockedCells[nbObj_, projName_?StringQ] := With[{
 	loadOrFail = $HeldLoadOrFail
 },
@@ -511,7 +561,8 @@ Module[{
 		}, ImageMargins -> 10],
 		newFileLinkButton,
 		newDraggedLinkButton,
-		openFolderButton
+		openFolderButton,
+		colorPickerButtonGrid,
 	}];
 
 	cell = Cell[
