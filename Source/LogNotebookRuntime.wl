@@ -33,36 +33,31 @@ importSVG[path_?StringQ] := Module[{func},
 	func[path]
 ]
 
+importIcon[filename_?StringQ] := importSVG[
+	FileNameJoin[{
+		PacletObject["Organizer"]["AssetLocation", "Icons"],
+		filename
+	}]
+]
+
 LoadIcons[] := (
 	$iconCalendarWithPlus;
 	$iconUnfinishedTodoList;
 	$iconPlus;
+	$iconFileLink;
+	$iconLinkArea;
+	$iconOpenFolder;
 )
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
    value. *)
-$iconCalendarWithPlus := $iconCalendarWithPlus = importSVG[
-	FileNameJoin[{
-		PacletObject["Organizer"]["AssetLocation", "Icons"],
-		"CalendarWithPlus.svg"
-	}]
-]
+$iconCalendarWithPlus   := $iconCalendarWithPlus   = importIcon["CalendarWithPlus.svg"]
+$iconUnfinishedTodoList := $iconUnfinishedTodoList = importIcon["UnfinishedTodoList.svg"]
+$iconPlus               := $iconPlus               = importIcon["Plus.svg"]
+$iconFileLink           := $iconFileLink           = importIcon["FileLink.svg"]
+$iconLinkArea           := $iconLinkArea           = importIcon["LinkArea.svg"]
+$iconOpenFolder         := $iconOpenFolder         = importIcon["OpenFolder.svg"]
 
-(* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
-   value. *)
-$iconUnfinishedTodoList := $iconUnfinishedTodoList = importSVG[
-	FileNameJoin[{
-		PacletObject["Organizer"]["AssetLocation", "Icons"],
-		"UnfinishedTodoList.svg"
-	}]
-]
-
-$iconPlus := $iconPlus = importSVG[
-	FileNameJoin[{
-		PacletObject["Organizer"]["AssetLocation", "Icons"],
-		"Plus.svg"
-	}]
-]
 
 (* ::Text:: *)
 
@@ -520,27 +515,36 @@ Module[{
 	];
 
 	newFileLinkButton = Button[
-		"File Link",
+		iconButtonContent[
+			$iconFileLink,
+			"Insert a link to a file chosen from the file system"
+		],
 		(
 			ReleaseHold[loadOrFail];
 			insertLinkAfterSelection[];
 		),
-		buttonOptions,
+		buttonBarOptions,
 		Method -> "Queued"
 	];
 
 	newDraggedLinkButton = Button[
-		"Dragged Link",
+		iconButtonContent[
+			$iconLinkArea,
+			"Insert a link dragged into a popup TextEdit window"
+		],
 		(
 			ReleaseHold[loadOrFail];
 			insertDraggedHyperlink[];
 		),
-		buttonOptions,
+		buttonBarOptions,
 		Method -> "Queued"
 	];
 
 	openFolderButton = Button[
-		"Open Folder",
+		iconButtonContent[
+			$iconOpenFolder,
+			"Open the folder containing the current Log notebook"
+		],
 		Function[
 			Switch[$SystemID,
 				"MacOSX-x86-64",
@@ -559,8 +563,10 @@ Module[{
 			newTodayTodoButton,
 			newTodoAtTopOfQueueButton
 		}, ImageMargins -> 10],
-		newFileLinkButton,
-		newDraggedLinkButton,
+		Row[{
+			newFileLinkButton,
+			newDraggedLinkButton
+		}, ImageMargins -> 10],
 		openFolderButton,
 		colorPickerButtonGrid[]
 	}];
