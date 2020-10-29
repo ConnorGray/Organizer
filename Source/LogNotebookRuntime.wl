@@ -562,7 +562,7 @@ Module[{
 		newFileLinkButton,
 		newDraggedLinkButton,
 		openFolderButton,
-		colorPickerButtonGrid,
+		colorPickerButtonGrid[]
 	}];
 
 	cell = Cell[
