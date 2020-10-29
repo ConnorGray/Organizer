@@ -46,6 +46,9 @@ The icons:
 * [CalendarWithPlus.svg](./Icons/CalendarWithPlus.svg)
 * [UnfinishedTodoList.svg](./Icons/UnfinishedTodoList.svg)
 * [Plus.svg](./Icons/Plus.svg)
+* [FileLink.svg](./Icons/FileLink.svg)
+* [LinkArea.svg](./Icons/LinkArea.svg)
+* [OpenFolder.svg](./Icons/OpenFolder.svg)
 
 are from [www.onlinewebfonts.com/icon](http://www.onlinewebfonts.com/icon), licensed as
 CC BY 3.0.
