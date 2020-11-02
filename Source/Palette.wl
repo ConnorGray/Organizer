@@ -268,6 +268,7 @@ handleStartNewProject[] := Module[{
 
     NotebookWrite[logNB, Cell["Queue", "Chapter"] ];
 
+    installLogNotebookStyles[logNB];
     installLogNotebookDockedCells[logNB, projNameSpaces];
 
     (* TODO: Set DockedCells *)

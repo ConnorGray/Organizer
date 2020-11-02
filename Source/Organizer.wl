@@ -5,7 +5,7 @@ BeginPackage["Organizer`"]
         `New Scratch NB` should also be relative, and use $ScratchNBRootDirectory.*)
 
 CreateOrganizerPalette
-UpdateDockedCells
+UpdateLogNotebooks
 
 Begin["`Private`"]
 
@@ -32,13 +32,22 @@ Needs["Organizer`LogNotebookRuntime`"];
 Needs["Organizer`Palette`"]
 
 (* This function is meant to be called manually whenever there is a change to the standard
-   set of docked cells. *)
-UpdateDockedCells[] := Scan[
-    installLogNotebookDockedCells[NotebookOpen[#], FileNameSplit[#][[-2]]] &,
-    FileNames[
+   set of docked cells or StyleDefinitions. *)
+UpdateLogNotebooks[] := Module[{nbs, nbObj},
+    nbs = FileNames[
         "Log.nb",
         FileNameJoin[{Organizer`Palette`Private`WorkspaceDirectory[], "Projects", "Active"}],
         Infinity
+    ];
+
+    Scan[
+        Function[nbPath,
+            nbObj = NotebookOpen[nbPath];
+
+            installLogNotebookDockedCells[nbObj, FileNameSplit[nbPath][[-2]]];
+            installLogNotebookStyls[nbObj];
+        ],
+        nbs
     ]
 ]
 

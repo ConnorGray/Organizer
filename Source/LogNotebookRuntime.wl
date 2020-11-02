@@ -111,19 +111,10 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 		cell, which can happen if the user types e.g. a down arrow immediately after
 		creating the cell (CurrentValue["EventKey"] would be a non-printable character in
 		that situtation). *)
-		TextData[If[LetterQ[content], content, ""] ]
-		,
-		"Text",
-		LineSpacing -> {0.95, 0},
-		CellMargins -> {{66, 0}, {2, 2}},
-		CellFrame -> {{2, 0}, {0, 0}},
-		CellFrameColor -> GrayLevel[0.7],
-		CellFrameMargins -> 5,
-		CellFrameLabels -> {
-			{checkboxCell[], None},
-			{None, None}
-		},
-		CellFrameLabelMargins -> 3
+		TextData[If[LetterQ[content], content, ""] ],
+		(* This inherits styles from the StyleData["TODO", ..] in the Log.nb's
+		StyleDefinitions property. *)
+		"TODO"
 	];
 
 	NotebookWrite[EvaluationCell[], cell, All];
@@ -133,17 +124,30 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 (* NOTE: Setting an explicit `Background -> White` here is required because CellFrameLabels
          inherit their styling from the parent cell, and we don't want the checkbox cell
 		 to have a colored background. *)
-checkboxCell[] := Cell[BoxData @ ToBoxes @ Checkbox[1, {1, 2, 3}], Background -> White ]
+CreateCheckboxCell[] := Cell[
+	BoxData @ ToBoxes @ Checkbox[
+		Dynamic[
+			CurrentValue[
+				ParentCell@EvaluationCell[],
+				{TaggingRules, "TODOCompletedQ"}
+			],
+			Function[val,
+				SetOptions[
+					ParentCell@EvaluationCell[],
+					TaggingRules -> {"TODOCompletedQ" -> val}
+				]
+			]
+		]
+	],
+	Background -> White
+]
 
 (*
 	This function must be kept in sync with replaceWithInertTodoCellAndSelect[]
 *)
 createTodoCell[] := Cell[
 	BoxData @ ToBoxes @ Placeholder["Empty TODO"],
-	"Text",
-	CellMargins -> {{66, 0}, {0, 1}},
-	CellFrameLabels -> {{checkboxCell[], None}, {None, None}},
-	CellFrameLabelMargins -> 0,
+	"TODO",
 	(* These cell event actions are triggered the first time a user interacts with the
 	   cell. Their purpose is to:
 
@@ -356,7 +360,7 @@ insertLinkAfterSelection[] := Module[{newCell, nb},
 		Return[$Failed];
 	];
 
-	nb = SelectedNotebook[];
+	nb = EvaluationNotebook[];
 	SelectionMove[nb, After, Cell];
 	NotebookWrite[nb, newCell];
 ]
@@ -579,6 +583,27 @@ Module[{
 	SetOptions[nbObj, DockedCells->{cell}]
 ]
 ]
+
+installLogNotebookStyles[nb_NotebookObject] := (
+	SetOptions[logNB,
+		StyleDefinitions -> Notebook[{
+			Cell[StyleData[StyleDefinitions -> "Default.nb"] ],
+			Cell[StyleData["TODO", StyleDefinitions -> StyleData["Text"] ],
+				TaggingRules -> {"TODOCompletedQ" -> False},
+				LineSpacing -> {0.95, 0},
+				CellMargins -> {{66, 0}, {2, 2}},
+				CellFrame -> {{2, 0}, {0, 0}},
+				CellFrameColor -> GrayLevel[0.7],
+				CellFrameMargins -> 5,
+				CellFrameLabelMargins -> 3,
+				CellFrameLabels -> {
+					{CreateCheckboxCell[], None},
+					{None, None}
+				}
+			]
+		}]
+	];
+)
 
 
 EndPackage[]
