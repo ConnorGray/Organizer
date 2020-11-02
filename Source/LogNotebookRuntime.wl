@@ -585,7 +585,7 @@ Module[{
 ]
 
 installLogNotebookStyles[nb_NotebookObject] := (
-	SetOptions[logNB,
+	SetOptions[nb,
 		StyleDefinitions -> Notebook[{
 			Cell[StyleData[StyleDefinitions -> "Default.nb"] ],
 			Cell[StyleData["TODO", StyleDefinitions -> StyleData["Text"] ],
