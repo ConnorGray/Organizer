@@ -561,7 +561,17 @@ Module[{
 	];
 
 	row = Row[{
-		Style[Pane[projName, ImageMargins -> 10], "Subchapter", White],
+		(* Make the Log.nb title a hidden button which opens the organizer palette. This
+		   is a quick and convenient way to access the palette without needing to keep
+		   it open all of the time. *)
+		Button[
+			Style[Pane[projName, ImageMargins -> 10], "Subchapter", White],
+			(
+				ReleaseHold[loadOrFail];
+				CreateOrganizerPalette[]
+			),
+			Appearance -> None
+		],
 		Row[{
 			newTODObutton,
 			newTodayTodoButton,
