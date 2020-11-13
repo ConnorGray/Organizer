@@ -334,18 +334,20 @@ moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
 (*Links*)
 
 
-createHyperlinkCell[] := Module[{filepath, label},
-	filepath = SystemDialogInput["FileOpen"];
+createSystemOpenCell[] := With[{
+	filepath = SystemDialogInput["FileOpen", NotebookDirectory[]]
+},
 	If[!StringQ[filepath],
 		Throw[StringForm["Invalid file path: ``", filepath]];
 	];
 
-	label = FileNameTake[filepath, -1];
-	MessageDialog[{filepath, label}];
-
 	Cell[
 		BoxData @ ToBoxes @ Framed[
-			Hyperlink[Style[label, Bold], filepath],
+			Button[
+				Style[(* label *)FileNameTake[filepath, -1], "Hyperlink", Bold],
+				SystemOpen[File[filepath]],
+				Appearance -> None
+			],
 			RoundingRadius -> 5,
 			Background -> LightBlue,
 			FrameStyle -> Directive[Thick, Darker@Green]
@@ -355,7 +357,7 @@ createHyperlinkCell[] := Module[{filepath, label},
 ]
 
 insertLinkAfterSelection[] := Module[{newCell, nb},
-	newCell = createHyperlinkCell[];
+	newCell = createSystemOpenCell[];
 	If[FailureQ @ newCell,
 		Return[$Failed];
 	];
