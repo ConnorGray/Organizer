@@ -356,17 +356,20 @@ createSystemOpenCell[] := With[{
 	]
 ]
 
-insertLinkAfterSelection[] := Module[{newCell, nb},
-	newCell = createSystemOpenCell[];
-	If[FailureQ @ newCell,
+insertCellAfterSelection[cell_] := Module[{nb},
+	If[FailureQ @ cell,
+		Return[$Failed];
+	];
+
+	If[!MatchQ[cell, Cell[__]],
 		Return[$Failed];
 	];
 
 	nb = EvaluationNotebook[];
+	(* nb = SelectedNotebook[]; *)
 	SelectionMove[nb, After, Cell];
-	NotebookWrite[nb, newCell];
+	NotebookWrite[nb, cell];
 ]
-
 
 getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 	(* TODO: Make path cross-platform. *)
@@ -407,17 +410,10 @@ getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 ]
 
 
-insertDraggedHyperlink[] := Module[{newCell, nb},
-	newCell = getDraggedHyperlink[];
-
-	nb = SelectedNotebook[];
-	SelectionMove[nb, After, Cell];
-	NotebookWrite[nb, newCell];
-]
-
-
+(**************************************)
 (* ::Chapter:: *)
-(*New NB setup*)
+(* New Notebook Setup                 *)
+(**************************************)
 
 iconButtonContent[icon_, tooltip_?StringQ] := Tooltip[
 	Show[
@@ -527,7 +523,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			insertLinkAfterSelection[];
+			insertCellAfterSelection[createSystemOpenCell[]];
 		),
 		buttonBarOptions,
 		Method -> "Queued"
@@ -540,7 +536,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			insertDraggedHyperlink[];
+			insertCellAfterSelection[getDraggedHyperlink[]];
 		),
 		buttonBarOptions,
 		Method -> "Queued"
