@@ -473,7 +473,7 @@ getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
 	If[Length[data] === 1,
 		message = data[[1]];
 		url = URL["message://%3C" <> URLEncode[message["ID"]] <> "%3E"];
-		hyperlink = Hyperlink[message["Subject"], url];
+		hyperlink = Hyperlink[Style[message["Subject"], 12], url];
 
 		Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
 	];
