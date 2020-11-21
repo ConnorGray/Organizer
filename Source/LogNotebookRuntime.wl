@@ -47,6 +47,7 @@ LoadIcons[] := (
 	$iconFileLink;
 	$iconLinkArea;
 	$iconOpenFolder;
+	$iconMessageLink;
 )
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
@@ -57,6 +58,7 @@ $iconPlus               := $iconPlus               = importIcon["Plus.svg"]
 $iconFileLink           := $iconFileLink           = importIcon["FileLink.svg"]
 $iconLinkArea           := $iconLinkArea           = importIcon["LinkArea.svg"]
 $iconOpenFolder         := $iconOpenFolder         = importIcon["OpenFolder.svg"]
+$iconMessageLink        := $iconMessageLink        = importIcon["MessageLink.svg"]
 
 
 (* ::Text:: *)
@@ -410,6 +412,75 @@ getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 	Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"]
 ]
 
+(**************************************)
+(* AppleScripts                       *)
+(**************************************)
+
+$getMailLinkScript = "
+tell application \"Mail\"
+	(* open (get first message of inbox) *)
+
+	set _selectedMsgs to selected messages of message viewer 0
+
+	if (_selectedMsgs is equal to missing value) then
+		log \"Missing[\\\"NotAvailable\\\"]\"
+		return
+	end if
+
+	log \"{\"
+	repeat with _theMsg in _selectedMsgs
+		set _id to (message id of _theMsg)
+		set _subject to (subject of _theMsg)
+		set _date to (date received of _theMsg)
+		set _sender to (sender of _theMsg)
+
+		log \"<|\"
+		log \"\\\"ID\\\" -> \\\"\"           & _id      & \"\\\", \"
+		log \"\\\"Subject\\\" -> \\\"\"      & _subject & \"\\\", \"
+		log \"\\\"DateReceived\\\" -> \\\"\" & _date    & \"\\\", \"
+		log \"\\\"Sender\\\" -> \\\"\"       & _sender  & \"\\\"\"
+		log \"|>, \"
+	end repeat
+	log \"Sequence[]}\"
+
+	(*if (_msgs is not equal to missing value) then
+		set _msg to last item of _msgs
+		set _msgID to (message id of _msg)
+
+		return _msgID
+	end if
+	*)
+end tell
+";
+
+getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
+	data = RunProcess[{"osascript", "-e", $getMailLinkScript}, "StandardError"];
+	If[FailureQ[data],
+		Return[data];
+	];
+	Assert[StringQ[data]];
+
+	data = ToExpression[data];
+
+	If[MissingQ[data],
+		Return[data];
+	];
+
+	If[!ListQ[data] || data === {},
+		Return[$Failed];
+	];
+
+	If[Length[data] === 1,
+		message = data[[1]];
+		url = URL["message://%3C" <> URLEncode[message["ID"]] <> "%3E"];
+		hyperlink = Hyperlink[message["Subject"], url];
+
+		Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
+	];
+
+	(* TODO: Support showing a listing of possible emails to link to when Length[data] > 1 *)
+	Return[$Failed];
+]
 
 (**************************************)
 (* ::Chapter:: *)
@@ -530,6 +601,19 @@ Module[{
 		Method -> "Queued"
 	];
 
+	newMessageLinkButton = Button[
+		iconButtonContent[
+			$iconMessageLink,
+			"Insert a link to the selected Apple Mail message"
+		],
+		(
+			ReleaseHold[loadOrFail];
+			insertCellAfterSelection[getAppleMailHyperlink[]];
+		),
+		buttonBarOptions,
+		Method -> "Queued"
+	];
+
 	newDraggedLinkButton = Button[
 		iconButtonContent[
 			$iconLinkArea,
@@ -578,6 +662,7 @@ Module[{
 		}, ImageMargins -> 10],
 		Row[{
 			newFileLinkButton,
+			newMessageLinkButton,
 			newDraggedLinkButton
 		}, ImageMargins -> 10],
 		openFolderButton,
