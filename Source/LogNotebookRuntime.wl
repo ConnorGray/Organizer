@@ -330,9 +330,10 @@ moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
 	];
 ]
 
+(**************************************)
 (* ::Subsubsection:: *)
 (*Links*)
-
+(**************************************)
 
 createSystemOpenCell[] := With[{
 	filepath = SystemDialogInput["FileOpen", NotebookDirectory[]]
