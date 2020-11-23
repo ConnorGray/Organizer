@@ -48,6 +48,7 @@ LoadIcons[] := (
 	$iconLinkArea;
 	$iconOpenFolder;
 	$iconMessageLink;
+	$iconBrowserLink;
 )
 
 (* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
@@ -59,6 +60,7 @@ $iconFileLink           := $iconFileLink           = importIcon["FileLink.svg"]
 $iconLinkArea           := $iconLinkArea           = importIcon["LinkArea.svg"]
 $iconOpenFolder         := $iconOpenFolder         = importIcon["OpenFolder.svg"]
 $iconMessageLink        := $iconMessageLink        = importIcon["MessageLink.svg"]
+$iconBrowserLink        := $iconBrowserLink        = importIcon["BrowserLink.svg"]
 
 
 (* ::Text:: *)
@@ -453,6 +455,22 @@ tell application \"Mail\"
 end tell
 ";
 
+$getSafariLinkScript = "
+tell application \"Safari\"
+	log \"{\"
+	repeat with _theDoc in every document
+		set _title to (name of _theDoc)
+		set _url to (URL of _theDoc)
+
+		log \"<|\"
+		log \"\\\"Title\\\" -> \\\"\" & _title as «class utf8»      & \"\\\", \"
+		log \"\\\"URL\\\" -> \\\"\"   & _url  & \"\\\"\"
+		log \"|>, \"
+	end repeat
+	log \"Sequence[]}\"
+end tell
+"
+
 getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
 	data = RunProcess[{"osascript", "-e", $getMailLinkScript}, "StandardError"];
 	If[FailureQ[data],
@@ -480,6 +498,55 @@ getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
 
 	(* TODO: Support showing a listing of possible emails to link to when Length[data] > 1 *)
 	Return[$Failed];
+]
+
+getSafariHyperlink[] := Module[{data, pair, hyperlink},
+	data = RunProcess[{"osascript", "-e", $getSafariLinkScript}, "StandardError"];
+
+	(* Echo[InputForm[data], "data A"] *)
+
+	If[FailureQ[data],
+		Return[data];
+	];
+	Assert[StringQ[data]];
+
+	If[StringContainsQ[data, "missing value"],
+		Return[$Failed];
+	];
+
+	data = ToExpression[data];
+
+	(* Echo[data, "data B"]; *)
+
+	If[!MatchQ[data, {KeyValuePattern[{"Title" -> _?StringQ, "URL" -> _?StringQ}]...}],
+		Return[$Failed];
+	];
+
+	(* Echo[data, "data C"]; *)
+
+	pair = Which[
+		Length[data] === 0,
+			Return[$Failed]
+		,
+		Length[data] === 1,
+			data[[1]]
+		,
+		True,
+			DialogInput[DialogNotebook[{
+				Column[
+					Map[
+						Function[{pair},
+							Button[pair["Title"], DialogReturn[pair]]
+						],
+						data
+					]
+				]
+			}]]
+	];
+
+	hyperlink = Hyperlink[Style[pair["Title"], 12], pair["URL"]];
+
+	Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
 ]
 
 (**************************************)
@@ -543,7 +610,10 @@ Module[{
 	buttonOptions, newTODObutton,
 	newTodayTodoButton,
 	newTodoAtTopOfQueueButton,
-	newFileLinkButton, newDraggedLinkButton,
+	newFileLinkButton,
+	newDraggedLinkButton,
+	newMessageLinkButton,
+	newSafariLinkButton,
 	openFolderButton, row, cell
 },
 	buttonBarOptions = Sequence[
@@ -614,6 +684,19 @@ Module[{
 		Method -> "Queued"
 	];
 
+	newSafariLinkButton = Button[
+		iconButtonContent[
+			$iconBrowserLink,
+			"Insert a link to a web page open in Safari"
+		],
+		(
+			ReleaseHold[loadOrFail];
+			insertCellAfterSelection[getSafariHyperlink[]];
+		),
+		buttonBarOptions,
+		Method -> "Queued"
+	];
+
 	newDraggedLinkButton = Button[
 		iconButtonContent[
 			$iconLinkArea,
@@ -663,6 +746,7 @@ Module[{
 		Row[{
 			newFileLinkButton,
 			newMessageLinkButton,
+			newSafariLinkButton,
 			newDraggedLinkButton
 		}, ImageMargins -> 10],
 		openFolderButton,
