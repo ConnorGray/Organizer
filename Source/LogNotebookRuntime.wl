@@ -500,17 +500,30 @@ getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
 	Return[$Failed];
 ]
 
+errorDialog[message_?StringQ] := MessageDialog[Row[{
+	Style["Error: ", 14, Darker[Red]],
+	message
+}]]
+
 getSafariHyperlink[] := Module[{data, pair, hyperlink},
 	data = RunProcess[{"osascript", "-e", $getSafariLinkScript}, "StandardError"];
 
 	(* Echo[InputForm[data], "data A"] *)
 
 	If[FailureQ[data],
+		errorDialog[ToString@StringForm[
+			"Data returned from `osascript` was FailureQ: ``",
+			data
+		]];
 		Return[data];
 	];
 	Assert[StringQ[data]];
 
 	If[StringContainsQ[data, "missing value"],
+		errorDialog[ToString@StringForm[
+			"Data returned from `osascript` contains missing value: ``",
+			data
+		]];
 		Return[$Failed];
 	];
 
@@ -519,6 +532,10 @@ getSafariHyperlink[] := Module[{data, pair, hyperlink},
 	(* Echo[data, "data B"]; *)
 
 	If[!MatchQ[data, {KeyValuePattern[{"Title" -> _?StringQ, "URL" -> _?StringQ}]...}],
+		errorDialog[ToString@StringForm[
+			"Data returned from `osascript` does not have the expected Association form: ``",
+			InputForm[data]
+		]];
 		Return[$Failed];
 	];
 
@@ -526,6 +543,10 @@ getSafariHyperlink[] := Module[{data, pair, hyperlink},
 
 	pair = Which[
 		Length[data] === 0,
+			errorDialog[ToString@StringForm[
+				"Data returned from `osascript` was an empty list: ``",
+				InputForm[data]
+			]];
 			Return[$Failed]
 		,
 		Length[data] === 1,
@@ -542,6 +563,10 @@ getSafariHyperlink[] := Module[{data, pair, hyperlink},
 					]
 				]
 			}]]
+	];
+
+	If[pair === $Canceled,
+		Return[$Failed];
 	];
 
 	hyperlink = Hyperlink[Style[pair["Title"], 12], pair["URL"]];
