@@ -42,9 +42,15 @@ WorkspaceDirectory[] := Module[{name, dir},
     dir
 ];
 
-Workspaces[] := Map[
-    FileNameTake[#, -1]&,
-    Select[FileNames[All, NotebooksDirectory[] ], DirectoryQ]
+Workspaces[] := Module[{files},
+    files = FileNames[All, NotebooksDirectory[]];
+    files = Select[files, DirectoryQ];
+
+    (* Get the last component of the file path -- this these are the Workspace names. *)
+    files = Map[FileNameTake[#, -1]&, files];
+    files = Select[files, !StringStartsQ[#, "."]&];
+
+    files
 ]
 
 (**************************************)
