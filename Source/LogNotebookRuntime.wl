@@ -13,6 +13,8 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 	"Organizer`Utils`"
 }]
 
+FindQueueChapterCell
+
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
 		{LightRed, LightGreen, LightBlue},
@@ -298,15 +300,9 @@ insertTodoForToday[nb_NotebookObject] := Module[{
 insertTodoAtTopOfQueue[nb_NotebookObject] := Module[{
 	queueChapterCell
 },
-	queueChapterCell = SelectFirst[
-		Cells[nb, CellStyle -> "Chapter"],
-		MatchQ[
-			NotebookRead[#],
-			Cell["Queue", "Chapter", ___]
-		] &
-	];
+	queueChapterCell = FindQueueChapterCell[nb];
 
-	If[!MatchQ[queueChapterCell, CellObject[___]],
+	If[FailureQ[queueChapterCell],
 		MessageDialog[StringForm[
 			"Organizer`.`: Unable to insert new TODO cell: no 'Queue' chapter exists in specified notebook: ``",
 			Information[nb]["WindowTitle"]
@@ -332,6 +328,22 @@ moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
 		SelectionMove[SelectedNotebook[], After, Cell],
 		SelectionMove[heading, After, Cell]
 	];
+]
+
+FindQueueChapterCell[nb_NotebookObject] := Module[{cell},
+	cell = SelectFirst[
+		Cells[nb, CellStyle -> "Chapter"],
+		MatchQ[
+			NotebookRead[#],
+			Cell["Queue", "Chapter", ___]
+		] &
+	];
+
+	If[!MatchQ[cell, CellObject[___]],
+		Return[$Failed];
+	];
+
+	cell
 ]
 
 (**************************************)
