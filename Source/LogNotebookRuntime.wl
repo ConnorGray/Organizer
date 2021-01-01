@@ -329,9 +329,10 @@ moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
 	situation that `heading` is not the head of it's own cell group, which is to instead
 	select the *parent* cell group which `heading` is a part of.
 *)
-GroupSelectionMove[heading_CellObject, dir_] := Module[{cells},
+GroupSelectionMove[heading_CellObject, dir_] := Module[{nb, cells},
+	nb = ParentNotebook[heading];
 	SelectionMove[heading, All, CellGroup];
-	cells = SelectedCells[];
+	cells = SelectedCells[nb];
 
 	(* Hacky way of checking if `heading` is the head of a CellGroup. *)
 	If[First[cells] === heading,
@@ -340,7 +341,7 @@ GroupSelectionMove[heading_CellObject, dir_] := Module[{cells},
 		   end of that set of selected cells. If we used `heading` here, we would only be
 		   moving to the cell immediately after `heading`, which won't be at the end of
 		   the group. *)
-		SelectionMove[SelectedNotebook[], dir, Cell],
+		SelectionMove[nb, dir, Cell],
 		SelectionMove[heading, dir, Cell]
 	];
 ]
