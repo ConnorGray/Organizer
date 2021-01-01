@@ -14,6 +14,7 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 }]
 
 FindQueueChapterCell
+GroupSelectionMove
 
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
@@ -316,8 +317,22 @@ insertTodoAtTopOfQueue[nb_NotebookObject] := Module[{
 
 (* Thanks Dad for contributing this. *)
 moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
+	GroupSelectionMove[heading, After]
+]
+
+(*
+	Move the selection relative to the cell group associated with `heading`.
+
+	If `heading` is not the first cell in a CellGroup (because it has no child cells),
+	the selected cells will only include `heading` itself. This essentially works around
+	the undesirable behavior that `SelectionMove[heading, All, CellGroup]` has in the
+	situation that `heading` is not the head of it's own cell group, which is to instead
+	select the *parent* cell group which `heading` is a part of.
+*)
+GroupSelectionMove[heading_CellObject, dir_] := Module[{cells},
 	SelectionMove[heading, All, CellGroup];
 	cells = SelectedCells[];
+
 	(* Hacky way of checking if `heading` is the head of a CellGroup. *)
 	If[First[cells] === heading,
 		(* Use SelectedNotebook[] because the current situation is that multiple cells are
@@ -325,8 +340,8 @@ moveSelectionToEndOfSection[heading_CellObject] := Module[{cells},
 		   end of that set of selected cells. If we used `heading` here, we would only be
 		   moving to the cell immediately after `heading`, which won't be at the end of
 		   the group. *)
-		SelectionMove[SelectedNotebook[], After, Cell],
-		SelectionMove[heading, After, Cell]
+		SelectionMove[SelectedNotebook[], dir, Cell],
+		SelectionMove[heading, dir, Cell]
 	];
 ]
 
