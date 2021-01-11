@@ -499,6 +499,26 @@ tell application \"Safari\"
 end tell
 "
 
+$getChromeLinkScript = "
+if application \"Google Chrome\" is running then
+	tell application \"Google Chrome\"
+		log \"{\"
+		repeat with _window in every window
+			set _title to the title of active tab of _window
+			set _url to the URL of active tab of _window
+
+			log \"<|\"
+			log \"\\\"Title\\\" -> \\\"\" & _title as «class utf8»      & \"\\\", \"
+			log \"\\\"URL\\\" -> \\\"\"   & _url  & \"\\\"\"
+			log \"|>, \"
+		end repeat
+		log \"Sequence[]}\"
+	end tell
+else
+	log \"{}\"
+end if
+"
+
 getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
 	data = RunProcess[{"osascript", "-e", $getMailLinkScript}, "StandardError"];
 	If[FailureQ[data],
@@ -533,8 +553,8 @@ errorDialog[message_?StringQ] := MessageDialog[Row[{
 	message
 }]]
 
-getSafariHyperlink[] := Module[{data, pair, hyperlink},
-	data = RunProcess[{"osascript", "-e", $getSafariLinkScript}, "StandardError"];
+getOpenPages[script_?StringQ] := Module[{data},
+	data = RunProcess[{"osascript", "-e", script}, "StandardError"];
 
 	(* Echo[InputForm[data], "data A"] *)
 
@@ -567,12 +587,27 @@ getSafariHyperlink[] := Module[{data, pair, hyperlink},
 		Return[$Failed];
 	];
 
-	(* Echo[data, "data C"]; *)
+	Return[data];
+]
+
+
+getBrowserHyperlink[] := Module[{safariData, chromeData, data, pair, hyperlink},
+	safariData = getOpenPages[$getSafariLinkScript];
+	If[FailureQ[safariData],
+		Return[$Failed];
+	];
+
+	chromeData = getOpenPages[$getChromeLinkScript];
+	If[FailureQ[chromeData],
+		Return[$Failed];
+	];
+
+	data = Join[safariData, chromeData];
 
 	pair = Which[
 		Length[data] === 0,
 			errorDialog[ToString@StringForm[
-				"Data returned from `osascript` was an empty list: ``",
+				"Data returned from `osascript` was an empty list: ``. Perhaps you have no browser windows open?",
 				InputForm[data]
 			]];
 			Return[$Failed]
@@ -666,7 +701,7 @@ Module[{
 	newFileLinkButton,
 	newDraggedLinkButton,
 	newMessageLinkButton,
-	newSafariLinkButton,
+	newBrowserLinkButton,
 	openFolderButton, row, cell
 },
 	buttonBarOptions = Sequence[
@@ -737,14 +772,14 @@ Module[{
 		Method -> "Queued"
 	];
 
-	newSafariLinkButton = Button[
+	newBrowserLinkButton = Button[
 		iconButtonContent[
 			$iconBrowserLink,
-			"Insert a link to a web page open in Safari"
+			"Insert a link to a web page open in Safari or Google Chrome"
 		],
 		(
 			ReleaseHold[loadOrFail];
-			insertCellAfterSelection[getSafariHyperlink[]];
+			insertCellAfterSelection[getBrowserHyperlink[]];
 		),
 		buttonBarOptions,
 		Method -> "Queued"
@@ -799,7 +834,7 @@ Module[{
 		Row[{
 			newFileLinkButton,
 			newMessageLinkButton,
-			newSafariLinkButton,
+			newBrowserLinkButton,
 			newDraggedLinkButton
 		}, ImageMargins -> 10],
 		openFolderButton,
