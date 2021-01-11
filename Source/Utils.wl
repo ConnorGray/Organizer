@@ -27,23 +27,19 @@ AttachedPopupMenu[
     childPosition_ : {Right, Top},
     buttonOpts : OptionsPattern[]
 ] := With[{
-    loadOrFail = $HeldLoadOrFail,
-    po = Unevaluated@PersistentValue["CG:Organizer:AttachedCommandDropdown", "FrontEndSession"]
+    loadOrFail = $HeldLoadOrFail
 },
     Button[
         label,
         (
             ReleaseHold[loadOrFail];
 
-            If[MatchQ[po, _CellObject] && !FailureQ[NotebookRead[po]],
-                NotebookDelete[po];
-                po = None;
-                ,
-                po = makePopupAttachedCell[
-                    contentsFunction[(NotebookDelete[po]; po = None) &],
-                    parentPosition,
-                    childPosition
-                ];
+            toggleAttachedPopupCell[
+                "CG:Organizer:AttachedCommandDropdown",
+                label,
+                contentsFunction,
+                parentPosition,
+                childPosition
             ];
         ),
         Method -> "Queued",
@@ -51,6 +47,36 @@ AttachedPopupMenu[
         Background -> Lighter@Orange,
         ImageSize -> Full
     ]
+]
+
+toggleAttachedPopupCell[
+    tag_?StringQ,
+    label_,
+    contentsFunction_,
+    parentPosition_,
+    childPosition_
+] := With[{
+    po = Unevaluated[PersistentValue[tag, "FrontEndSession"]]
+},
+    If[MatchQ[Evaluate[po], CellObject[___]],
+        (* NOTE:
+            Currently, this code isn't actually run. When the toggle button is pressed,
+            the "OutsideMouseClick" closing action (set below) is causing the FE to
+            *automatically* close the attached cell, so by the time we get here, `po` is
+            actually already closed. But for the sake of robustness, it seems better to
+            leave this here, just in case.
+        *)
+        If[!FailureQ[NotebookRead[po]],
+            NotebookDelete[po];
+        ];
+        po = None;
+        ,
+        po = makePopupAttachedCell[
+            contentsFunction[(NotebookDelete[po]; po = None) &],
+            parentPosition,
+            childPosition
+        ];
+    ];
 ]
 
 makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
