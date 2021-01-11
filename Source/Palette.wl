@@ -367,7 +367,7 @@ handleShowQueues[] := Module[{nb, projects, path, cells},
 ]
 
 queueCellsFromNB[path_?StringQ] := Module[{nbObj, cells, queueChapterCell, isAlreadyOpen},
-    isAlreadyOpen = Echo[notebookAtPathIsOpen[path], "isAlreadyOpen"];
+    isAlreadyOpen = notebookAtPathIsOpen[path];
 
     (* `Visible -> False` so we don't overload the user by opening a bunch of notebooks
        they didn't actually want to see. *)
@@ -396,7 +396,7 @@ queueCellsFromNB[path_?StringQ] := Module[{nbObj, cells, queueChapterCell, isAlr
     cells
 ]
 
-notebookAtPathIsOpen[path_?StringQ] := Echo@AnyTrue[
+notebookAtPathIsOpen[path_?StringQ] := AnyTrue[
     Notebooks[],
     Function[nb, Module[{name},
         name = Association[NotebookInformation[nb]]["FileName"];
