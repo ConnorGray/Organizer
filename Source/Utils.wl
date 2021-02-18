@@ -58,25 +58,22 @@ toggleAttachedPopupCell[
 ] := With[{
     po = Unevaluated[PersistentValue[tag, "FrontEndSession"]]
 },
-    If[MatchQ[Evaluate[po], CellObject[___]],
-        (* NOTE:
-            Currently, this code isn't actually run. When the toggle button is pressed,
-            the "OutsideMouseClick" closing action (set below) is causing the FE to
-            *automatically* close the attached cell, so by the time we get here, `po` is
-            actually already closed. But for the sake of robustness, it seems better to
-            leave this here, just in case.
-        *)
-        If[!FailureQ[NotebookRead[po]],
-            NotebookDelete[po];
-        ];
+Module[{
+    isOpen
+},
+    isOpen = MatchQ[Evaluate[po], CellObject[___]] && !FailureQ[NotebookRead[Evaluate[po]]];
+
+    If[isOpen,
+        NotebookDelete[Evaluate[po]];
         po = None;
         ,
         po = makePopupAttachedCell[
-            contentsFunction[(NotebookDelete[po]; po = None) &],
+            contentsFunction[(NotebookDelete[Evaluate[po]]; po = None) &],
             parentPosition,
             childPosition
         ];
     ];
+]
 ]
 
 makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
@@ -95,7 +92,7 @@ makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
         parentPosition,
         (* position on child *)
         childPosition,
-        "ClosingActions" -> {"EvaluatorQuit", "OutsideMouseClick", "ParentChanged"}
+        "ClosingActions" -> {"EvaluatorQuit", (*"OutsideMouseClick",*) "ParentChanged"}
     ]]
 ];
 
