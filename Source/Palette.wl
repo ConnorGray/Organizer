@@ -310,14 +310,21 @@ handleNewMeetingNotes[] := Module[{nameSpaces, nameHyphens},
 
 (* Create and open a new NB which contains the Queue's NB section for every active project
    in the current workspace. *)
-handleShowQueues[] := Module[{nb, projects, path, cells},
+handleShowQueues[] := Module[{nb, projects, path, cells, timestamp, workspaceName},
     nb = CreateNotebook[];
 
-    NotebookWrite[nb, Cell["All Queues: " <> FileNameTake[WorkspaceDirectory[], -1], "Title"]];
+    workspaceName = FileNameTake[WorkspaceDirectory[], -1];
+
+    timestamp = DateString[Now, {
+        "DayName", " ", "MonthName", " ", "Day",
+        " at ", "Hour12Short", ":", "Minute", "AMPMLowerCase"
+    }];
+
+    NotebookWrite[nb, Cell["All Queues: " <> workspaceName, "Title"]];
     NotebookWrite[
         nb,
         Cell[
-            "Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day", " at ", "Hour12Short", ":", "Minute", "AMPMLowerCase"}],
+            "Created " <> timestamp,
             "Subtitle"
         ]
     ];
@@ -333,8 +340,12 @@ handleShowQueues[] := Module[{nb, projects, path, cells},
            content copied into it. This is removed later. *)
         DockedCells -> {
             Cell[
-                BoxData @ ToBoxes @ Style["Building ...", Italic, GrayLevel[0.2]],
-                "Subtitle",
+                BoxData @ ToBoxes @ Row[{
+                    Style["Generating: ", Italic, GrayLevel[0.2]],
+                    Style["All Queues: " <> workspaceName <> ": " <> timestamp]
+                }],
+                FontSize -> 14,
+                FontColor -> GrayLevel[0.2],
                 Background -> Lighter[Orange]
             ]
         }
@@ -363,17 +374,42 @@ handleShowQueues[] := Module[{nb, projects, path, cells},
     ];
 
     (* Remove the warning docked cell -- the notebook is now complete. *)
-    SetOptions[nb, DockedCells -> {}];
+    SetOptions[nb,
+        (* Add a temporary docked cell warning the user that the notebook is still having
+           content copied into it. This is removed later. *)
+        DockedCells -> {
+            Cell[
+                BoxData @ ToBoxes @ Style["All Queues: " <> workspaceName <> ": " <> timestamp],
+                "Text",
+                FontSize -> 14,
+                FontColor -> GrayLevel[0.2],
+                Background -> LightBlue
+            ]
+        }
+    ];
+
+    SelectionMove[First[Cells[nb]], Before, Cell, AutoScroll -> True];
 ]
 
 queueCellsFromNB[path_?StringQ] := Module[{nbObj, cells, queueChapterCell, isAlreadyOpen},
     isAlreadyOpen = notebookAtPathIsOpen[path];
 
     (* `Visible -> False` so we don't overload the user by opening a bunch of notebooks
-       they didn't actually want to see. *)
-    nbObj = NotebookOpen[path, Visible -> isAlreadyOpen];
+       they didn't actually want to see. This also prevents a subtle annoyance: if you
+       have multiple desktops (not multiple monitors, but multiple "virtual" desktop
+       spaces), when `nbObj` is already open on a different desktop, the screen will
+       quickly swipe over to it, and away from the All Queues notebook which is being
+       generated.
+    *)
+    nbObj = NotebookOpen[path, Visible -> False];
     If[FailureQ[nbObj],
         Return[nbObj];
+    ];
+
+    (* If the user already had the notebook open, quickly make it visible again. This
+       happens quickly enough that I haven't noticed any visual "flickering". *)
+    If[isAlreadyOpen,
+        SetOptions[nbObj, Visible -> True]
     ];
 
 	queueChapterCell = FindQueueChapterCell[nbObj];
