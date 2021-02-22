@@ -4,7 +4,17 @@ BeginPackage["Organizer`Palette`", {
     "Organizer`LogNotebookRuntime`"
 }]
 
+CategoryDirectory
+
 Begin["`Private`"]
+
+errorDialog[message_?StringQ] := MessageDialog[Row[{
+	Style["Error: ", 14, Darker[Red]],
+	message
+}]]
+
+errorDialog[form_StringForm] := errorDialog[ToString[form]]
+
 
 NotebooksDirectory[] := Module[{dir},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
@@ -42,20 +52,51 @@ WorkspaceDirectory[] := Module[{name, dir},
     dir
 ];
 
-Workspaces[] := Module[{files},
-    files = FileNames[All, NotebooksDirectory[]];
-    files = Select[files, DirectoryQ];
+CategoryDirectory[] := Module[{name},
+    name = PersistentValue["CG:Organizer:Category", "Local"];
+    If[!StringQ[name],
+        name = ChoiceDialog[
+            "No Category is selected. Please choose one.",
+            Map[(# -> #)&, Categories[]]
+        ];
+        PersistentValue["CG:Organizer:Category", "Local"] = name;
+    ];
 
-    (* Get the last component of the file path -- this these are the Workspace names. *)
-    files = Map[FileNameTake[#, -1]&, files];
-    files = Select[files, !StringStartsQ[#, "."]&];
+    dir = FileNameJoin[{WorkspaceDirectory[], "Projects", name}];
+    If[!DirectoryQ[dir],
+        errorDialog[StringForm[
+            "saved Category name '``' does not exist in the Workspace directory: ``",
+            name,
+            dir
+        ]];
+        Throw[$Failed];
+    ];
+    dir
+]
 
-    files
+Workspaces[] := subDirectoryNames[NotebooksDirectory[]]
+
+(* Get a list of Categories which are a part of the current workspace. *)
+Categories[] := subDirectoryNames[FileNameJoin[{WorkspaceDirectory[], "Projects"}]]
+
+Projects[] := subDirectoryNames[CategoryDirectory[]]
+
+subDirectoryNames[dir_?DirectoryQ] := Module[{names},
+    names = FileNames[All, dir];
+    names = Select[names, DirectoryQ];
+
+    (* Get the last component of the file path; these are the Workspace/Category/Project names. *)
+    names = Map[FileNameTake[#, -1]&, names];
+    names = Select[names, !StringStartsQ[#, "."]&];
+
+    names
 ]
 
 (**************************************)
 (* Interface Building Code            *)
 (**************************************)
+
+$PaletteWidth = 220;
 
 (*
     Statefully create or refresh the global Organizer palette.
@@ -63,7 +104,29 @@ Workspaces[] := Module[{files},
 CreateOrganizerPalette[] := With[{
     loadOrFail = $HeldLoadOrFail
 },
-    Module[{paletteContents, existingNB, margins},
+    Module[{categoryPicker, categoryButton, paletteContents, existingNB, margins},
+        categoryButton[category_?StringQ] := Button[
+            category,
+            (
+                ReleaseHold[loadOrFail];
+                PersistentValue["CG:Organizer:Category"] = category;
+
+                (* CreateOrganizerPalette[] automatically overwrites the already-open
+                organizer. This is effectively a Refresh. *)
+                Organizer`CreateOrganizerPalette[]
+            ),
+            FrameMargins -> 2,
+            Appearance -> "Palette",
+            ImageSize -> Medium
+        ];
+
+        categoryPicker = Pane[
+            Grid[{Map[button, Categories[]]}, Spacings -> 0],
+            $PaletteWidth,
+            ImageSizeAction -> "Scrollable",
+            Scrollbars -> {False, False}
+        ];
+
         paletteContents = Column[
             {
                 Grid[
@@ -102,13 +165,14 @@ CreateOrganizerPalette[] := With[{
                     ItemSize -> {{Scaled[0.75], Scaled[0.25]}},
                     Spacings -> {0, 0}
                 ],
-                Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}]
+                Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}],
+                categoryPicker
             }
             ,
             Spacings -> 0.15
         ];
 
-        paletteContents = Pane[paletteContents, ImageSize -> 220];
+        paletteContents = Pane[paletteContents, ImageSize -> $PaletteWidth];
 
         existingNB = PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"];
 
@@ -152,6 +216,12 @@ commandDropdownContents[close_Function] := With[{
                         ReleaseHold[loadOrFail];
 
                         PersistentValue["CG:Organizer:Workspace", "Local"] = #;
+                        (* Set the category for the selected workspace. Because the
+                           categories just happen to be sorted (by FileNames), "Active" is
+                           typically the first category. There currently isn't a proper
+                           concept of a "default" category for a workspace. *)
+                        PersistentValue["CG:Organizer:Category"] = First[Categories[]];
+
                         Organizer`CreateOrganizerPalette[]
                     )&,
                     Workspaces[]
@@ -180,19 +250,8 @@ commandDropdownContents[close_Function] := With[{
     ]
 ]
 
-getListOfActiveProjects[] := Map[
-    FileNameTake[#, -1] &,
-    Select[
-        FileNames[
-            All,
-            FileNameJoin[{WorkspaceDirectory[], "Projects", "Active"}]
-        ],
-        DirectoryQ
-    ]
-]
-
 buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
-    activeProjs = getListOfActiveProjects[];
+    activeProjs = Projects[];
 
     (* Extremely janky way of making the Tasks and Bugs projects come first in the palette. *)
 
@@ -204,7 +263,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
         Function[proj,
             With[{
                 loadOrFail = $HeldLoadOrFail,
-                path = FileNameJoin[{WorkspaceDirectory[], "Projects", "Active", proj, "Log.nb"}]
+                path = FileNameJoin[{CategoryDirectory[], proj, "Log.nb"}]
             },
                 If[FileExistsQ[path],
                     {
@@ -259,7 +318,7 @@ handleStartNewProject[] := Module[{
     ];
     projName = StringReplace[projNameSpaces, " " -> "-"];
 
-    dirPath = FileNameJoin[{WorkspaceDirectory[], "Projects", "Active", projName}];
+    dirPath = FileNameJoin[{CategoryDirectory[], projName}];
     If[FileExistsQ[dirPath],
         MessageDialog[StringForm["File exists at path ``", dirPath]];
         Return[$Failed];
@@ -351,11 +410,11 @@ handleShowQueues[] := Module[{nb, projects, path, cells, timestamp, workspaceNam
         }
     ];
 
-    projects = getListOfActiveProjects[];
+    projects = Projects[];
 
     Scan[
         Function[proj,
-            path = FileNameJoin[{WorkspaceDirectory[], "Projects", "Active", proj, "Log.nb"}];
+            path = FileNameJoin[{CategoryDirectory[], proj, "Log.nb"}];
 
             cells = queueCellsFromNB[path];
             If[FailureQ[cells],
