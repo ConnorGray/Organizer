@@ -121,7 +121,7 @@ CreateOrganizerPalette[] := With[{
         ];
 
         categoryPicker = Pane[
-            Grid[{Map[button, Categories[]]}, Spacings -> 0],
+            Grid[{Map[categoryButton, Categories[]]}, Spacings -> 0],
             $PaletteWidth,
             ImageSizeAction -> "Scrollable",
             Scrollbars -> {False, False}
