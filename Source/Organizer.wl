@@ -36,7 +36,7 @@ Needs["Organizer`Palette`"]
 UpdateLogNotebooks[] := Module[{nbs, nbObj},
     nbs = FileNames[
         "Log.nb",
-        FileNameJoin[{Organizer`Palette`Private`WorkspaceDirectory[], "Projects", "Active"}],
+        Organizer`Palette`CategoryDirectory[],
         Infinity
     ];
 

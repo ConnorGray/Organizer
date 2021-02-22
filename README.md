@@ -39,6 +39,15 @@ CreateOrganizerPalette[]
 This should open a new empty palette window. New projects may be added by clicking the
 "New Project" button and entering a name in the dialog window.
 
+### On-disk directory structure
+
+```
+{RootDirectory}/{Workspace..}/Projects/{Category..}/{Project..}/Log.nb
+```
+
+The string literal `Projects` is a historical artifact of how I have historicall organized
+my notebooks in relation to other non-notebook files.
+
 ### Credits
 
 The icons:
