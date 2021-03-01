@@ -250,14 +250,11 @@ commandDropdownContents[close_Function] := With[{
     ]
 ]
 
-buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
-    activeProjs = Projects[];
+buttonListToOpenActiveProjectLogs[] := Module[{projects, metaProjs},
+    projects = Projects[];
 
-    (* Extremely janky way of making the Tasks and Bugs projects come first in the palette. *)
-
-    activeProjs = Replace[activeProjs, {head__, "Ideas", tail__} :> {"Ideas", head, tail}];
-    activeProjs = Replace[activeProjs, {head__, "Bugs", tail__} :> {"Bugs", head, tail}];
-    activeProjs = Replace[activeProjs, {head__, "Tasks", tail__} :> {"Tasks", head, tail}];
+    metaProjs = Sort[Select[projects, StringStartsQ["+"]]];
+    projects = Sort[Complement[projects, metaProjs]];
 
     Map[
         Function[proj,
@@ -267,7 +264,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
             },
                 If[FileExistsQ[path],
                     {
-                        Button[Style[proj, 16],
+                        Button[Style[StringTrim[proj, "+"], 16],
                             (
                                 ReleaseHold[loadOrFail];
                                 Module[{nb},
@@ -278,10 +275,10 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
                                 ]
                             ),
                             Method -> "Queued",
-                            Background -> Replace[proj, {
-                                "Ideas" | "Bugs" | "Tasks" -> Lighter@Lighter@Lighter@Blue,
-                                _ -> LightBlue
-                            }]
+                            Background -> If[StringStartsQ[proj, "+"],
+                                Lighter@Lighter@Lighter@Blue,
+                                LightBlue
+                            ]
                         ],
                         Button[Style["./", 16, Bold],
                             (
@@ -298,7 +295,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
                 ]
             ]
         ],
-        activeProjs
+        Join[metaProjs, projects]
     ]
 ]
 
