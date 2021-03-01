@@ -359,14 +359,6 @@ handleStartNewProject[] := Module[{
     CreateOrganizerPalette[];
 ]
 
-handleNewMeetingNotes[] := Module[{nameSpaces, nameHyphens},
-    nameSpaces = InputString[];
-    If[!StringQ[nameSpaces],
-        Throw[StringForm["Invalid meeting notes name: ``", nameSpaces] ];
-    ];
-    nameHyphens = StringReplace[nameSpaces, " " -> "-"];
-]
-
 (* Create and open a new NB which contains the Queue's NB section for every active project
    in the current workspace. *)
 handleShowQueues[] := Module[{nb, projects, path, cells, timestamp, workspaceName},
