@@ -307,16 +307,15 @@ buttonListToOpenActiveProjectLogs[] := Module[{activeProjs},
 (**************************************)
 
 handleStartNewProject[] := Module[{
-    projNameSpaces, projName, dirPath, logNB
+    projName, dirPath, logNB
 },
-    projNameSpaces = InputString[];
-    If[!StringQ[projNameSpaces],
-        If[projNameSpaces === $Canceled,
+    projName = InputString[];
+    If[!StringQ[projName],
+        If[projName === $Canceled,
             Return[];
         ];
-        Throw[StringForm["Invalid project name: ``", projNameSpaces] ];
+        Throw[StringForm["Invalid project name: ``", projName] ];
     ];
-    projName = StringReplace[projNameSpaces, " " -> "-"];
 
     dirPath = FileNameJoin[{CategoryDirectory[], projName}];
     If[FileExistsQ[dirPath],
@@ -331,7 +330,7 @@ handleStartNewProject[] := Module[{
 
     logNB = CreateNotebook[];
 
-    NotebookWrite[logNB, Cell[projNameSpaces, "Title"] ];
+    NotebookWrite[logNB, Cell[projName, "Title"] ];
     NotebookWrite[
         logNB,
         Cell[
@@ -349,7 +348,7 @@ handleStartNewProject[] := Module[{
     NotebookWrite[logNB, Cell["Queue", "Chapter"] ];
 
     installLogNotebookStyles[logNB];
-    installLogNotebookDockedCells[logNB, projNameSpaces];
+    installLogNotebookDockedCells[logNB, projName];
 
     (* TODO: Set DockedCells *)
 
