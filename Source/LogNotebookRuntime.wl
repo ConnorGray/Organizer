@@ -390,7 +390,7 @@ createSystemOpenCell[] := With[{
 ]
 
 insertCellAfterSelection[cell_] := Module[{nb},
-	If[FailureQ @ cell,
+	If[FailureQ @ cell || cell === $Canceled,
 		Return[$Failed];
 	];
 
@@ -426,6 +426,10 @@ getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 			FrameMargins -> 120
 		]
 	}]];
+
+	If[res === $Canceled,
+		Return[$Canceled];
+	];
 
 	data = Import[path, {{"Hyperlinks", "Plaintext"}}];
 
