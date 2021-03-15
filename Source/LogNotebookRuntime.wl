@@ -367,6 +367,12 @@ FindQueueChapterCell[nb_NotebookObject] := Module[{cell},
 (*Links*)
 (**************************************)
 
+shortenURLLabel[label_?StringQ] := StringReplace[
+  label,
+  (* Personal set of URL shortening rules. *)
+  "Pull Request #" ~~ content___ ~~ "- Wolfram Stash" :> "PR #" <> content
+]
+
 createSystemOpenCell[] := With[{
 	filepath = SystemDialogInput["FileOpen", NotebookDirectory[]]
 },
@@ -436,7 +442,7 @@ getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 	DeleteFile[path];
 
 	hyperlink = Replace[data, {
-		{{link_}, label_} :> Hyperlink[Style[label, 12], URL[link]],
+		{{link_}, label_} :> Hyperlink[Style[shortenURLLabel[label], 12], URL[link]],
 		_ :> Throw[StringForm[
 			"Dragged link did not have the expected format after Import: ``",
 			data
@@ -636,7 +642,10 @@ getBrowserHyperlink[] := Module[{safariData, chromeData, data, pair, hyperlink},
 		Return[$Failed];
 	];
 
-	hyperlink = Hyperlink[Style[pair["Title"], 12], pair["URL"]];
+	hyperlink = Hyperlink[
+		Style[shortenURLLabel[pair["Title"]], 12],
+		pair["URL"]
+	];
 
 	Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
 ]
