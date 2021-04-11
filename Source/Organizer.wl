@@ -1,9 +1,5 @@
 BeginPackage["Organizer`"]
 
-
-(*TODO: Make $ScratchNBRootDirectory relative to TODOs.nb. The hyperlinks made by
-        `New Scratch NB` should also be relative, and use $ScratchNBRootDirectory.*)
-
 CreateOrganizerPalette
 UpdateLogNotebooks
 
