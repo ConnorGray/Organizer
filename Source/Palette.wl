@@ -62,7 +62,7 @@ CategoryDirectory[] := Module[{name},
         PersistentValue["CG:Organizer:Category", "Local"] = name;
     ];
 
-    dir = FileNameJoin[{WorkspaceDirectory[], "Projects", name}];
+    dir = FileNameJoin[{WorkspaceDirectory[], name}];
     If[!DirectoryQ[dir],
         errorDialog[StringForm[
             "saved Category name '``' does not exist in the Workspace directory: ``",
@@ -77,7 +77,7 @@ CategoryDirectory[] := Module[{name},
 Workspaces[] := subDirectoryNames[NotebooksDirectory[]]
 
 (* Get a list of Categories which are a part of the current workspace. *)
-Categories[] := subDirectoryNames[FileNameJoin[{WorkspaceDirectory[], "Projects"}]]
+Categories[] := subDirectoryNames[WorkspaceDirectory[]]
 
 Projects[] := subDirectoryNames[CategoryDirectory[]]
 
