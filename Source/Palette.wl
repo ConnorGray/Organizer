@@ -55,7 +55,7 @@ WorkspaceDirectory[] := Module[{name, dir},
     dir
 ];
 
-CategoryDirectory[] := Module[{name},
+CategoryDirectory[] := Module[{name, dir},
     name = PersistentValue["CG:Organizer:Category", "Local"];
     If[!StringQ[name],
         name = ChoiceDialog[
