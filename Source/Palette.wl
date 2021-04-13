@@ -35,6 +35,9 @@ WorkspaceDirectory[] := Module[{name, dir},
             "No Workspace is selected. Please choose one.",
             Map[(# -> #)&, Workspaces[]]
         ];
+        If[name === $Canceled,
+            Throw[$Failed];
+        ];
         PersistentValue["CG:Organizer:Workspace", "Local"] = name;
         (* Throw[StringForm[
             "Error: no valid Workspace is selected: ``",
@@ -58,6 +61,9 @@ CategoryDirectory[] := Module[{name},
         name = ChoiceDialog[
             "No Category is selected. Please choose one.",
             Map[(# -> #)&, Categories[]]
+        ];
+        If[name === $Canceled,
+            Throw[$Failed];
         ];
         PersistentValue["CG:Organizer:Category", "Local"] = name;
     ];
