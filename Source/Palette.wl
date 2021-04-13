@@ -199,16 +199,19 @@ commandDropdownContents[close_Function] := With[{
     loadOrFail = $HeldLoadOrFail
 },
     Column[
-        Reverse @ {
-            Button[
-                Style["Show Queues", 20],
+        {
+            Button[Style["Refresh", 20],
                 (
                     ReleaseHold[loadOrFail];
 
-                    handleShowQueues[];
+                    Assert[MemberQ[$Packages, "Organizer`"]];
+
+                    (* CreateOrganizerPalette[] automatically overwrites the already-open
+                    organizer. *)
+                    Organizer`CreateOrganizerPalette[]
                 ),
                 Method -> "Queued",
-                Background -> LightOrange
+                Background -> LightBlue
             ],
             With[{
                 choices = Map[
@@ -233,18 +236,15 @@ commandDropdownContents[close_Function] := With[{
                     ImageSize -> Full
                 ]
             ],
-            Button[Style["Refresh", 20],
+            Button[
+                Style["Show Queues", 20],
                 (
                     ReleaseHold[loadOrFail];
 
-                    Assert[MemberQ[$Packages, "Organizer`"]];
-
-                    (* CreateOrganizerPalette[] automatically overwrites the already-open
-                    organizer. *)
-                    Organizer`CreateOrganizerPalette[]
+                    handleShowQueues[];
                 ),
                 Method -> "Queued",
-                Background -> LightBlue
+                Background -> LightOrange
             ]
         }
     ]
