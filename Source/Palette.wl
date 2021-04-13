@@ -237,7 +237,7 @@ commandDropdownContents[close_Function] := With[{
                 ]
             },
                 ActionMenu[
-                    Style["Workspace ...", 16],
+                    Style["Workspace ...", 18],
                     choices,
                     ImageSize -> Full
                 ]
