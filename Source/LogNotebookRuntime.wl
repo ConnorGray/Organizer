@@ -14,6 +14,7 @@ BeginPackage["Organizer`LogNotebookRuntime`", {
 }]
 
 FindQueueChapterCell
+FindDailyChapterCell
 GroupSelectionMove
 
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
@@ -346,12 +347,15 @@ GroupSelectionMove[heading_CellObject, dir_] := Module[{nb, cells},
 	];
 ]
 
-FindQueueChapterCell[nb_NotebookObject] := Module[{cell},
+FindQueueChapterCell[nb_NotebookObject] := findChapterCell[nb, "Queue"]
+FindDailyChapterCell[nb_NotebookObject] := findChapterCell[nb, "Daily"]
+
+findChapterCell[nb_NotebookObject, contents_?StringQ] := Module[{cell},
 	cell = SelectFirst[
 		Cells[nb, CellStyle -> "Chapter"],
 		MatchQ[
 			NotebookRead[#],
-			Cell["Queue", "Chapter", ___]
+			Cell[contents, "Chapter", ___]
 		] &
 	];
 

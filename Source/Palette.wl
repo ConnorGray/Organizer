@@ -15,6 +15,13 @@ errorDialog[message_?StringQ] := MessageDialog[Row[{
 
 errorDialog[form_StringForm] := errorDialog[ToString[form]]
 
+errorDialog[
+	Failure[_, KeyValuePattern[{
+		"MessageTemplate" -> template_?StringQ,
+		"MessageParameters" -> params_?ListQ
+	}]]
+] := errorDialog[StringForm[template, Sequence @@ params]]
+
 
 NotebooksDirectory[] := Module[{dir},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
@@ -251,6 +258,16 @@ commandDropdownContents[close_Function] := With[{
                 ),
                 Method -> "Queued",
                 Background -> LightOrange
+            ],
+            Button[
+                Style["Show Daily's", 20],
+                (
+                    ReleaseHold[loadOrFail];
+
+                    HandleShowDailys[];
+                ),
+                Method -> "Queued",
+                Background -> LightBlue
             ]
         }
     ]
@@ -305,9 +322,9 @@ buttonListToOpenActiveProjectLogs[] := Module[{projects, metaProjs},
     ]
 ]
 
-(**************************************)
-(* UI Event Handlers                  *)
-(**************************************)
+(******************************************************************************)
+(* UI Event Handlers                                                          *)
+(******************************************************************************)
 
 handleStartNewProject[] := Module[{
     projName, dirPath, logNB
@@ -361,6 +378,10 @@ handleStartNewProject[] := Module[{
     CreateOrganizerPalette[];
 ]
 
+(**************************************)
+(* Show Queue's Report                *)
+(**************************************)
+
 (* Create and open a new NB which contains the Queue's NB section for every active project
    in the current workspace. *)
 handleShowQueues[] := Module[{nb, projects, path, cells, timestamp, workspaceName},
@@ -410,7 +431,7 @@ handleShowQueues[] := Module[{nb, projects, path, cells, timestamp, workspaceNam
         Function[proj,
             path = FileNameJoin[{CategoryDirectory[], proj, "Log.nb"}];
 
-            cells = queueCellsFromNB[path];
+            cells = cellsFromChapterInNB[path, "Queue"];
             If[FailureQ[cells],
                 MessageDialog[Row[{"Failed to read cells from: ", path}]];
                 Return[];
@@ -444,61 +465,365 @@ handleShowQueues[] := Module[{nb, projects, path, cells, timestamp, workspaceNam
     SelectionMove[First[Cells[nb]], Before, Cell, AutoScroll -> True];
 ]
 
-queueCellsFromNB[path_?StringQ] := Module[{nbObj, cells, queueChapterCell, isAlreadyOpen},
-    isAlreadyOpen = notebookAtPathIsOpen[path];
+(**************************************)
+(* Show Daily's Report                *)
+(**************************************)
 
-    (* `Visible -> False` so we don't overload the user by opening a bunch of notebooks
-       they didn't actually want to see. This also prevents a subtle annoyance: if you
-       have multiple desktops (not multiple monitors, but multiple "virtual" desktop
-       spaces), when `nbObj` is already open on a different desktop, the screen will
-       quickly swipe over to it, and away from the All Queues notebook which is being
-       generated.
-    *)
-    nbObj = NotebookOpen[path, Visible -> False];
-    If[FailureQ[nbObj],
-        Return[nbObj];
-    ];
+HandleShowDailys[] := Module[{result},
+	result = iHandleShowDailys[];
 
-    (* If the user already had the notebook open, quickly make it visible again. This
-       happens quickly enough that I haven't noticed any visual "flickering". *)
-    If[isAlreadyOpen,
-        SetOptions[nbObj, Visible -> True]
-    ];
+	If[MatchQ[result, _Failure],
+		errorDialog[result];
+	];
+]
 
-	queueChapterCell = FindQueueChapterCell[nbObj];
+iHandleShowDailys[] := Enclose[Module[{
+	nb,
+	workspaceName,
+	timestamp,
+	projects,
+	startDate,
+	endDate,
+	cells
+},
+	(*---------------------------------*)
+	(* Ask the user for the date range *)
+	(*---------------------------------*)
 
-    GroupSelectionMove[queueChapterCell, All];
+	(* FIXME: Fill this in with a proper DialogInput panel. *)
+	startDate = Today;
+	endDate = Today - Quantity[7, "Days"];
+
+	(* TODO: Show a column of checkboxes where the user can filter the projects they want
+			to include in the report. *)
+
+	(*---------------------------------*)
+	(* Generate the All Daily's report *)
+	(*---------------------------------*)
+
+	nb = CreateNotebook[];
+
+	workspaceName = FileNameTake[WorkspaceDirectory[], -1];
+
+	timestamp = DateString[Now, {
+		"DayName", " ", "MonthName", " ", "Day",
+		" at ", "Hour12Short", ":", "Minute", "AMPMLowerCase"
+	}];
+
+	NotebookWrite[nb, Cell["All Daily's: " <> workspaceName, "Title"]];
+	NotebookWrite[
+		nb,
+		Cell[
+			"Created " <> timestamp,
+			"Subtitle"
+		]
+	];
+
+	(* Add style definitions so that copied TODO cells render properly. *)
+	installLogNotebookStyles[nb];
+
+	SetOptions[nb,
+		(* Disable editing. If the user wants to edit these queues, they should do it in
+		the source notebook. *)
+		Editable -> False,
+		(* Add a temporary docked cell warning the user that the notebook is still having
+		content copied into it. This is removed later. *)
+		DockedCells -> {
+			Cell[
+				BoxData @ ToBoxes @ Row[{
+					Style["Generating: ", Italic, GrayLevel[0.2]],
+					Style["All Daily's: " <> workspaceName <> ": " <> timestamp]
+				}],
+				FontSize -> 14,
+				FontColor -> GrayLevel[0.2],
+				Background -> Lighter[Orange]
+			]
+		}
+	];
+
+	projects = Projects[];
+
+	Scan[
+		Function[proj,
+			path = FileNameJoin[{CategoryDirectory[], proj, "Log.nb"}];
+
+			cells = cellsFromChapterInNB[path, "Daily"];
+			If[FailureQ[cells],
+				MessageDialog[Row[{"Failed to read cells from: ", path}]];
+				Return[];
+			];
+
+			cells = Confirm @ Replace[
+				filterDailyCellsByInterval[cells, DateInterval[{startDate, endDate}]],
+				{
+					$Failed :> Failure["ShowDailys", <|
+						"MessageTemplate" -> "Unknown failure occurred while processing '``' project",
+						"MessageParameters" -> {proj}
+					|>],
+					Failure[tag_, KeyValuePattern[{
+						"MessageTemplate" -> template_?StringQ,
+						"MessageParameters" -> params_?ListQ
+					}]] :> Failure[tag, <|
+						"MessageTemplate" -> "Error processing '``' project: " <> template,
+						"MessageParameters" -> Join[{proj}, params]
+					|>],
+					err_?FailureQ :> err,
+					result_ :> result
+				}
+			];
+
+			cells = Replace[
+				cells,
+				{Cell["Daily", "Chapter", props___], rest___} :> {Cell["Daily — " <> proj, "Chapter", props], rest}
+			];
+
+			If[!MatchQ[cells, {___Cell}],
+				Confirm[$Failed];
+			];
+
+            NotebookWrite[nb, cells];
+
+			(* NotebookWrite[nb, cells]; *)
+		],
+		projects
+	];
+
+	(* Remove the warning docked cell -- the notebook is now complete. *)
+	SetOptions[nb,
+		(* Replace the temporary docked cell with a permanent one. *)
+		DockedCells -> {
+			Cell[
+				BoxData @ ToBoxes @ Style["All Daily's: " <> workspaceName <> ": " <> timestamp],
+				"Text",
+				FontSize -> 14,
+				FontColor -> GrayLevel[0.2],
+				Background -> LightBlue
+			]
+		}
+	];
+
+	SelectionMove[First[Cells[nb]], Before, Cell, AutoScroll -> True];
+],
+#["Expression"]&
+]
+
+filterDailyCellsByInterval[
+	cells0 : {___Cell},
+	interval_DateInterval
+] := Enclose[Module[{
+	cells = cells0,
+	currentDate = None,
+	updateCurrentDate
+},
+	(* Confirm that the granularity of the interval is Day. *)
+	If[interval["Granularity"] =!= "Day",
+		Confirm[$Failed];
+	];
+
+	(*----------------------------------------------*)
+	(* updateSubsubsectionDate[] helper definitions *)
+	(*----------------------------------------------*)
+
+	updateCurrentDateFromSubsubsection[date0_?StringQ] := Module[{
+		date = date0
+	},
+		If[!DateObjectQ[currentDate] || !MemberQ[{"Month", "Day"}, currentDate["Granularity"]],
+			Confirm[Failure["DateFilter", <|
+				"MessageTemplate" -> "Unknown current year when filtering Daily cells by date: ``",
+				"MessageParameters" -> {InputForm[currentDate]}
+			|>]];
+		];
+
+		(* TODO: Generalize these transformation rules as a user setting. *)
+		date = FixedPoint[
+			StringReplace[{
+				StartOfString ~~ "[X] " ~~ rest___ ~~ EndOfString :> rest,
+				StartOfString ~~ most___ ~~ "\[LongDash]" ~~ rest___ ~~ EndOfString :> most,
+				StartOfString ~~ most___ ~~ Repeated[DigitCharacter, {4}] ~~ EndOfString :> most,
+				WordBoundary ~~ day : Repeated[DigitCharacter, {1, 2}] ~~ ("st" | "nd" | "rd" | "th") ~~ WordBoundary :> day
+			}],
+			date
+		];
+
+		(* Ensure the date object is interpreted in the correct year. *)
+		date = date <> " " <> ToString[currentDate["Year"]];
+
+		currentDate = DateObject[
+			{date, {"DayName", "MonthName", "Day", "Year"}},
+			"Day"
+		];
+		If[!DateObjectQ[currentDate],
+			Confirm[Failure["DateFilter", <|
+				"MessageTemplate" -> "Cannot interpret Subsubsection as date: ``",
+				"MessageParameters" -> {InputForm[date]}
+			|>]];
+		];
+	];
+
+	(*-------------------------*)
+	(* Main Select filter loop *)
+	(*-------------------------*)
+
+	(* TODO:
+		Optimize which cells are parsed using DateObject, by doing a crude
+		replacement to limit by the "<Month> <Year>" Subsection cells. This is on a
+		hunch that DateObject is probably fairly slow.
+	*)
+
+	(* Select all cells which describe a date within `interval`. *)
+
+	(* NOTE:
+		The code below handling inclusion of Section, Subsection, and Subsubsection cells
+		uses DateOverlapsQ instead of IntervalMemberQ to work around the fact that
+		IntervalMemberQ will return False if the granularity of the DateObject is larger
+		than the granularity of the interval itself. E.g. consider:
+
+			interval = DateInterval[{"January 1st, 2021", "January 7th, 2021"}];
+			currentDate = DateObject["January 2021", "Month"];
+
+			IntervalMemberQ[interval, currentDate]
+				=> False
+
+			DateOverlapsQ[interval, currentDate]
+				=> True
+
+		Using IntervalMemberQ would cause Section/Subsection cells with the year and
+		month/year to be incorrectly stripped out by the Select.
+	*)
+	cells = Select[
+		cells,
+		Replace[#, {
+			Cell["Daily", "Chapter", ___] -> True,
+			Cell[year_?StringQ, "Section", ___] :> (
+				DateOverlapsQ[interval, DateObject[{year, {"Year"}}, "Year"]]
+			),
+			Cell[monthYear_?StringQ, "Subsection", ___] :> (
+				currentDate = DateObject[{monthYear, {"Month", "Year"}}, "Month"];
+				If[!DateObjectQ[currentDate],
+					Confirm[Failure["DateFilter", <|
+						"MessageTemplate" -> "Cannot interpret Subsection as date: ``",
+						"MessageParameters" -> {InputForm[monthYear]}
+					|>]];
+				];
+
+				DateOverlapsQ[interval, currentDate]
+			),
+			Cell[dayNameMonth_?StringQ, "Subsubsection", ___] :> (
+				updateCurrentDateFromSubsubsection[dayNameMonth];
+
+				DateOverlapsQ[interval, currentDate]
+			),
+			Cell[dateTextData_TextData, "Subsubsection", ___] :> Module[{
+				date
+			},
+				date = ReplaceRepeated[dateTextData, {
+					TextData[{strings___?StringQ}] :> StringJoin[strings],
+					StyleBox[string_?StringQ, ___] :> string
+				}];
+
+				If[!StringQ[date],
+					Confirm[$Failed];
+				];
+
+				updateCurrentDateFromSubsubsection[date];
+
+				Assert[DateObjectQ[currentDate] && currentDate["Granularity"] === "Day"];
+
+				DateOverlapsQ[interval, currentDate]
+			],
+			Cell[date_, "Subsubsection", ___] :> Confirm @ Failure["DateFilter", <|
+				"MessageTemplate" -> "Cannot interpret Subsubsection with non-String contents as date: ``",
+				"MessageParameters" -> {InputForm[date]}
+			|>],
+			(* Handle all the other cells types, e.g. TODO, Text, Input, Item, etc. Use
+			   the `currentDate` value computed by previous handling of
+			   Section/Subsection/Subsubsection headers which described the date. *)
+			Cell[___] :> (
+				If[!DateObjectQ[currentDate] || currentDate["Granularity"] =!= "Day",
+					Confirm[Failure["DateFilter", <|
+						"MessageTemplate" -> "Unknown current date when filtering Daily cells by date: ``: ``",
+						"MessageParameters" -> {InputForm[currentDate], #}
+					|>]];
+				];
+				IntervalMemberQ[interval, currentDate]
+			),
+			_ :> Confirm[$Failed]
+		}] &
+	];
+
+	cells
+],
+#["Expression"] &
+]
+
+(******************************************************************************)
+(* Shared utility functions                                                   *)
+(******************************************************************************)
+
+cellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Module[{
+	nbObj,
+	cells,
+	chapterCell,
+	isAlreadyOpen
+},
+	isAlreadyOpen = notebookAtPathIsOpen[path];
+
+	(* `Visible -> False` so we don't overload the user by opening a bunch of notebooks
+	they didn't actually want to see. This also prevents a subtle annoyance: if you
+	have multiple desktops (not multiple monitors, but multiple "virtual" desktop
+	spaces), when `nbObj` is already open on a different desktop, the screen will
+	quickly swipe over to it, and away from the All Queues notebook which is being
+	generated.
+	*)
+	nbObj = NotebookOpen[path, Visible -> False];
+	If[FailureQ[nbObj],
+		Return[nbObj];
+	];
+
+	(* If the user already had the notebook open, quickly make it visible again. This
+	happens quickly enough that I haven't noticed any visual "flickering". *)
+	If[isAlreadyOpen,
+		SetOptions[nbObj, Visible -> True]
+	];
+
+	chapterCell = Replace[chapter, {
+		"Queue" :> FindQueueChapterCell[nbObj],
+		"Daily" :> FindDailyChapterCell[nbObj],
+		_ :> Return[$Failed]
+	}];
+
+	GroupSelectionMove[chapterCell, All];
 	cells = NotebookRead /@ SelectedCells[nbObj];
 
-    (* Move the selection so that no cells are actually selected. This reduces the
-       likelyhood that the user will accidentally erase selected cells if they switch
-       focus back to the notebook and begin typing, expecting their cursor to be somewhere
-       else. *)
-    SelectionMove[nbObj, After, Cell];
+	(* Move the selection so that no cells are actually selected. This reduces the
+	likelyhood that the user will accidentally erase selected cells if they switch
+	focus back to the notebook and begin typing, expecting their cursor to be somewhere
+	else. *)
+	SelectionMove[nbObj, After, Cell];
 
-    (* Only close the notebook if it was not already open before the user pressed the
-       "Show Queues" button. *)
-    If[!isAlreadyOpen,
-        NotebookClose[nbObj, Interactive -> True];
-    ];
+	(* Only close the notebook if it was not already open before the user pressed the
+	"Show Queues" button. *)
+	If[!isAlreadyOpen,
+		NotebookClose[nbObj, Interactive -> True];
+	];
 
-    cells
+	cells
 ]
 
 notebookAtPathIsOpen[path_?StringQ] := AnyTrue[
-    Notebooks[],
-    Function[nb, Module[{name},
-        name = Association[NotebookInformation[nb]]["FileName"];
-        If[MissingQ[name],
-            Return[False, Module];
-        ];
+	Notebooks[],
+	Function[nb, Module[{name},
+		name = Association[NotebookInformation[nb]]["FileName"];
+		If[MissingQ[name],
+			Return[False, Module];
+		];
 
-        name = Replace[
-            name,
-            FrontEnd`FileName[{parts___}, name_, ___] :> FileNameJoin[{parts, name}]
-        ];
-        name == path
-    ]]
+		name = Replace[
+			name,
+			FrontEnd`FileName[{parts___}, name_, ___] :> FileNameJoin[{parts, name}]
+		];
+		name == path
+	]]
 ]
 
 
