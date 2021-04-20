@@ -478,24 +478,77 @@ HandleShowDailys[] := Module[{result},
 ]
 
 iHandleShowDailys[] := Enclose[Module[{
+	settings,
+	timePeriod,
+	startDate,
+	endDate,
 	nb,
 	workspaceName,
 	timestamp,
 	projects,
-	startDate,
-	endDate,
 	cells
 },
 	(*---------------------------------*)
 	(* Ask the user for the date range *)
 	(*---------------------------------*)
 
-	(* FIXME: Fill this in with a proper DialogInput panel. *)
-	startDate = Today;
-	endDate = Today - Quantity[7, "Days"];
-
 	(* TODO: Show a column of checkboxes where the user can filter the projects they want
 			to include in the report. *)
+	settings = DialogInput[{
+		timePeriod
+	},
+		Column[{
+			Panel[
+				Column[{
+					PopupMenu[
+						Dynamic[timePeriod],
+						{"Past 7 Days", "Past 30 Days", "Last Week"}
+					]
+				}],
+				"Daily's Report Settings"
+			],
+			DefaultButton["Generate",
+				DialogReturn[<|"TimePeriod" -> timePeriod|>]
+			]
+		}]
+	];
+
+	If[!AssociationQ[settings],
+		(* PRE-COMMIT: Better error reporting. *)
+		Return[$Failed]
+	];
+
+	timePeriod = Confirm @ Lookup[settings, "TimePeriod", $Failed];
+
+	Replace[timePeriod, {
+		"Past 7 Days" :> (
+			startDate = Today - Quantity[7, "Days"];
+			endDate = Today;
+		),
+		"Past 30 Days" :> (
+			startDate = Today - Quantity[30, "Days"];
+			endDate = Today;
+		),
+		"Last Week" :> Module[{daysOfLastWeek},
+			daysOfLastWeek = Map[
+				DatePlus[#, {-1, "Day"}] &,
+				DayRange[
+					DateValue[Today, "Week", DateObject] - Quantity[1, "Week"],
+					DateValue[Today, "Week", DateObject]
+				]
+			];
+
+			startDate = First[daysOfLastWeek];
+			endDate = Last[daysOfLastWeek];
+
+			Assert[startDate["DayName"] === Sunday];
+			Assert[endDate["DayName"] === Sunday];
+		],
+		_ :> Confirm[$Failed]
+	}];
+
+	Assert[DateObjectQ[startDate] && DateObjectQ[endDate]];
+	Assert[startDate["Granularity"] === "Day" && endDate["Granularity"] === "Day"];
 
 	(*---------------------------------*)
 	(* Generate the All Daily's report *)
@@ -513,9 +566,13 @@ iHandleShowDailys[] := Enclose[Module[{
 	NotebookWrite[nb, Cell["All Daily's: " <> workspaceName, "Title"]];
 	NotebookWrite[
 		nb,
+		Cell["Generated " <> timestamp, "Subtitle"]
+	];
+	NotebookWrite[
+		nb,
 		Cell[
-			"Created " <> timestamp,
-			"Subtitle"
+			"Showing " <> TextString[startDate] <> " — " <> TextString[endDate],
+			"Subsubtitle"
 		]
 	];
 
