@@ -531,18 +531,26 @@ iHandleShowDailys[] := Enclose[Module[{
 	projects,
 	cells
 },
-	(*---------------------------------*)
-	(* Ask the user for the date range *)
-	(*---------------------------------*)
+	(*---------------------------------------------------------*)
+	(* Ask the user for the date range and projects to include *)
+	(*---------------------------------------------------------*)
 
-	(* TODO: Show a column of checkboxes where the user can filter the projects they want
-			to include in the report. *)
+	projects = Projects[];
+
+	Assert[MatchQ[projects, {___?StringQ}]];
+
 	settings = DialogInput[{
-		timePeriod
+		timePeriod,
+		selectedProjects = projects
 	},
 		Column[{
 			Panel[
 				Column[{
+					CheckboxBar[
+						Dynamic[selectedProjects],
+						projects,
+						Appearance -> "Vertical"
+					],
 					PopupMenu[
 						Dynamic[timePeriod],
 						{"Past 7 Days", "Past 30 Days", "Last Week"}
@@ -551,7 +559,10 @@ iHandleShowDailys[] := Enclose[Module[{
 				"Daily's Report Settings"
 			],
 			DefaultButton["Generate",
-				DialogReturn[<|"TimePeriod" -> timePeriod|>]
+				DialogReturn[<|
+					"TimePeriod" -> timePeriod,
+					"Projects" -> selectedProjects
+				|>]
 			]
 		}]
 	];
@@ -562,6 +573,7 @@ iHandleShowDailys[] := Enclose[Module[{
 	];
 
 	timePeriod = Confirm @ Lookup[settings, "TimePeriod", $Failed];
+	projects = Confirm @ Lookup[settings, "Projects", $Failed];
 
 	Replace[timePeriod, {
 		"Past 7 Days" :> (
@@ -640,8 +652,6 @@ iHandleShowDailys[] := Enclose[Module[{
 			]
 		}
 	];
-
-	projects = Projects[];
 
 	Scan[
 		Function[proj,
