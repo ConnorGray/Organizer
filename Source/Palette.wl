@@ -626,7 +626,7 @@ iHandleShowDailys[] := Enclose[Module[{
 	NotebookWrite[
 		nb,
 		Cell[
-			"Showing " <> TextString[startDate] <> " — " <> TextString[endDate],
+			"Showing " <> TextString[startDate] <> " — " <> TextString[endDate] <> " (" <> timePeriod <> ")",
 			"Subsubtitle"
 		]
 	];
