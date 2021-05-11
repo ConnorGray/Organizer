@@ -384,7 +384,52 @@ handleStartNewProject[] := Module[{
 
 (* Create and open a new NB which contains the Queue's NB section for every active project
    in the current workspace. *)
-handleShowQueues[] := Module[{nb, projects, path, cells, timestamp, workspaceName},
+handleShowQueues[] := Module[{projects, settings, nb, path, cells, timestamp, workspaceName},
+
+	(*--------------------------------------------------------------------*)
+	(* Present the user with a DialogInput to select the projects to view *)
+	(*--------------------------------------------------------------------*)
+
+	projects = Projects[];
+
+	Assert[MatchQ[projects, {___?StringQ}]];
+
+	settings = DialogInput[{
+		selectedProjects = projects
+	},
+		Column[{
+			Panel[
+				Column[{
+					CheckboxBar[
+						Dynamic[selectedProjects],
+						projects,
+						Appearance -> "Vertical"
+					]
+				}],
+				"Queue's Report Settings"
+			],
+			DefaultButton["Generate",
+				DialogReturn[<|"Projects" -> selectedProjects|>]
+			]
+		}]
+	];
+
+	projects = Replace[settings, {
+		$Canceled :> Return[Null, Module],
+		_?AssociationQ :> settings["Projects"],
+		_ :> (
+			errorDialog[StringForm[
+				"Unexpected value returned from settings panel: ``",
+				InputForm[settings]
+			]];
+			Return[$Failed, Module];
+		)
+	}];
+
+	(*-----------------------*)
+	(* Populate the notebook *)
+	(*-----------------------*)
+
     nb = CreateNotebook[];
 
     workspaceName = FileNameTake[WorkspaceDirectory[], -1];
@@ -424,8 +469,6 @@ handleShowQueues[] := Module[{nb, projects, path, cells, timestamp, workspaceNam
             ]
         }
     ];
-
-    projects = Projects[];
 
     Scan[
         Function[proj,
