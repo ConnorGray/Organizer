@@ -586,6 +586,7 @@ iHandleShowDailys[] := Enclose[Module[{
 		),
 		"Last Week" :> Module[{daysOfLastWeek},
 			daysOfLastWeek = Map[
+				(* Subtract one day to get a Sunday-Sunday week instead of Monday-Monday. *)
 				DatePlus[#, {-1, "Day"}] &,
 				DayRange[
 					DateValue[Today, "Week", DateObject] - Quantity[1, "Week"],
