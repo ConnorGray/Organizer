@@ -553,7 +553,7 @@ iHandleShowDailys[] := Enclose[Module[{
 					],
 					PopupMenu[
 						Dynamic[timePeriod],
-						{"Past 7 Days", "Past 30 Days", "Last Week"}
+						{"This Week", "Last Week", "Yesterday", "Past 7 Days", "Past 30 Days"}
 					]
 				}],
 				"Daily's Report Settings"
@@ -599,6 +599,22 @@ iHandleShowDailys[] := Enclose[Module[{
 			Assert[startDate["DayName"] === Sunday];
 			Assert[endDate["DayName"] === Sunday];
 		],
+		"This Week" :> Module[{daysOfThisWeek},
+			(* Get the days of this week between the first Monday of the week and today. *)
+			daysOfThisWeek = DayRange[
+				DateValue[Today, "Week", DateObject],
+				Today
+			];
+
+			startDate = First[daysOfThisWeek];
+			endDate = Last[daysOfThisWeek];
+
+			Assert[startDate["DayName"] === Monday];
+		],
+		"Yesterday" :> (
+			startDate = Today - Quantity[1, "Day"];
+			endDate = startDate;
+		),
 		_ :> Confirm[$Failed]
 	}];
 
