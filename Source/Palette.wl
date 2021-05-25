@@ -744,7 +744,10 @@ filterDailyCellsByInterval[
 },
 	(* Confirm that the granularity of the interval is Day. *)
 	If[interval["Granularity"] =!= "Day",
-		Confirm[$Failed];
+		Confirm[Failure["DateFilter", <|
+			"MessageTemplate" -> "Granularity of interval `` is not \"Day\"",
+			"MessageParameters" -> {ToString[InputForm[interval]]}
+		|>]];
 	];
 
 	(*----------------------------------------------*)
@@ -849,7 +852,10 @@ filterDailyCellsByInterval[
 				}];
 
 				If[!StringQ[date],
-					Confirm[$Failed];
+					Confirm[Failure["SubsubsectionDateFormat", <|
+						"MessageTemplate" -> "Content of Subsubsection does not have the expected format:  ``",
+						"MessageParameters" -> {ToString[InputForm[date]]}
+					|>]];
 				];
 
 				updateCurrentDateFromSubsubsection[date];
