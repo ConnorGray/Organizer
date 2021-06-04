@@ -26,65 +26,150 @@ errorDialog[
 NotebooksDirectory[] := Module[{dir},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
     If[!DirectoryQ[dir],
-        Throw[StringForm[
-            "Error: saved organizer notebooks directory is not DirectoryQ: ``",
-            dir
-        ]];
+		If[$DynamicEvaluation,
+			(* ChoiceDialog and SystemDialogInput don't work if this is a pre-emptive
+			   evaluation, so skip trying to recover. This can happen when the hidden
+			   button in the Log.nb docked title bar is clicked. *)
+			Throw[StringForm[
+				"Error: Saved Organizer root directory is not DirectoryQ: ``",
+				dir
+			]];
+		];
+
+		(* Ask the user if they would like to pick a new root directory. *)
+		If[
+			!ChoiceDialog[ToString @ StringForm[
+				"Error: saved Organizer root directory does not exist: ``. Would you like to pick a new root directory?",
+				InputForm[dir]
+			]],
+			Throw[$Canceled];
+		];
+
+		dir = SystemDialogInput["Directory", $HomeDirectory];
+
+		If[!DirectoryQ[dir],
+			If[dir === $Canceled,
+				Throw[$Canceled];
+			];
+
+			Throw[StringForm[
+				"Error: Saved Organizer root directory is not DirectoryQ: ``",
+				dir
+			]];
+		];
+
+		PersistentValue["CG:Organizer:RootDirectory", "Local"] = dir;
     ];
     dir
 ]
 
 (* Get the directory for the currently selected Workspace. *)
-WorkspaceDirectory[] := Module[{name, dir},
-    name = PersistentValue["CG:Organizer:Workspace", "Local"];
-    If[!StringQ[name],
-        name = ChoiceDialog[
-            "No Workspace is selected. Please choose one.",
-            Map[(# -> #)&, Workspaces[]]
-        ];
-        If[name === $Canceled,
-            Throw[$Failed];
-        ];
-        PersistentValue["CG:Organizer:Workspace", "Local"] = name;
-        (* Throw[StringForm[
-            "Error: no valid Workspace is selected: ``",
-            name
-        ]]; *)
-    ];
+WorkspaceDirectory[] := Module[{name, dir, workspaces},
+	name = PersistentValue["CG:Organizer:Workspace", "Local"];
+	workspaces = Workspaces[];
 
-    dir = FileNameJoin[{NotebooksDirectory[], name}];
-    If[!DirectoryQ[dir],
-        Throw[StringForm[
-            "Error: saved Workspace name does not exist in the Notebooks directory: ``",
-            dir
-        ]];
-    ];
-    dir
+	Assert[ListQ[workspaces]];
+
+	If[workspaces === {},
+		errorDialog[Failure["NoWorkspaceDirectories", <|
+			"MessageTemplate" -> "The Organizer root directory (``) does not contain any subdirectories. Please create a subdirectory and try again.",
+			"MessageParameters" -> {InputForm[NotebooksDirectory[]]}
+		|>]];
+		Throw[$Failed];
+	];
+
+	(* Handle some recoverable error conditions by prompting the user to pick a new
+	   Workspace. *)
+	Which[
+		(* Handle the case that the saved Workspace name does not exist on disk. This
+		   condition can happen when the user renames a Workspace. *)
+		StringQ[name] && !MemberQ[workspaces, name], (
+			name = ChoiceDialog[
+				ToString @ StringForm[
+					"Saved Workspace name '``' does not exist in the Organizer root directory: ``. Please choose another Workspace directory.",
+					name, InputForm[NotebooksDirectory[]]
+				],
+				Map[(# -> #)&, workspaces]
+			];
+			If[name === $Canceled,
+				Throw[$Failed];
+			];
+			PersistentValue["CG:Organizer:Workspace", "Local"] = name;
+		),
+		(* Handle the case that the Workspace name is not a string. This condition can
+		   occur when the user is setting up for the first time and has does not yet have
+		   a saved Workspace name. *)
+		!StringQ[name], (
+			name = ChoiceDialog[
+				"No Workspace is selected. Please choose one.",
+				Map[(# -> #)&, workspaces]
+			];
+			If[name === $Canceled,
+				Throw[$Failed];
+			];
+			PersistentValue["CG:Organizer:Workspace", "Local"] = name;
+		)
+	];
+
+	dir = FileNameJoin[{NotebooksDirectory[], name}];
+	If[!DirectoryQ[dir],
+		Throw[$Failed];
+	];
+	dir
 ];
 
-CategoryDirectory[] := Module[{name, dir},
-    name = PersistentValue["CG:Organizer:Category", "Local"];
-    If[!StringQ[name],
-        name = ChoiceDialog[
-            "No Category is selected. Please choose one.",
-            Map[(# -> #)&, Categories[]]
-        ];
-        If[name === $Canceled,
-            Throw[$Failed];
-        ];
-        PersistentValue["CG:Organizer:Category", "Local"] = name;
-    ];
+CategoryDirectory[] := Module[{name, dir, categories},
+	name = PersistentValue["CG:Organizer:Category", "Local"];
+	categories = Categories[];
 
-    dir = FileNameJoin[{WorkspaceDirectory[], name}];
-    If[!DirectoryQ[dir],
-        errorDialog[StringForm[
-            "saved Category name '``' does not exist in the Workspace directory: ``",
-            name,
-            dir
-        ]];
-        Throw[$Failed];
-    ];
-    dir
+	Assert[ListQ[categories]];
+
+	If[categories === {},
+		errorDialog[Failure["NoCategoryDirectories", <|
+			"MessageTemplate" -> "The current Workspace directory (``) does not contain any subdirectories. Please create a subdirectory and try again.",
+			"MessageParameters" -> {InputForm[WorkspaceDirectory[]]}
+		|>]];
+		Throw[$Failed];
+	];
+
+	(* Handle some recoverable error conditions by prompting the user to pick a new
+	   Category. *)
+	Which[
+		(* Handle the case that the saved Category name does not exist on disk. This
+		   condition can happen when the user renames a Category. *)
+		StringQ[name] && !MemberQ[categories, name], (
+			name = ChoiceDialog[
+				ToString @ StringForm[
+					"Saved Category name '``' does not exist in the current Workspace directory: ``. Please choose another Category directory.",
+					name, InputForm[WorkspaceDirectory[]]
+				],
+				Map[(# -> #)&, categories]
+			];
+			If[name === $Canceled,
+				Throw[$Failed];
+			];
+			PersistentValue["CG:Organizer:Category", "Local"] = name;
+		),
+		(* Handle the case that the Category name is not a string. This condition can
+		   occur when the user is setting up for the first time and has does not yet have
+		   a saved Category name. *)
+		!StringQ[name], (
+			name = ChoiceDialog[
+				"No Category is selected. Please choose one.",
+				Map[(# -> #)&, categories]
+			];
+			If[name === $Canceled,
+				Throw[$Failed];
+			];
+			PersistentValue["CG:Organizer:Category", "Local"] = name;
+		)
+	];
+
+	dir = FileNameJoin[{WorkspaceDirectory[], name}];
+	If[!DirectoryQ[dir],
+		Throw[$Failed];
+	];
+	dir
 ]
 
 Workspaces[] := subDirectoryNames[NotebooksDirectory[]]
