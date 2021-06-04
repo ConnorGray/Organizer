@@ -5,6 +5,12 @@ UpdateLogNotebooks
 
 Begin["`Private`"]
 
+If[$VersionNumber >= 12.3,
+	(* TODO: Once the "WolframVersion" of Organizer is increased to at least 12.3+, update
+	         the code to use PersistentSymbol, and remove this Off call. *)
+	Off[PersistentValue::obs]
+];
+
 (* PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = None; *)
 
 If[!DirectoryQ[PersistentValue["CG:Organizer:RootDirectory", "Local"]],
