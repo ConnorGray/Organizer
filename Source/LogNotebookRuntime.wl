@@ -19,8 +19,8 @@ GroupSelectionMove
 
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
-		{LightRed, LightGreen, LightBlue},
-		{LightYellow, LightOrange, LightCyan}
+		{LightBlue, LightCyan, LightGreen},
+		{LightYellow, LightOrange, LightRed}
 	};
 ]
 
