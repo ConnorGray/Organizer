@@ -608,7 +608,7 @@ getOpenPages[script_?StringQ] := Module[{data},
 
 	If[FailureQ[data],
 		errorDialog[ToString@StringForm[
-			"Data returned from `osascript` was FailureQ: ``",
+			"Data returned from 'osascript' was FailureQ: ``",
 			data
 		]];
 		Return[data];
@@ -617,7 +617,7 @@ getOpenPages[script_?StringQ] := Module[{data},
 
 	If[StringContainsQ[data, "missing value"],
 		errorDialog[ToString@StringForm[
-			"Data returned from `osascript` contains missing value: ``",
+			"Data returned from 'osascript' contains missing value: ``",
 			data
 		]];
 		Return[$Failed];
@@ -629,7 +629,7 @@ getOpenPages[script_?StringQ] := Module[{data},
 
 	If[!MatchQ[data, {KeyValuePattern[{"Title" -> _?StringQ, "URL" -> _?StringQ}]...}],
 		errorDialog[ToString@StringForm[
-			"Data returned from `osascript` does not have the expected Association form: ``",
+			"Data returned from 'osascript' does not have the expected Association form: ``",
 			InputForm[data]
 		]];
 		Return[$Failed];
@@ -655,7 +655,7 @@ getBrowserHyperlink[] := Module[{safariData, chromeData, data, pair, hyperlink},
 	pair = Which[
 		Length[data] === 0,
 			errorDialog[ToString@StringForm[
-				"Data returned from `osascript` was an empty list: ``. Perhaps you have no browser windows open?",
+				"Data returned from 'osascript' was an empty list: ``. Perhaps you have no browser windows open?",
 				InputForm[data]
 			]];
 			Return[$Failed]
