@@ -28,6 +28,7 @@ If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 (* Icons *)
 (*********)
 
+(*
 importSVG[path_?StringQ] := Module[{func},
 	func = ResourceFunction["SVGImport"];
 	If[FailureQ[func],
@@ -41,6 +42,14 @@ importIcon[filename_?StringQ] := importSVG[
 	FileNameJoin[{
 		PacletObject["Organizer"]["AssetLocation", "Icons"],
 		filename
+	}]
+]
+*)
+
+importIcon[filename_?StringQ] := Get[
+	FileNameJoin[{
+		PacletObject["Organizer"]["AssetLocation", "Icons"],
+		filename <> ".wl"
 	}]
 ]
 
