@@ -58,6 +58,26 @@ NotebooksDirectory[] := Module[{dir},
 			]];
 		];
 
+		(* If the user has chosen an empty directory as their root directory, offer to
+		   create an initial/sample Organizer directory structure for them. This makes it
+		   slightly easier for first-time users to jump straight into creating projects. *)
+		If[FileNames[All, dir] === {},
+			If[
+				ChoiceDialog[Column[{
+					ToString @ StringForm[
+						"The chosen directory is empty: ``. Would you like to have an initial Organizer directory structure created automatically?",
+						InputForm[dir]
+					],
+					"You may rename Workspace and Category directories at any time."
+				}]],
+				CreateDirectory[FileNameJoin[{dir, "Personal/Active/"}], CreateIntermediateDirectories -> True];
+				CreateDirectory[FileNameJoin[{dir, "Work/Active/"}], CreateIntermediateDirectories -> True];
+
+				PersistentValue["CG:Organizer:Workspace", "Local"] = "Work";
+				PersistentValue["CG:Organizer:Category", "Local"] = "Active";
+			];
+		];
+
 		PersistentValue["CG:Organizer:RootDirectory", "Local"] = dir;
     ];
     dir
