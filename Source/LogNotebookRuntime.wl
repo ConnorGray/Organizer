@@ -389,6 +389,10 @@ shortenURLLabel[label_?StringQ] := StringReplace[
 createSystemOpenCell[] := With[{
 	filepath = SystemDialogInput["FileOpen", NotebookDirectory[]]
 },
+	If[filepath === $Canceled,
+		Return[$Canceled];
+	];
+
 	If[!StringQ[filepath],
 		Throw[StringForm["Invalid file path: ``", filepath]];
 	];
