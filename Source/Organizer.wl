@@ -13,23 +13,6 @@ If[$VersionNumber >= 12.3,
 
 (* PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = None; *)
 
-If[!DirectoryQ[PersistentValue["CG:Organizer:RootDirectory", "Local"]],
-	dir = SystemDialogInput[
-		"Directory",
-		FileNameDrop[PacletObject["Organizer"]["Location"], -1]
-	];
-
-    If[!DirectoryQ[dir],
-        If[dir === $Canceled,
-            Return[];
-        ];
-        Throw[StringForm["Invalid project name: ``", dir] ];
-    ];
-
-	PersistentValue["CG:Organizer:RootDirectory", "Local"] = dir;
-];
-
-
 Needs["Organizer`LogNotebookRuntime`"];
 Needs["Organizer`Palette`"]
 
