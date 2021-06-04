@@ -144,16 +144,37 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 CreateCheckboxCell[] := Cell[
 	BoxData @ ToBoxes @ Checkbox[
 		Dynamic[
-			CurrentValue[
-				ParentCell@EvaluationCell[],
-				{TaggingRules, "TODOCompletedQ"}
-			],
-			Function[val,
-				SetOptions[
+			Or[
+				(* Note: Check for the legacy, un-namespaced "TODOCompletedQ" tagging rule. *)
+				(* TODO:
+					These should only be present in my personal log notebooks; this
+				    legacy tagging rule is not part of any shared release of Organizer.
+					Once I've cleaned these out of my personal notebooks, this workaround
+					should be removed. *)
+				TrueQ @ CurrentValue[
 					ParentCell@EvaluationCell[],
-					TaggingRules -> {"TODOCompletedQ" -> val}
+					{TaggingRules, "TODOCompletedQ"}
+				],
+				TrueQ @ CurrentValue[
+					ParentCell@EvaluationCell[],
+					{TaggingRules, "CG:Organizer", "TODOCompletedQ"}
 				]
-			]
+			],
+			Function[val, Module[{
+				cell
+			},
+				cell = ParentCell[EvaluationCell[]];
+
+				(* Remove the legacy, un-namespaced "TODOCompletedQ" tagging rule to ensure
+				   it isn't ambiguous when compared to the namespaced tagging rule. *)
+				(* See TODO above. *)
+				SetOptions[cell, TaggingRules -> Replace[
+					CurrentValue[cell, TaggingRules],
+					{most___, "TODOCompletedQ" -> _, rest___} :> {most, rest}
+				]];
+
+				CurrentValue[cell, {TaggingRules, "CG:Organizer", "TODOCompletedQ"}] = val;
+			]]
 		]
 	],
 	Background -> White
@@ -882,7 +903,7 @@ Module[{
 
 installLogNotebookStyles[nb_NotebookObject] := With[{
 	todoDefinitions = Sequence[
-		TaggingRules -> {"TODOCompletedQ" -> False},
+		TaggingRules -> {"CG:Organizer" -> {"TODOCompletedQ" -> False}},
 		LineSpacing -> {0.95, 0},
 		CellMargins -> {{66, 0}, {2, 2}},
 		CellFrame -> {{2, 0}, {0, 0}},
