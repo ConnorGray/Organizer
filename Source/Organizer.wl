@@ -29,8 +29,8 @@ UpdateLogNotebooks[] := Module[{nbs, nbObj},
         Function[nbPath,
             nbObj = NotebookOpen[nbPath];
 
-            installLogNotebookDockedCells[nbObj, FileNameSplit[nbPath][[-2]]];
-            installLogNotebookStyles[nbObj];
+            InstallLogNotebookDockedCells[nbObj, FileNameSplit[nbPath][[-2]]];
+            InstallLogNotebookStyles[nbObj];
         ],
         nbs
     ]
