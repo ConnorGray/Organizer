@@ -472,8 +472,8 @@ handleStartNewProject[] := Module[{
 
     NotebookWrite[logNB, Cell["Queue", "Chapter"] ];
 
-    installLogNotebookStyles[logNB];
-    installLogNotebookDockedCells[logNB, projName];
+    InstallLogNotebookStyles[logNB];
+    InstallLogNotebookDockedCells[logNB, projName];
 
     (* TODO: Set DockedCells *)
 
@@ -554,7 +554,7 @@ handleShowQueues[] := Module[{projects, settings, nb, path, cells, timestamp, wo
     ];
 
     (* Add style definitions so that copied TODO cells render properly. *)
-    installLogNotebookStyles[nb];
+    InstallLogNotebookStyles[nb];
 
     SetOptions[nb,
         (* Disable editing. If the user wants to edit these queues, they should do it in
@@ -754,7 +754,7 @@ iHandleShowDailys[] := Enclose[Module[{
 	];
 
 	(* Add style definitions so that copied TODO cells render properly. *)
-	installLogNotebookStyles[nb];
+	InstallLogNotebookStyles[nb];
 
 	SetOptions[nb,
 		(* Disable editing. If the user wants to edit these queues, they should do it in

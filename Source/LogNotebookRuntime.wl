@@ -17,6 +17,11 @@ FindQueueChapterCell
 FindDailyChapterCell
 GroupSelectionMove
 
+InstallLogNotebookDockedCells
+InstallLogNotebookStyles
+
+Begin["`Private`"]
+
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
 		{LightBlue, LightCyan, LightGreen},
@@ -742,7 +747,7 @@ Module[{colors, grid},
 ]
 ]
 
-installLogNotebookDockedCells[nbObj_, projName_?StringQ] := With[{
+InstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
@@ -901,7 +906,7 @@ Module[{
 ]
 ]
 
-installLogNotebookStyles[nb_NotebookObject] := With[{
+InstallLogNotebookStyles[nb_NotebookObject] := With[{
 	todoDefinitions = Sequence[
 		TaggingRules -> {"CG:Organizer" -> {"TODOCompletedQ" -> False}},
 		LineSpacing -> {0.95, 0},
@@ -987,5 +992,7 @@ installLogNotebookStyles[nb_NotebookObject] := With[{
 	];
 ]
 
+
+End[]
 
 EndPackage[]
