@@ -4,6 +4,7 @@ BeginPackage["Organizer`Palette`", {
     "Organizer`LogNotebookRuntime`"
 }]
 
+WorkspaceDirectory
 CategoryDirectory
 
 Begin["`Private`"]
