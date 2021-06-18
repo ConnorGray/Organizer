@@ -999,71 +999,29 @@ filterDailyCellsByInterval[
 (******************************************************************************)
 
 cellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Module[{
-	nbObj,
 	cells,
 	chapterCell,
 	isAlreadyOpen
 },
-	isAlreadyOpen = notebookAtPathIsOpen[path];
+	NotebookProcess[path, Function[nbObj, (
+		chapterCell = Replace[chapter, {
+			"Queue" :> FindQueueChapterCell[nbObj],
+			"Daily" :> FindDailyChapterCell[nbObj],
+			_ :> Return[$Failed]
+		}];
 
-	(* `Visible -> False` so we don't overload the user by opening a bunch of notebooks
-	they didn't actually want to see. This also prevents a subtle annoyance: if you
-	have multiple desktops (not multiple monitors, but multiple "virtual" desktop
-	spaces), when `nbObj` is already open on a different desktop, the screen will
-	quickly swipe over to it, and away from the All Queues notebook which is being
-	generated.
-	*)
-	nbObj = NotebookOpen[path, Visible -> False];
-	If[FailureQ[nbObj],
-		Return[nbObj];
-	];
+		GroupSelectionMove[chapterCell, All];
+		cells = NotebookRead /@ SelectedCells[nbObj];
 
-	(* If the user already had the notebook open, quickly make it visible again. This
-	happens quickly enough that I haven't noticed any visual "flickering". *)
-	If[isAlreadyOpen,
-		SetOptions[nbObj, Visible -> True]
-	];
+		(* Move the selection so that no cells are actually selected. This reduces the
+		likelyhood that the user will accidentally erase selected cells if they switch
+		focus back to the notebook and begin typing, expecting their cursor to be somewhere
+		else. *)
+		SelectionMove[nbObj, After, Cell];
 
-	chapterCell = Replace[chapter, {
-		"Queue" :> FindQueueChapterCell[nbObj],
-		"Daily" :> FindDailyChapterCell[nbObj],
-		_ :> Return[$Failed]
-	}];
-
-	GroupSelectionMove[chapterCell, All];
-	cells = NotebookRead /@ SelectedCells[nbObj];
-
-	(* Move the selection so that no cells are actually selected. This reduces the
-	likelyhood that the user will accidentally erase selected cells if they switch
-	focus back to the notebook and begin typing, expecting their cursor to be somewhere
-	else. *)
-	SelectionMove[nbObj, After, Cell];
-
-	(* Only close the notebook if it was not already open before the user pressed the
-	"Show Queues" button. *)
-	If[!isAlreadyOpen,
-		NotebookClose[nbObj, Interactive -> True];
-	];
-
-	cells
+		cells
+	)]]
 ]
-
-notebookAtPathIsOpen[path_?StringQ] := AnyTrue[
-	Notebooks[],
-	Function[nb, Module[{name},
-		name = Association[NotebookInformation[nb]]["FileName"];
-		If[MissingQ[name],
-			Return[False, Module];
-		];
-
-		name = Replace[
-			name,
-			FrontEnd`FileName[{parts___}, name_, ___] :> FileNameJoin[{parts, name}]
-		];
-		name == path
-	]]
-]
-
 
 End[]
 
