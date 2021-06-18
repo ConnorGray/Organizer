@@ -1,5 +1,7 @@
 BeginPackage["Organizer`Utils`"]
 
+AttachedPopupMenu
+NotebookProcess
 
 (*
     With[..] is used to embed this expression directly within the palette expression. This
@@ -11,6 +13,8 @@ $HeldLoadOrFail = Hold[
         Abort[];
     ];
 ]
+
+Begin["`Private`"]
 
 (**************************************)
 (* Attached Cells                     *)
@@ -96,6 +100,69 @@ makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
     ]]
 ];
 
+(**************************************)
+(* Notebook Processing                *)
+(**************************************)
 
+(* Open the notebook at `path` for processing using `callback`.
+
+	If the notebook at `path` is not currently open, it will not become visible.
+	If the notebook at `path` is currently open, it will remain visible.
+*)
+NotebookProcess[path_?StringQ, callback_] := Module[{
+	nbObj,
+	isAlreadyOpen,
+	result
+},
+	isAlreadyOpen = notebookAtPathIsOpen[path];
+
+	(* `Visible -> False` so we don't overload the user by opening a bunch of notebooks
+	   they didn't actually want to see. This also prevents a subtle annoyance: if you
+	   have multiple desktops (not multiple monitors, but multiple "virtual" desktop
+	   spaces), when `nbObj` is already open on a different desktop, the screen will
+	   quickly swipe over to it, and away from the All Queues notebook which is being
+	   generated.
+	*)
+	nbObj = NotebookOpen[path, Visible -> False];
+	If[FailureQ[nbObj],
+		Return[nbObj];
+	];
+
+	(* If the user already had the notebook open, quickly make it visible again. This
+	   happens quickly enough that I haven't noticed any visual "flickering". *)
+	If[isAlreadyOpen,
+		SetOptions[nbObj, Visible -> True]
+	];
+
+	(* Run the user code on the open notebook. *)
+	result = callback[nbObj];
+
+	(* Only close the notebook if it was not already open before the user pressed the
+	"Show Queues" button. *)
+	If[!isAlreadyOpen,
+		NotebookClose[nbObj, Interactive -> True];
+	];
+
+	result
+]
+
+notebookAtPathIsOpen[path_?StringQ] := AnyTrue[
+	Notebooks[],
+	Function[nb, Module[{name},
+		name = Association[NotebookInformation[nb]]["FileName"];
+		If[MissingQ[name],
+			Return[False, Module];
+		];
+
+		name = Replace[
+			name,
+			FrontEnd`FileName[{parts___}, name_, ___] :> FileNameJoin[{parts, name}]
+		];
+		name == path
+	]]
+]
+
+
+End[]
 
 EndPackage[]
