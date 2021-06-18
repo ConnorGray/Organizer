@@ -15,23 +15,30 @@ If[$VersionNumber >= 12.3,
 
 Needs["Organizer`LogNotebookRuntime`"];
 Needs["Organizer`Palette`"]
+Needs["Organizer`Utils`"]
 
 (* This function is meant to be called manually whenever there is a change to the standard
    set of docked cells or StyleDefinitions. *)
-UpdateLogNotebooks[] := Module[{nbs, nbObj},
+UpdateLogNotebooks[] := Try @ Module[{nbs, nbObj},
     nbs = FileNames[
         "Log.nb",
-        Organizer`Palette`CategoryDirectory[],
+        Organizer`Palette`WorkspaceDirectory[],
         Infinity
     ];
 
-    Scan[
-        Function[nbPath,
-            nbObj = NotebookOpen[nbPath];
+	ConfirmMatchQ[nbs, {___?StringQ}];
 
-            InstallLogNotebookDockedCells[nbObj, FileNameSplit[nbPath][[-2]]];
-            InstallLogNotebookStyles[nbObj];
-        ],
+    Scan[
+		nbPath |-> NotebookProcess[
+			nbPath,
+			Function[nbObj, (
+				InstallLogNotebookDockedCells[nbObj, FileNameSplit[nbPath][[-2]]];
+				InstallLogNotebookStyles[nbObj];
+			)],
+			(* We're editing the notebooks, so save the notebook automatically, without
+			   interactively prompting the user. *)
+			"ForceSave" -> True
+		],
         nbs
     ]
 ]

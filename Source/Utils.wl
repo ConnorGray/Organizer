@@ -119,14 +119,19 @@ makePopupAttachedCell[contents_, parentPosition_, childPosition_] := With[{
 (* Notebook Processing                *)
 (**************************************)
 
+Options[NotebookProcess] = {
+	"ForceSave" -> False
+}
+
 (* Open the notebook at `path` for processing using `callback`.
 
 	If the notebook at `path` is not currently open, it will not become visible.
 	If the notebook at `path` is currently open, it will remain visible.
 *)
-NotebookProcess[path_?StringQ, callback_] := Module[{
+NotebookProcess[path_?StringQ, callback_, OptionsPattern[]] := Module[{
 	nbObj,
 	isAlreadyOpen,
+	forceSave = TrueQ[OptionValue["ForceSave"]],
 	result
 },
 	isAlreadyOpen = notebookAtPathIsOpen[path];
@@ -155,6 +160,19 @@ NotebookProcess[path_?StringQ, callback_] := Module[{
 	(* Only close the notebook if it was not already open before the user pressed the
 	"Show Queues" button. *)
 	If[!isAlreadyOpen,
+		(* Use NotebookSave to avoid interactively prompting the user.
+
+		   If NotebookProcess is being used to extract data from a notebook in a read-only
+		   way, the default `"ForceSave" -> False` behavior will lead to an interactive
+		   prompt being generated when NotebookClose is called, warning the user that
+		   the notebook contents may have changed when they didn't intend them to.
+
+		   However, if the caller knows they'll be editing the notebook, they can pass
+		   `"ForceSave" -> True` to avoid the interactive prompt which would otherwise
+		   appear when NotebookClose is called. *)
+		If[forceSave,
+			NotebookSave[nbObj];
+		];
 		NotebookClose[nbObj, Interactive -> True];
 	];
 
