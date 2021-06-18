@@ -20,6 +20,12 @@ GroupSelectionMove
 InstallLogNotebookDockedCells
 InstallLogNotebookStyles
 
+(* These functions are part of the DockedCells toolbar. Renaming them is a
+   backwards-incompatible change. *)
+InsertTodoAfterSelection
+InsertTodoForToday
+InsertTodoAtTopOfQueue
+
 Begin["`Private`"]
 
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
@@ -234,14 +240,14 @@ writeTodoAndSelect[nb_NotebookObject] := (
 (* TODO Insertion                     *)
 (**************************************)
 
-insertTodoAfterSelection[] := Module[{nb},
+InsertTodoAfterSelection[] := Module[{nb},
 	nb = SelectedNotebook[];
 	SelectionMove[nb, After, Cell];
 
 	writeTodoAndSelect[nb]
 ]
 
-insertTodoForToday[nb_NotebookObject] := Module[{
+InsertTodoForToday[nb_NotebookObject] := Module[{
 	dailyChapterCell,
 	todaySectionCell,
 	monthSectionCell,
@@ -334,7 +340,7 @@ insertTodoForToday[nb_NotebookObject] := Module[{
    longer-term than that should go in another section, e.g. Features. This implies that
    *most* of the time, we want to insert the new TODO at the *top* of the Queue, so we
    do just that. *)
-insertTodoAtTopOfQueue[nb_NotebookObject] := Module[{
+InsertTodoAtTopOfQueue[nb_NotebookObject] := Module[{
 	queueChapterCell
 },
 	queueChapterCell = FindQueueChapterCell[nb];
@@ -776,7 +782,7 @@ Module[{
 		iconButtonContent[$iconPlus, "Insert new TODO after current selection"],
 		(
 			ReleaseHold[loadOrFail];
-			insertTodoAfterSelection[];
+			InsertTodoAfterSelection[];
 		),
 		buttonBarOptions
 	];
@@ -785,7 +791,7 @@ Module[{
 		iconButtonContent[$iconCalendarWithPlus, "Insert new TODO item for today"],
 		(
 			ReleaseHold[loadOrFail];
-			insertTodoForToday[SelectedNotebook[]];
+			InsertTodoForToday[SelectedNotebook[]];
 		),
 		buttonBarOptions
 	];
@@ -797,7 +803,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			insertTodoAtTopOfQueue[SelectedNotebook[]];
+			InsertTodoAtTopOfQueue[SelectedNotebook[]];
 		),
 		buttonBarOptions
 	];
