@@ -1,5 +1,6 @@
 BeginPackage["Organizer`Utils`"]
 
+Try
 AttachedPopupMenu
 NotebookProcess
 
@@ -15,6 +16,20 @@ $HeldLoadOrFail = Hold[
 ]
 
 Begin["`Private`"]
+
+(**************************************)
+(* Try                                *)
+(**************************************)
+
+Attributes[Try] = {HoldFirst}
+
+Try[expr_] := Enclose[
+	expr,
+	err |-> If[MissingQ[err["Expression"]],
+		err,
+		err["Expression"]
+	]
+]
 
 (**************************************)
 (* Attached Cells                     *)
