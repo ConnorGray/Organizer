@@ -1,13 +1,13 @@
-BeginPackage["Organizer`Palette`", {
-    "Organizer`",
-    "Organizer`Utils`",
-    "Organizer`LogNotebookRuntime`"
-}]
+BeginPackage["Organizer`Palette`"]
 
 WorkspaceDirectory
 CategoryDirectory
 
 Begin["`Private`"]
+
+Needs["Organizer`"]
+Needs["Organizer`Utils`"]
+Needs["Organizer`LogNotebookRuntime`"]
 
 errorDialog[message_?StringQ] := MessageDialog[Row[{
 	Style["Error: ", 14, Darker[Red]],

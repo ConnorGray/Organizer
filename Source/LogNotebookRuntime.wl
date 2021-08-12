@@ -8,10 +8,7 @@
 (*Runtime*)
 
 
-BeginPackage["Organizer`LogNotebookRuntime`", {
-	"Organizer`",
-	"Organizer`Utils`"
-}]
+BeginPackage["Organizer`LogNotebookRuntime`"]
 
 FindQueueChapterCell
 FindDailyChapterCell
@@ -27,6 +24,9 @@ InsertTodoForToday
 InsertTodoAtTopOfQueue
 
 Begin["`Private`"]
+
+Needs["Organizer`"]
+Needs["Organizer`Utils`"]
 
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
