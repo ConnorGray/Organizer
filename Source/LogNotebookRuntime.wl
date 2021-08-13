@@ -247,27 +247,13 @@ InsertTodoAfterSelection[] := Module[{nb},
 	writeTodoAndSelect[nb]
 ]
 
-InsertTodoForToday[nb_NotebookObject] := Module[{
+InsertTodoForToday[nb_NotebookObject] := Try @ Module[{
 	dailyChapterCell,
 	todaySectionCell,
 	monthSectionCell,
 	cellsAfterThisMonth
 },
-	dailyChapterCell = SelectFirst[
-		Cells[nb, CellStyle -> "Chapter"],
-		MatchQ[
-			NotebookRead[#],
-			Cell["Daily", "Chapter", ___]
-		] &
-	];
-
-	If[!MatchQ[dailyChapterCell, CellObject[___]],
-		MessageDialog[StringForm[
-			"Organizer`.`: Unable to insert new TODO cell: no 'Daily' chapter exists in specified notebook: ``",
-			Information[nb]["WindowTitle"]
-		]];
-		Return[$Failed];
-	];
+	dailyChapterCell = Confirm @ FindDailyChapterCell[nb];
 
 	(*
 		Check if the current notebook contains a Subsection for the current month.
@@ -290,7 +276,10 @@ InsertTodoForToday[nb_NotebookObject] := Module[{
 		(* Get the cell we just wrote/selected. *)
 		monthSectionCell = Replace[SelectedCells[], {
 			{cell_CellObject} :> cell,
-			_ :> Throw["Expected NotebookWrite[] / SelectedCells[] to result in the cell which was written"]
+			_ :> Confirm @ FailureMessage[
+				Organizer::error,
+				"Expected NotebookWrite[] / SelectedCells[] to result in the cell which was written"
+			]
 		}];
 		SelectionMove[nb, After, Cell];
 
@@ -340,18 +329,10 @@ InsertTodoForToday[nb_NotebookObject] := Module[{
    longer-term than that should go in another section, e.g. Features. This implies that
    *most* of the time, we want to insert the new TODO at the *top* of the Queue, so we
    do just that. *)
-InsertTodoAtTopOfQueue[nb_NotebookObject] := Module[{
+InsertTodoAtTopOfQueue[nb_NotebookObject] := Try @ Module[{
 	queueChapterCell
 },
-	queueChapterCell = FindQueueChapterCell[nb];
-
-	If[FailureQ[queueChapterCell],
-		MessageDialog[StringForm[
-			"Organizer`.`: Unable to insert new TODO cell: no 'Queue' chapter exists in specified notebook: ``",
-			Information[nb]["WindowTitle"]
-		]];
-		Return[$Failed];
-	];
+	queueChapterCell = Confirm @ FindQueueChapterCell[nb];
 
 	SelectionMove[queueChapterCell, After, Cell];
 	writeTodoAndSelect[nb];
@@ -391,7 +372,7 @@ GroupSelectionMove[heading_CellObject, dir_] := Module[{nb, cells},
 FindQueueChapterCell[nb_NotebookObject] := findChapterCell[nb, "Queue"]
 FindDailyChapterCell[nb_NotebookObject] := findChapterCell[nb, "Daily"]
 
-findChapterCell[nb_NotebookObject, contents_?StringQ] := Module[{cell},
+findChapterCell[nb_NotebookObject, contents_?StringQ] := Try @ Module[{cell},
 	cell = SelectFirst[
 		Cells[nb, CellStyle -> "Chapter"],
 		MatchQ[
@@ -401,7 +382,11 @@ findChapterCell[nb_NotebookObject, contents_?StringQ] := Module[{cell},
 	];
 
 	If[!MatchQ[cell, CellObject[___]],
-		Return[$Failed];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"No `` chapter exists in current notebook: ``",
+			{InputForm[contents], Information[nb]["WindowTitle"]}
+		];
 	];
 
 	cell
@@ -418,7 +403,7 @@ shortenURLLabel[label_?StringQ] := StringReplace[
   "Pull Request #" ~~ content___ ~~ "- Wolfram Stash" :> "PR #" <> content
 ]
 
-createSystemOpenCell[] := With[{
+createSystemOpenCell[] := Try @ With[{
 	filepath = SystemDialogInput["FileOpen", NotebookDirectory[]]
 },
 	If[filepath === $Canceled,
@@ -426,7 +411,11 @@ createSystemOpenCell[] := With[{
 	];
 
 	If[!StringQ[filepath],
-		Throw[StringForm["Invalid file path: ``", filepath]];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Invalid file path: ``",
+			{filepath}
+		];
 	];
 
 	Cell[
@@ -444,13 +433,17 @@ createSystemOpenCell[] := With[{
 	]
 ]
 
-insertCellAfterSelection[cell_] := Module[{nb},
-	If[FailureQ @ cell || cell === $Canceled,
-		Return[$Failed];
+insertCellAfterSelection[cell_] := Try Module[{nb},
+	If[cell === $Canceled,
+		Return[$Canceled, Module];
 	];
 
-	If[!MatchQ[cell, Cell[__]],
-		Return[$Failed];
+	If[FailureQ[cell] || !MatchQ[cell, Cell[__]],
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Error inserting cell after selection: ``",
+			{InputForm[cell]}
+		];
 	];
 
 	nb = EvaluationNotebook[];
@@ -459,10 +452,13 @@ insertCellAfterSelection[cell_] := Module[{nb},
 	NotebookWrite[nb, cell];
 ]
 
-getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
+getDraggedHyperlink[] := Try @ Module[{path, res, data, hyperlink},
 	(* TODO: Make path cross-platform. *)
 	If[$SystemID =!= "MacOSX-x86-64",
-		Throw["Cannot get dragged link on non-MacOSX platforms."];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Cannot get dragged link on non-MacOSX platforms."
+		];
 	];
 
 	path = FileNameJoin[{$HomeDirectory, "Desktop/dragged_link.html"}];
@@ -492,10 +488,11 @@ getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 
 	hyperlink = Replace[data, {
 		{{link_}, label_} :> Hyperlink[Style[shortenURLLabel[label], 12], URL[link]],
-		_ :> Throw[StringForm[
+		_ :> Confirm @ FailureMessage[
+			Organizer::error,
 			"Dragged link did not have the expected format after Import: ``",
-			data
-		]]
+			{InputForm[data]}
+		]
 	}];
 
 	Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"]
@@ -607,31 +604,27 @@ getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
 	Return[$Failed];
 ]
 
-errorDialog[message_?StringQ] := MessageDialog[Row[{
-	Style["Error: ", 14, Darker[Red]],
-	message
-}]]
 
-getOpenPages[script_?StringQ] := Module[{data},
+getOpenPages[script_?StringQ] := Try @ Module[{data},
 	data = RunProcess[{"osascript", "-e", script}, "StandardError"];
 
 	(* Echo[InputForm[data], "data A"] *)
 
 	If[FailureQ[data],
-		errorDialog[ToString@StringForm[
-			"Data returned from 'osascript' was FailureQ: ``",
-			data
-		]];
-		Return[data];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Invocation of 'osascript' failed: ``",
+			{InputForm[data]}
+		];
 	];
 	Assert[StringQ[data]];
 
 	If[StringContainsQ[data, "missing value"],
-		errorDialog[ToString@StringForm[
+		Confirm @ FailureMessage[
+			Organizer::error,
 			"Data returned from 'osascript' contains missing value: ``",
-			data
-		]];
-		Return[$Failed];
+			{InputForm[data]}
+		];
 	];
 
 	data = ToExpression[data];
@@ -639,37 +632,30 @@ getOpenPages[script_?StringQ] := Module[{data},
 	(* Echo[data, "data B"]; *)
 
 	If[!MatchQ[data, {KeyValuePattern[{"Title" -> _?StringQ, "URL" -> _?StringQ}]...}],
-		errorDialog[ToString@StringForm[
+		Confirm @ FailureMessage[
+			Organizer::error,
 			"Data returned from 'osascript' does not have the expected Association form: ``",
-			InputForm[data]
-		]];
-		Return[$Failed];
+			{InputForm[data]}
+		];
 	];
 
 	Return[data];
 ]
 
 
-getBrowserHyperlink[] := Module[{safariData, chromeData, data, pair, hyperlink},
-	safariData = getOpenPages[$getSafariLinkScript];
-	If[FailureQ[safariData],
-		Return[$Failed];
-	];
-
-	chromeData = getOpenPages[$getChromeLinkScript];
-	If[FailureQ[chromeData],
-		Return[$Failed];
-	];
+getBrowserHyperlink[] := Try @ Module[{safariData, chromeData, data, pair, hyperlink},
+	safariData = Confirm @ getOpenPages[$getSafariLinkScript];
+	chromeData = Confirm @ getOpenPages[$getChromeLinkScript];
 
 	data = Join[safariData, chromeData];
 
 	pair = Which[
 		Length[data] === 0,
-			errorDialog[ToString@StringForm[
+			Confirm @ FailureMessage[
+				Organizer::error,
 				"Data returned from 'osascript' was an empty list: ``. Perhaps you have no browser windows open?",
-				InputForm[data]
-			]];
-			Return[$Failed]
+				{InputForm[data]}
+			];
 		,
 		Length[data] === 1,
 			data[[1]]
@@ -688,7 +674,7 @@ getBrowserHyperlink[] := Module[{safariData, chromeData, data, pair, hyperlink},
 	];
 
 	If[pair === $Canceled,
-		Return[$Failed];
+		Return[$Canceled];
 	];
 
 	hyperlink = Hyperlink[
@@ -719,18 +705,24 @@ setSelectedCellsBackground[color_] := Module[{selectedCells},
 	Map[SetOptions[#, Background -> color] &, selectedCells]
 ]
 
-colorPickerButtonGrid[] := With[{
+colorPickerButtonGrid[] := Try @ With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{colors, grid},
 	colors = PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"];
 
 	If[MissingQ[colors],
-		Throw["No \"CG:Organizer:BackgroundColorPalette\" PersistentValue is set."];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"No \"CG:Organizer:BackgroundColorPalette\" PersistentValue is set."
+		];
 	];
 
 	If[!MatchQ[colors, {{___RGBColor}..}],
-		Throw["\"CG:Organizer:BackgroundColorPalette\" PersistentValue is not a valid array of colors."]
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"\"CG:Organizer:BackgroundColorPalette\" PersistentValue is not a valid array of colors."
+		];
 	];
 
 	grid = Map[
@@ -791,7 +783,7 @@ Module[{
 		iconButtonContent[$iconCalendarWithPlus, "Insert new TODO item for today"],
 		(
 			ReleaseHold[loadOrFail];
-			InsertTodoForToday[SelectedNotebook[]];
+			HandleUIFailure @ InsertTodoForToday[SelectedNotebook[]];
 		),
 		buttonBarOptions
 	];
@@ -803,7 +795,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			InsertTodoAtTopOfQueue[SelectedNotebook[]];
+			HandleUIFailure @ InsertTodoAtTopOfQueue[SelectedNotebook[]];
 		),
 		buttonBarOptions
 	];
@@ -815,7 +807,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			insertCellAfterSelection[createSystemOpenCell[]];
+			HandleUIFailure @ insertCellAfterSelection[HandleUIFailure @ createSystemOpenCell[]];
 		),
 		buttonBarOptions,
 		Method -> "Queued"
@@ -828,7 +820,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			insertCellAfterSelection[getAppleMailHyperlink[]];
+			HandleUIFailure @ insertCellAfterSelection[HandleUIFailure @ getAppleMailHyperlink[]];
 		),
 		buttonBarOptions,
 		Method -> "Queued"
@@ -841,7 +833,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			insertCellAfterSelection[getBrowserHyperlink[]];
+			HandleUIFailure @ insertCellAfterSelection[HandleUIFailure @ getBrowserHyperlink[]];
 		),
 		buttonBarOptions,
 		Method -> "Queued"
@@ -854,7 +846,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			insertCellAfterSelection[getDraggedHyperlink[]];
+			HandleUIFailure @ insertCellAfterSelection[HandleUIFailure @ getDraggedHyperlink[]];
 		),
 		buttonBarOptions,
 		Method -> "Queued"
@@ -870,7 +862,11 @@ Module[{
 				"MacOSX-x86-64",
 					RunProcess[{"open", NotebookDirectory[]}],
 				_,
-					Throw[StringForm["Unhandled $SystemID: ``", $SystemID]]
+					Confirm @ FailureMessage[
+						Organizer::error,
+						"Unhandled $SystemID for opening folder: ``",
+						{InputForm[$SystemID]}
+					];
 			]
 		],
 		buttonOptions
@@ -900,7 +896,7 @@ Module[{
 			newDraggedLinkButton
 		}, ImageMargins -> 10],
 		openFolderButton,
-		colorPickerButtonGrid[]
+		Confirm @ colorPickerButtonGrid[]
 	}];
 
 	cell = Cell[
