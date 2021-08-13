@@ -745,7 +745,7 @@ Module[{colors, grid},
 ]
 ]
 
-InstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := With[{
+InstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Try @ With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
