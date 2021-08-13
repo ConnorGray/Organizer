@@ -292,7 +292,7 @@ InsertTodoForToday[nb_NotebookObject] := Module[{
 			{cell_CellObject} :> cell,
 			_ :> Throw["Expected NotebookWrite[] / SelectedCells[] to result in the cell which was written"]
 		}];
-		SelectionMove[nb, After, Cell]
+		SelectionMove[nb, After, Cell];
 
 		Assert[MatchQ[NotebookRead[monthSectionCell], Cell[_, "Subsection"]]]
 	];
