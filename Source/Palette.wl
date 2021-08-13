@@ -21,7 +21,7 @@ NotebooksDirectory[] := Try @ Module[{dir},
 			Confirm @ FailureMessage[
 				Organizer::error,
 				"Error: Saved Organizer root directory is not DirectoryQ: ``",
-				dir
+				{dir}
 			];
 		];
 
@@ -52,7 +52,7 @@ NotebooksDirectory[] := Try @ Module[{dir},
 			Confirm @ FailureMessage[
 				Organizer::error,
 				"Error: Saved Organizer root directory is not DirectoryQ: ``",
-				dir
+				{dir}
 			];
 		];
 
