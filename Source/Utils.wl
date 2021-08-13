@@ -155,6 +155,7 @@ AttachedPopupMenu[
             ReleaseHold[loadOrFail];
 
             toggleAttachedPopupCell[
+				(* FIXME: This should not be hard-coded. *)
                 "CG:Organizer:AttachedCommandDropdown",
                 label,
                 contentsFunction,

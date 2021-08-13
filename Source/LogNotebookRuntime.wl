@@ -880,7 +880,7 @@ Module[{
 			Style[Pane[projName, ImageMargins -> 10], "Subchapter", White],
 			(
 				ReleaseHold[loadOrFail];
-				CreateOrganizerPalette[]
+				OpenOrganizerPalette[]
 			),
 			Appearance -> None
 		],

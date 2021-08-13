@@ -1,6 +1,6 @@
 BeginPackage["Organizer`"]
 
-CreateOrganizerPalette
+OpenOrganizerPalette
 UpdateLogNotebooks
 
 Begin["`Private`"]
@@ -10,8 +10,6 @@ If[$VersionNumber >= 12.3,
 	         the code to use PersistentSymbol, and remove this Off call. *)
 	Off[PersistentValue::obs]
 ];
-
-(* PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = None; *)
 
 Needs["Organizer`LogNotebookRuntime`"];
 Needs["Organizer`Palette`"]

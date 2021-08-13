@@ -2,6 +2,7 @@ BeginPackage["Organizer`Palette`"]
 
 WorkspaceDirectory
 CategoryDirectory
+RefreshOrganizerPalette
 
 Begin["`Private`"]
 
@@ -241,103 +242,199 @@ subDirectoryNames[dir_?DirectoryQ] := Module[{names},
 
 $PaletteWidth = 220;
 
-(*
-    Statefully create or refresh the global Organizer palette.
-*)
-(* TODO: Use HandleUIFailure here? This is both a public and UI function at the moment. *)
-CreateOrganizerPalette[] := Try @ With[{
-    loadOrFail = $HeldLoadOrFail
+OpenOrganizerPalette[] := Try @ Module[{
+	organizerPacletLocation,
+	paletteLocation,
+	paletteNBObj
 },
-    Module[{categoryPicker, categoryButton, paletteContents, existingNB, margins},
-        categoryButton[category_?StringQ] := Button[
-            category,
-            (
-                ReleaseHold[loadOrFail];
-                PersistentValue["CG:Organizer:Category"] = category;
+	(* Clear persistent TaggingRules (see PalettesMenuSettings). This seemed to be
+	   necessary due to values which got cached, but after clearing them once, they
+	   haven't come back -- keeping this around temporarily until I'm more confident
+	   it won't be necessary. *)
+	(* CurrentValue[$FrontEnd, System`PalettesMenuSettings] = DeleteCases[
+		CurrentValue[$FrontEnd, System`PalettesMenuSettings],
+		file_ /; StringContainsQ[file, "Organizer.nb"] -> _
+	]; *)
 
-                (* CreateOrganizerPalette[] automatically overwrites the already-open
-                organizer. This is effectively a Refresh. *)
-                Organizer`CreateOrganizerPalette[]
-            ),
-            FrameMargins -> 2,
-            Appearance -> "Palette",
-            ImageSize -> Medium
-        ];
 
-        categoryPicker = Pane[
-            Grid[{Map[categoryButton, Categories[]]}, Spacings -> 0],
-            $PaletteWidth,
-            ImageSizeAction -> "Scrollable",
-            Scrollbars -> {False, False}
-        ];
+	organizerPacletLocation = Confirm[PacletObject["Organizer"]]["Location"];
+	paletteLocation = FileNameJoin[{
+		organizerPacletLocation,
+		"FrontEnd", "Palettes", "Organizer.nb"
+	}];
 
-        paletteContents = Column[
-            {
-                Grid[
-                    {{
-                        Button[
-                            Style["New Project", 20],
-                            (
-                                ReleaseHold[loadOrFail];
-                                handleStartNewProject[];
-                            ),
-                            Method -> "Queued",
-                            Background -> Green,
-                            ImageSize -> Full
-                        ],
-                        AttachedPopupMenu[
-                            Style["\[CloverLeaf]", 25],
-                            Function[close,
-                                HandleUIFailure @ commandDropdownContents[close]
-                            ]
-                        ]
-                        (*
-                        Button[
-                            Style[Global`\[CloverLeaf], 25],
-                            (
-                                ReleaseHold[loadOrFail];
-                                openCommandDropdown[];
-                            ),
-                            Method -> "Queued",
-                            Active -> False,
-                            Alignment -> Center,
-                            Background -> Lighter@Orange,
-                            ImageSize -> Full
-                        ]
-                        *)
-                    }},
-                    ItemSize -> {{Scaled[0.75], Scaled[0.25]}},
-                    Spacings -> {0, 0}
-                ],
-                Grid[Confirm @ buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}],
-                categoryPicker
-            }
-            ,
-            Spacings -> 0.15
-        ];
+	If[!DirectoryQ[organizerPacletLocation] || !FileExistsQ[paletteLocation],
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Unable to get location of Organizer paclet and/or palette: ``",
+			{InputForm[organizerPacletLocation]}
+		];
+	];
 
-        paletteContents = Pane[paletteContents, ImageSize -> $PaletteWidth];
+	(* Check if the palette is already open by examining Notebooks[]. *)
+	paletteNBObj = SelectFirst[
+		Notebooks[],
+		nb |-> SameQ[
+			Quiet[NotebookFileName[nb], NotebookFileName::nosv],
+			paletteLocation
+		]
+	];
 
-        existingNB = PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"];
+	If[!MissingQ[paletteNBObj] && MatchQ[paletteNBObj, NotebookObject[__]],
+		(* The palette is already open. Refresh its contents. *)
+		Confirm @ RefreshOrganizerPalette[paletteNBObj];
+		,
+		(* Open the Organizer.nb. Whether it succeeds or fails, this operation returns Null. *)
+		FrontEndTokenExecute["OpenFromPalettesMenu", "Organizer.nb"];
+	];
 
-        If[MatchQ[existingNB, NotebookObject[__] ],
-            Module[{opts},
-                opts = Options[existingNB];
-                (* Check that existingNBObj is still actually open. If not, reset the global
-                palette NB object. *)
-                If[FailureQ @ opts,
-                    PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
-                    Return[];
-                ];
-                margins = Association[Options[existingNB] ][WindowMargins];
-                CreatePalette[paletteContents, existingNB];
-                SetOptions[existingNB, WindowMargins -> margins];
-            ]
-            ,
-            PersistentValue["CG:Organizer:PaletteObject", "FrontEndSession"] = CreatePalette[paletteContents];
-        ];
-    ];
+	(* TODO: Return the NotebookObject[..] for the open palette? *)
 ]
+
+RefreshOrganizerPalette[nb_NotebookObject] := Try @ Module[{
+	organizerPaletteQ, info,
+	body, contents
+},
+	(* Echo["called RefreshOrganizerPalette:"]; *)
+
+	(*------------------------------------------------------------------------------*)
+	(* Defensively check that this is the Organizer palette we're about to refresh. *)
+	(*------------------------------------------------------------------------------*)
+
+	(* If `nb` is somehow accidentally a user's notebook, we do NOT want to delete
+	   everything in it and repopulate it with the Organizer palette content. Given the
+	   sometimes murky behavior of EvaluationNotebook[] (which may have been called to get
+	   `nb`) (especially in the presense of pre-emptive evaluations), it seems best to be
+	   on guard against this potential bug. *)
+	organizerPaletteQ = SameQ[
+		CurrentValue[nb, {TaggingRules, "CG:Organizer", "DocumentType"}],
+		"MainOrganizerPalette"
+	];
+
+	If[!organizerPaletteQ,
+		info = Association[NotebookInformation[nb]];
+
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"CRITICAL ERROR: Unsafe attempt to refresh a notebook which was not the main "
+			<> "Organizer palette. Doing so would delete all contents of the affected notebook. "
+			<> "Notebook file path was: ``. Notebook title was: ``",
+			{InputForm[info["FileName"]], InputForm[info["WindowTitle"]]}
+		];
+	];
+
+	(*-------------------------------------------------------------------*)
+	(* Delete the existing contents of the palette and (re-)populate it. *)
+	(*-------------------------------------------------------------------*)
+
+	(* Work around double Initialization bug. If we modify the contents of the notebook
+	   during Initialization (happening right now), the Initialization code is run twice. *)
+	SetOptions[nb, Initialization -> None];
+
+	(* Make selection of the notebook contents possible. *)
+	SetOptions[nb, Selectable -> True];
+
+
+	(* Compute the new contents for the palette. *)
+	(* Do this *before* deleting the old contents to minimize the time that the palette
+	   is blank. *)
+	contents = Confirm @ createOrganizerPalette[];
+
+	(* Delete everything in the notebook! *)
+	SelectionMove[nb, All, Notebook];
+	NotebookDelete[nb];
+
+	(* Write the new content. *)
+	NotebookWrite[
+		nb,
+		Cell[BoxData @ ToBoxes @ contents]
+	];
+
+
+	(* Restore `Selectable -> False` *)
+	SetOptions[nb, Selectable -> False];
+
+	(* Force the notebook to resize to fit its content. *)
+	SetOptions[nb, WindowSize -> All];
+
+	CurrentValue[nb, {TaggingRules, "CG:Organizer", "DocumentType"}] = "MainOrganizerPalette";
+]
+
+createOrganizerPalette[] := Try @ With[{
+    loadOrFail = $HeldLoadOrFail
+}, Module[{
+	categoryButton, categoryPicker, paletteContents
+},
+	categoryButton[category_?StringQ] := Button[
+		category,
+		(
+			ReleaseHold[loadOrFail];
+			PersistentValue["CG:Organizer:Category"] = category;
+
+			(* OpenOrganizerPalette[] automatically refreshes the organizer palette. *)
+			Organizer`OpenOrganizerPalette[]
+		),
+		FrameMargins -> 2,
+		Appearance -> "Palette",
+		ImageSize -> Medium
+	];
+
+	categoryPicker = Pane[
+		Grid[{Map[categoryButton, Confirm @ Categories[]]}, Spacings -> 0],
+		$PaletteWidth,
+		ImageSizeAction -> "Scrollable",
+		Scrollbars -> {False, False}
+	];
+
+	paletteContents = Column[
+		{
+			Grid[
+				{{
+					Button[
+						Style["New Project", 20],
+						(
+							ReleaseHold[loadOrFail];
+							handleStartNewProject[];
+						),
+						Method -> "Queued",
+						Background -> Green,
+						ImageSize -> Full
+					],
+					AttachedPopupMenu[
+						Style["\[CloverLeaf]", 25],
+						Function[close,
+							HandleUIFailure @ commandDropdownContents[close]
+						]
+					]
+					(*
+					Button[
+						Style[Global`\[CloverLeaf], 25],
+						(
+							ReleaseHold[loadOrFail];
+							openCommandDropdown[];
+						),
+						Method -> "Queued",
+						Active -> False,
+						Alignment -> Center,
+						Background -> Lighter@Orange,
+						ImageSize -> Full
+					]
+					*)
+				}},
+				ItemSize -> {{Scaled[0.75], Scaled[0.25]}},
+				Spacings -> {0, 0}
+			],
+			Grid[Confirm @ buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}],
+			categoryPicker
+		}
+		,
+		Spacings -> 0.15
+	];
+
+	paletteContents = Pane[paletteContents, ImageSize -> $PaletteWidth];
+
+	paletteContents
+]]
 
 commandDropdownContents[close_Function] := Try @ With[{
     loadOrFail = $HeldLoadOrFail
@@ -350,9 +447,8 @@ commandDropdownContents[close_Function] := Try @ With[{
 
                     Assert[MemberQ[$Packages, "Organizer`"]];
 
-                    (* CreateOrganizerPalette[] automatically overwrites the already-open
-                    organizer. *)
-                    Organizer`CreateOrganizerPalette[]
+                    (* OpenOrganizerPalette[] automatically refreshes the palettte. *)
+                    Organizer`OpenOrganizerPalette[]
                 ),
                 Method -> "Queued",
                 Background -> LightBlue
@@ -369,7 +465,8 @@ commandDropdownContents[close_Function] := Try @ With[{
                            concept of a "default" category for a workspace. *)
                         PersistentValue["CG:Organizer:Category"] = First[Categories[]];
 
-                        Organizer`CreateOrganizerPalette[]
+						(* OpenOrganizerPalette[] automatically refreshes the palette. *)
+                        Organizer`OpenOrganizerPalette[]
                     )&,
                     Confirm @ Workspaces[]
                 ]
@@ -513,7 +610,7 @@ handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
     NotebookSave[logNB, FileNameJoin[{dirPath, "Log.nb"}] ];
 
     (* Refresh the organizer palette in-place. *)
-    CreateOrganizerPalette[];
+    OpenOrganizerPalette[];
 ]
 
 (**************************************)
