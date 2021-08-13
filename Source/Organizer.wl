@@ -22,7 +22,7 @@ Needs["Organizer`Utils`"]
 UpdateLogNotebooks[] := Try @ Module[{nbs, nbObj},
     nbs = FileNames[
         "Log.nb",
-        Organizer`Palette`WorkspaceDirectory[],
+        Confirm @ Organizer`Palette`WorkspaceDirectory[],
         Infinity
     ];
 

@@ -9,32 +9,19 @@ Needs["Organizer`"]
 Needs["Organizer`Utils`"]
 Needs["Organizer`LogNotebookRuntime`"]
 
-errorDialog[message_?StringQ] := MessageDialog[Row[{
-	Style["Error: ", 14, Darker[Red]],
-	message
-}]]
 
-errorDialog[form_StringForm] := errorDialog[ToString[form]]
-
-errorDialog[
-	Failure[_, KeyValuePattern[{
-		"MessageTemplate" -> template_?StringQ,
-		"MessageParameters" -> params_?ListQ
-	}]]
-] := errorDialog[StringForm[template, Sequence @@ params]]
-
-
-NotebooksDirectory[] := Module[{dir},
+NotebooksDirectory[] := Try @ Module[{dir},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
     If[!DirectoryQ[dir],
 		If[$DynamicEvaluation,
 			(* ChoiceDialog and SystemDialogInput don't work if this is a pre-emptive
 			   evaluation, so skip trying to recover. This can happen when the hidden
 			   button in the Log.nb docked title bar is clicked. *)
-			Throw[StringForm[
+			Confirm @ FailureMessage[
+				Organizer::error,
 				"Error: Saved Organizer root directory is not DirectoryQ: ``",
 				dir
-			]];
+			];
 		];
 
 		(* Ask the user if they would like to pick a new root directory. *)
@@ -43,20 +30,29 @@ NotebooksDirectory[] := Module[{dir},
 				"Error: saved Organizer root directory does not exist: ``. Would you like to pick a new root directory?",
 				InputForm[dir]
 			]],
-			Throw[$Canceled];
+			(* The user decided not to pick a root directory. Return an error. *)
+			Confirm @ FailureMessage[
+				Organizer::canceled,
+				"Canceling operation. No Organizer Root directory is available."
+			];
 		];
 
 		dir = SystemDialogInput["Directory", $HomeDirectory];
 
 		If[!DirectoryQ[dir],
 			If[dir === $Canceled,
-				Throw[$Canceled];
+				(* The user decided not to pick a root directory. Return an error. *)
+				Confirm @ FailureMessage[
+					Organizer::canceled,
+					"Canceling operation. No Organizer Root directory is available."
+				];
 			];
 
-			Throw[StringForm[
+			Confirm @ FailureMessage[
+				Organizer::error,
 				"Error: Saved Organizer root directory is not DirectoryQ: ``",
 				dir
-			]];
+			];
 		];
 
 		(* If the user has chosen an empty directory as their root directory, offer to
@@ -85,18 +81,21 @@ NotebooksDirectory[] := Module[{dir},
 ]
 
 (* Get the directory for the currently selected Workspace. *)
-WorkspaceDirectory[] := Module[{name, dir, workspaces},
+WorkspaceDirectory[] := Try @ Module[{organizerRoot, name, dir, workspaces},
+	organizerRoot = Confirm @ NotebooksDirectory[];
+
 	name = PersistentValue["CG:Organizer:Workspace", "Local"];
-	workspaces = Workspaces[];
+	workspaces = Confirm @ Workspaces[];
 
 	Assert[ListQ[workspaces]];
 
 	If[workspaces === {},
-		errorDialog[Failure["NoWorkspaceDirectories", <|
-			"MessageTemplate" -> "The Organizer root directory (``) does not contain any subdirectories. Please create a subdirectory and try again.",
-			"MessageParameters" -> {InputForm[NotebooksDirectory[]]}
-		|>]];
-		Throw[$Failed];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"The Organizer root directory (``) does not contain any subdirectories. "
+			<> "Please create a subdirectory and try again.",
+			{InputForm[organizerRoot]}
+		];
 	];
 
 	(* Handle some recoverable error conditions by prompting the user to pick a new
@@ -107,13 +106,17 @@ WorkspaceDirectory[] := Module[{name, dir, workspaces},
 		StringQ[name] && !MemberQ[workspaces, name], (
 			name = ChoiceDialog[
 				ToString @ StringForm[
-					"Saved Workspace name '``' does not exist in the Organizer root directory: ``. Please choose another Workspace directory.",
-					name, InputForm[NotebooksDirectory[]]
+					"Saved Workspace name '``' does not exist in the Organizer root directory: ``. "
+					<> "Please choose another Workspace directory.",
+					name, InputForm[organizerRoot]
 				],
 				Map[(# -> #)&, workspaces]
 			];
 			If[name === $Canceled,
-				Throw[$Failed];
+				Confirm @ FailureMessage[
+					Organizer::canceled,
+					"Canceling operation. No Workspace directory is available."
+				];
 			];
 			PersistentValue["CG:Organizer:Workspace", "Local"] = name;
 		),
@@ -126,31 +129,41 @@ WorkspaceDirectory[] := Module[{name, dir, workspaces},
 				Map[(# -> #)&, workspaces]
 			];
 			If[name === $Canceled,
-				Throw[$Failed];
+				Confirm @ FailureMessage[
+					Organizer::canceled,
+					"Canceling operation. No Workspace directory is available."
+				];
 			];
 			PersistentValue["CG:Organizer:Workspace", "Local"] = name;
 		)
 	];
 
-	dir = FileNameJoin[{NotebooksDirectory[], name}];
+	dir = FileNameJoin[{organizerRoot, name}];
 	If[!DirectoryQ[dir],
-		Throw[$Failed];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Workspace directory is unexpectedly invalid: ``",
+			{InputForm[dir]}
+		];
 	];
 	dir
 ];
 
-CategoryDirectory[] := Module[{name, dir, categories},
+CategoryDirectory[] := Try @ Module[{workspaceDir, name, dir, categories},
+	workspaceDir = Confirm @ WorkspaceDirectory[];
+
 	name = PersistentValue["CG:Organizer:Category", "Local"];
-	categories = Categories[];
+	categories = Confirm @ Categories[];
 
 	Assert[ListQ[categories]];
 
 	If[categories === {},
-		errorDialog[Failure["NoCategoryDirectories", <|
-			"MessageTemplate" -> "The current Workspace directory (``) does not contain any subdirectories. Please create a subdirectory and try again.",
-			"MessageParameters" -> {InputForm[WorkspaceDirectory[]]}
-		|>]];
-		Throw[$Failed];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"The current Workspace directory (``) does not contain any subdirectories. "
+			<> "Please create a subdirectory and try again.",
+			{InputForm[workspaceDir]}
+		];
 	];
 
 	(* Handle some recoverable error conditions by prompting the user to pick a new
@@ -161,13 +174,17 @@ CategoryDirectory[] := Module[{name, dir, categories},
 		StringQ[name] && !MemberQ[categories, name], (
 			name = ChoiceDialog[
 				ToString @ StringForm[
-					"Saved Category name '``' does not exist in the current Workspace directory: ``. Please choose another Category directory.",
-					name, InputForm[WorkspaceDirectory[]]
+					"Saved Category name '``' does not exist in the current Workspace directory: ``. "
+					<> "Please choose another Category directory.",
+					name, InputForm[workspaceDir]
 				],
 				Map[(# -> #)&, categories]
 			];
 			If[name === $Canceled,
-				Throw[$Failed];
+				Confirm @ FailureMessage[
+					Organizer::canceled,
+					"Canceling operation. No Category directory is available."
+				];
 			];
 			PersistentValue["CG:Organizer:Category", "Local"] = name;
 		),
@@ -180,25 +197,32 @@ CategoryDirectory[] := Module[{name, dir, categories},
 				Map[(# -> #)&, categories]
 			];
 			If[name === $Canceled,
-				Throw[$Failed];
+				Confirm @ FailureMessage[
+					Organizer::canceled,
+					"Canceling operation. No Category directory is available."
+				];
 			];
 			PersistentValue["CG:Organizer:Category", "Local"] = name;
 		)
 	];
 
-	dir = FileNameJoin[{WorkspaceDirectory[], name}];
+	dir = FileNameJoin[{workspaceDir, name}];
 	If[!DirectoryQ[dir],
-		Throw[$Failed];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Category directory is unexpectedly invalid: ``",
+			{InputForm[dir]}
+		];
 	];
 	dir
 ]
 
-Workspaces[] := subDirectoryNames[NotebooksDirectory[]]
+Workspaces[] := Try @ subDirectoryNames[Confirm @ NotebooksDirectory[]]
 
 (* Get a list of Categories which are a part of the current workspace. *)
-Categories[] := subDirectoryNames[WorkspaceDirectory[]]
+Categories[] := Try @ subDirectoryNames[Confirm @ WorkspaceDirectory[]]
 
-Projects[] := subDirectoryNames[CategoryDirectory[]]
+Projects[] := Try @ subDirectoryNames[Confirm @ CategoryDirectory[]]
 
 subDirectoryNames[dir_?DirectoryQ] := Module[{names},
     names = FileNames[All, dir];
@@ -220,7 +244,8 @@ $PaletteWidth = 220;
 (*
     Statefully create or refresh the global Organizer palette.
 *)
-CreateOrganizerPalette[] := With[{
+(* TODO: Use HandleUIFailure here? This is both a public and UI function at the moment. *)
+CreateOrganizerPalette[] := Try @ With[{
     loadOrFail = $HeldLoadOrFail
 },
     Module[{categoryPicker, categoryButton, paletteContents, existingNB, margins},
@@ -263,7 +288,7 @@ CreateOrganizerPalette[] := With[{
                         AttachedPopupMenu[
                             Style["\[CloverLeaf]", 25],
                             Function[close,
-                                commandDropdownContents[close]
+                                HandleUIFailure @ commandDropdownContents[close]
                             ]
                         ]
                         (*
@@ -284,7 +309,7 @@ CreateOrganizerPalette[] := With[{
                     ItemSize -> {{Scaled[0.75], Scaled[0.25]}},
                     Spacings -> {0, 0}
                 ],
-                Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}],
+                Grid[Confirm @ buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}],
                 categoryPicker
             }
             ,
@@ -314,7 +339,7 @@ CreateOrganizerPalette[] := With[{
     ];
 ]
 
-commandDropdownContents[close_Function] := With[{
+commandDropdownContents[close_Function] := Try @ With[{
     loadOrFail = $HeldLoadOrFail
 },
     Column[
@@ -346,7 +371,7 @@ commandDropdownContents[close_Function] := With[{
 
                         Organizer`CreateOrganizerPalette[]
                     )&,
-                    Workspaces[]
+                    Confirm @ Workspaces[]
                 ]
             },
                 ActionMenu[
@@ -379,8 +404,8 @@ commandDropdownContents[close_Function] := With[{
     ]
 ]
 
-buttonListToOpenActiveProjectLogs[] := Module[{projects, metaProjs},
-    projects = Projects[];
+buttonListToOpenActiveProjectLogs[] := Try @ Module[{projects, metaProjs},
+    projects = Confirm @ Projects[];
 
     metaProjs = Sort[Select[projects, StringStartsQ["+"]]];
     projects = Sort[Complement[projects, metaProjs]];
@@ -389,7 +414,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{projects, metaProjs},
         Function[proj,
             With[{
                 loadOrFail = $HeldLoadOrFail,
-                path = FileNameJoin[{CategoryDirectory[], proj, "Log.nb"}]
+                path = FileNameJoin[{Confirm @ CategoryDirectory[], proj, "Log.nb"}]
             },
                 If[FileExistsQ[path],
                     {
@@ -432,7 +457,7 @@ buttonListToOpenActiveProjectLogs[] := Module[{projects, metaProjs},
 (* UI Event Handlers                                                          *)
 (******************************************************************************)
 
-handleStartNewProject[] := Module[{
+handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
     projName, dirPath, logNB
 },
     projName = InputString[];
@@ -440,13 +465,20 @@ handleStartNewProject[] := Module[{
         If[projName === $Canceled,
             Return[];
         ];
-        Throw[StringForm["Invalid project name: ``", projName] ];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Invalid project name: ``",
+			{InputForm[projName]}
+		];
     ];
 
-    dirPath = FileNameJoin[{CategoryDirectory[], projName}];
+	dirPath = FileNameJoin[{Confirm @ CategoryDirectory[], projName}];
     If[FileExistsQ[dirPath],
-        MessageDialog[StringForm["File exists at path ``", dirPath]];
-        Return[$Failed];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"File already exists at path ``.",
+			{InputForm[dirPath]}
+		];
     ];
 
     (* Make sure the icons are loaded *before* we modify the filesystem. *)
@@ -490,7 +522,7 @@ handleStartNewProject[] := Module[{
 
 (* Create and open a new NB which contains the Queue's NB section for every active project
    in the current workspace. *)
-handleShowQueues[] := Module[{projects, settings, nb, path, cells, timestamp, workspaceName},
+handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, path, cells, timestamp, workspaceName},
 
 	(*--------------------------------------------------------------------*)
 	(* Present the user with a DialogInput to select the projects to view *)
@@ -524,11 +556,11 @@ handleShowQueues[] := Module[{projects, settings, nb, path, cells, timestamp, wo
 		$Canceled :> Return[Null, Module],
 		_?AssociationQ :> settings["Projects"],
 		_ :> (
-			errorDialog[StringForm[
+			Confirm @ FailureMessage[
+				Organizer::error,
 				"Unexpected value returned from settings panel: ``",
-				InputForm[settings]
-			]];
-			Return[$Failed, Module];
+				{InputForm[settings]}
+			];
 		)
 	}];
 
@@ -538,7 +570,7 @@ handleShowQueues[] := Module[{projects, settings, nb, path, cells, timestamp, wo
 
     nb = CreateNotebook[];
 
-    workspaceName = FileNameTake[WorkspaceDirectory[], -1];
+    workspaceName = FileNameTake[Confirm @ WorkspaceDirectory[], -1];
 
     timestamp = DateString[Now, {
         "DayName", " ", "MonthName", " ", "Day",
@@ -578,13 +610,9 @@ handleShowQueues[] := Module[{projects, settings, nb, path, cells, timestamp, wo
 
     Scan[
         Function[proj,
-            path = FileNameJoin[{CategoryDirectory[], proj, "Log.nb"}];
+            path = FileNameJoin[{Confirm @ CategoryDirectory[], proj, "Log.nb"}];
 
-            cells = cellsFromChapterInNB[path, "Queue"];
-            If[FailureQ[cells],
-                MessageDialog[Row[{"Failed to read cells from: ", path}]];
-                Return[];
-            ];
+            cells = Confirm @ cellsFromChapterInNB[path, "Queue"];
 
             cells = Replace[
                 cells,
@@ -618,15 +646,7 @@ handleShowQueues[] := Module[{projects, settings, nb, path, cells, timestamp, wo
 (* Show Daily's Report                *)
 (**************************************)
 
-HandleShowDailys[] := Module[{result},
-	result = iHandleShowDailys[];
-
-	If[MatchQ[result, _Failure],
-		errorDialog[result];
-	];
-]
-
-iHandleShowDailys[] := Enclose[Module[{
+HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 	settings,
 	timePeriod,
 	startDate,
@@ -734,7 +754,7 @@ iHandleShowDailys[] := Enclose[Module[{
 
 	nb = CreateNotebook[];
 
-	workspaceName = FileNameTake[WorkspaceDirectory[], -1];
+	workspaceName = FileNameTake[Confirm @ WorkspaceDirectory[], -1];
 
 	timestamp = DateString[Now, {
 		"DayName", " ", "MonthName", " ", "Day",
@@ -778,13 +798,9 @@ iHandleShowDailys[] := Enclose[Module[{
 
 	Scan[
 		Function[proj,
-			path = FileNameJoin[{CategoryDirectory[], proj, "Log.nb"}];
+			path = FileNameJoin[{Confirm @ CategoryDirectory[], proj, "Log.nb"}];
 
-			cells = cellsFromChapterInNB[path, "Daily"];
-			If[FailureQ[cells],
-				MessageDialog[Row[{"Failed to read cells from: ", path}]];
-				Return[];
-			];
+			cells = Confirm @ cellsFromChapterInNB[path, "Daily"];
 
 			cells = Confirm @ Replace[
 				filterDailyCellsByInterval[cells, DateInterval[{startDate, endDate}]],
@@ -836,14 +852,12 @@ iHandleShowDailys[] := Enclose[Module[{
 	];
 
 	SelectionMove[First[Cells[nb]], Before, Cell, AutoScroll -> True];
-],
-#["Expression"]&
 ]
 
 filterDailyCellsByInterval[
 	cells0 : {___Cell},
 	interval_DateInterval
-] := Enclose[Module[{
+] := Try @ Module[{
 	cells = cells0,
 	currentDate = None,
 	updateCurrentDate
@@ -991,15 +1005,13 @@ filterDailyCellsByInterval[
 	];
 
 	cells
-],
-#["Expression"] &
 ]
 
 (******************************************************************************)
 (* Shared utility functions                                                   *)
 (******************************************************************************)
 
-cellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Module[{
+cellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Try @ Module[{
 	cells,
 	chapterCell,
 	isAlreadyOpen
@@ -1008,7 +1020,11 @@ cellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Module[{
 		chapterCell = Replace[chapter, {
 			"Queue" :> FindQueueChapterCell[nbObj],
 			"Daily" :> FindDailyChapterCell[nbObj],
-			_ :> Return[$Failed]
+			_ :> Confirm @ FailureMessage[
+				Organizer::error,
+				"Failed to read cells from: ``",
+				{InputForm[path]}
+			]
 		}];
 
 		GroupSelectionMove[chapterCell, All];

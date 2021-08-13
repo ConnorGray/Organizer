@@ -1,6 +1,8 @@
 BeginPackage["Organizer`Utils`"]
 
 Try
+FailureMessage
+HandleUIFailure
 AttachedPopupMenu
 NotebookProcess
 
@@ -30,6 +32,105 @@ Try[expr_] := Enclose[
 		err["Expression"]
 	]
 ]
+
+(**************************************)
+(* FailureMessage                     *)
+(**************************************)
+
+Attributes[FailureMessage] = {HoldFirst}
+
+(*
+	Generate a message and a Failure object.
+
+	`messageName` must be a message which requires only one template parameter. If
+	`messageName` does not already have a definition, the definition `messageName = "``"`
+	will be created automatically.
+*)
+FailureMessage[
+	messageName_MessageName,
+	formatStr_?StringQ,
+	formatParams : _?ListQ | _?AssociationQ : {}
+] := Try @ Module[{},
+	If[!StringQ[messageName],
+		messageName = "``";
+	];
+
+	(* Generate a message. Create and apply the template before generating the message,
+	   because Message/StringForm does not support named template arguments from an
+	   Association.
+
+	   We don't use `string` in the returned Failure object, so that the
+	   caller can pick the arguments out of the "MessageParameters" list programatically
+	   if they desire.
+	*)
+	Module[{template, string},
+		(* Use ToString instead of the default, which is TextString. TextString doesn't
+		   have the behavior we want (try evaluating TextString[InputForm["Hello"]] or
+		   TextString[Quantity[30, "Seconds"]]), which is to reproduce the input code
+		   exactly, though also process wrappers like InputForm. *)
+		template = StringTemplate[formatStr, InsertionFunction -> ToString];
+
+		string = TemplateApply[template, formatParams];
+
+		Message[messageName, string];
+	];
+
+	(* Return a Failure object. *)
+	Failure[
+		ToString[HoldForm[messageName]],
+		<|
+			"MessageTemplate" -> formatStr,
+			"MessageParameters" -> formatParams
+		|>
+	]
+]
+
+(**************************************)
+(* HandleUIFailure                    *)
+(**************************************)
+
+(*
+	ErrorUIAbort
+	UIErrorHandler
+	ShowUIError
+	HandleUIFailure
+	EncloseErrorDialog
+	ShowDialogOnError
+*)
+
+(*
+	Handler for errors which bubble up to the root of a UI interaction evaluation.
+
+	Aborts the evaluations defensively, as there is no higher-level construct to handle
+	the error.
+*)
+HandleUIFailure[err_?FailureQ] := (
+	errorDialog[err];
+	Abort[];
+)
+
+HandleUIFailure[expr_] := expr
+
+(*--------------------*)
+(* errorDialog helper *)
+(*--------------------*)
+
+errorDialog[message_?StringQ] := MessageDialog[Row[{
+	Style["Error: ", 14, Darker[Red]],
+	message
+}]]
+
+errorDialog[form_StringForm] := errorDialog[ToString[form]]
+
+errorDialog[
+	Failure[_, KeyValuePattern[{
+		"MessageTemplate" -> template_?StringQ,
+		"MessageParameters" -> params_?ListQ
+	}]]
+] := errorDialog[StringForm[template, Sequence @@ params]]
+
+errorDialog[err_?FailureQ] :=
+	errorDialog[StringForm["An unknown Failure occurred: ``", InputForm[err]]]
 
 (**************************************)
 (* Attached Cells                     *)
