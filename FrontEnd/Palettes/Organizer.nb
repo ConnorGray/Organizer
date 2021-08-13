@@ -1,0 +1,39 @@
+Notebook[
+	{
+		Cell["Uninitialized Organizer Palette", "Text"]
+	},
+	(*-------------------------------*)
+	(* Organizer application options *)
+	(*-------------------------------*)
+	TaggingRules -> {
+		"CG:Organizer" -> {"DocumentType" -> "MainOrganizerPalette"}
+	},
+	Initialization :> (
+		Needs["Organizer`"];
+		Organizer`Utils`HandleUIFailure[
+			Organizer`Palette`RefreshOrganizerPalette[EvaluationNotebook[]]
+		]
+	),
+	(*---------------*)
+	(* Other options *)
+	(*---------------*)
+	ClosingAutoSave -> False,
+	Saveable -> False,
+	Editable -> False,
+	Selectable -> False,
+	WindowSize -> All,
+	WindowToolbars -> {},
+	WindowFrame -> "Palette",
+	WindowFrameElements -> "CloseBox",
+	WindowTitle -> "Organizer",
+	WindowClickSelect -> False,
+	WindowElements -> {"MagnificationPopUp"},
+	ScrollingOptions -> {
+		"VerticalScrollRange" -> Fit,
+		"PagewiseDisplay" -> True
+	},
+	Magnification -> 1.,
+	ShowCellBracket -> False,
+	CellMargins -> {{0, 0}, {0, 0}},
+	Background -> GrayLevel[0.9]
+]

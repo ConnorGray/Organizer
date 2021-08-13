@@ -4,6 +4,7 @@ PacletObject[<|
     "WolframVersion" -> "12.2+",
     "Extensions" -> {
         {"Kernel", "Root" -> "Source", "Context" -> "Organizer`"},
+		{"FrontEnd"},
 
         {"Resource", "Resources" -> {{"Icons", "./Icons"}}}
     }
