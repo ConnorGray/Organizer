@@ -433,7 +433,7 @@ createSystemOpenCell[] := Try @ With[{
 	]
 ]
 
-insertCellAfterSelection[cell_] := Try Module[{nb},
+insertCellAfterSelection[cell_] := Try @ Module[{nb},
 	If[cell === $Canceled,
 		Return[$Canceled, Module];
 	];
