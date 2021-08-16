@@ -11,7 +11,7 @@ Notebook[
 	Initialization :> (
 		Needs["Organizer`"];
 		Organizer`Utils`HandleUIFailure[
-			Organizer`Palette`RefreshOrganizerPalette[EvaluationNotebook[]]
+			Organizer`Palette`InitializeOrganizerPalette[EvaluationNotebook[]]
 		]
 	),
 	(*---------------*)

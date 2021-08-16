@@ -3,6 +3,7 @@ BeginPackage["Organizer`Palette`"]
 WorkspaceDirectory
 CategoryDirectory
 RefreshOrganizerPalette
+InitializeOrganizerPalette
 
 Begin["`Private`"]
 
@@ -14,7 +15,7 @@ Needs["Organizer`LogNotebookRuntime`"]
 NotebooksDirectory[] := Try @ Module[{dir},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
     If[!DirectoryQ[dir],
-		If[$DynamicEvaluation,
+		If[$SynchronousEvaluation,
 			(* ChoiceDialog and SystemDialogInput don't work if this is a pre-emptive
 			   evaluation, so skip trying to recover. This can happen when the hidden
 			   button in the Log.nb docked title bar is clicked. *)
@@ -291,11 +292,76 @@ OpenOrganizerPalette[] := Try @ Module[{
 	(* TODO: Return the NotebookObject[..] for the open palette? *)
 ]
 
-RefreshOrganizerPalette[nb_NotebookObject] := Try @ Module[{
+InitializeOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
+	contents
+},
+	If[FailureQ[CategoryDirectory[]],
+		(* If we can't get a CategoryDirectory[], make the contents of the palette be
+		   a `Method -> "Queued" button for the user to click. This is a workaround for
+		   the fact we cannot show dialog prompts to the user during a preemptive
+		   evaluation (which notebook `Initialization :> (..)` is). *)
+		Confirm @ SetOrganizerPaletteContent[nb0, Function[nb, (
+			contents = EchoLabel["contents"] @ Button[
+				Style["Setup Organizer", 20],
+				(
+					(* CategoryDirectory will interactively prompt the user to pick new
+					   values when the old values are bad in someway. Rely on this side-effect
+					   to initialize the Organizer root directory state. *)
+					HandleUIFailure[CategoryDirectory[]];
+
+					(* Re-attempt initialization. *)
+					HandleUIFailure[InitializeOrganizerPalette[nb]];
+				),
+				Method -> "Queued",
+				Background -> Green,
+				ImageSize -> Full
+			];
+
+			(* Delete everything in the notebook! *)
+			SelectionMove[nb, All, Notebook];
+			NotebookDelete[nb];
+
+			(* Write the new content. *)
+			NotebookWrite[
+				nb,
+				Cell[BoxData @ ToBoxes @ contents]
+			];
+		)]];
+		,
+		RefreshOrganizerPalette[nb0]
+	];
+]
+
+RefreshOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
+	contents
+},
+	(* Echo["called RefreshOrganizerPalette:"]; *)
+
+	SetOrganizerPaletteContent[
+		nb0,
+		Function[nb, (
+			(* Compute the new contents for the palette. *)
+			(* Do this *before* deleting the old contents to minimize the time that the palette
+			is blank. *)
+			contents = Confirm @ createOrganizerPalette[];
+
+			(* Delete everything in the notebook! *)
+			SelectionMove[nb, All, Notebook];
+			NotebookDelete[nb];
+
+			(* Write the new content. *)
+			NotebookWrite[
+				nb,
+				Cell[BoxData @ ToBoxes @ contents]
+			];
+		)]
+	]
+]
+
+SetOrganizerPaletteContent[nb_NotebookObject, callback_] := Try @ Module[{
 	organizerPaletteQ, info,
 	body, contents
 },
-	(* Echo["called RefreshOrganizerPalette:"]; *)
 
 	(*------------------------------------------------------------------------------*)
 	(* Defensively check that this is the Organizer palette we're about to refresh. *)
@@ -335,20 +401,7 @@ RefreshOrganizerPalette[nb_NotebookObject] := Try @ Module[{
 	SetOptions[nb, Selectable -> True];
 
 
-	(* Compute the new contents for the palette. *)
-	(* Do this *before* deleting the old contents to minimize the time that the palette
-	   is blank. *)
-	contents = Confirm @ createOrganizerPalette[];
-
-	(* Delete everything in the notebook! *)
-	SelectionMove[nb, All, Notebook];
-	NotebookDelete[nb];
-
-	(* Write the new content. *)
-	NotebookWrite[
-		nb,
-		Cell[BoxData @ ToBoxes @ contents]
-	];
+	Confirm @ callback[nb];
 
 
 	(* Restore `Selectable -> False` *)
