@@ -301,7 +301,7 @@ InitializeOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
 		   the fact we cannot show dialog prompts to the user during a preemptive
 		   evaluation (which notebook `Initialization :> (..)` is). *)
 		Confirm @ SetOrganizerPaletteContent[nb0, Function[nb, (
-			contents = EchoLabel["contents"] @ Button[
+			contents = Button[
 				Style["Setup Organizer", 20],
 				(
 					(* CategoryDirectory will interactively prompt the user to pick new
