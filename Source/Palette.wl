@@ -1,4 +1,4 @@
-BeginPackage["Organizer`Palette`"]
+BeginPackage["ConnorGray`Organizer`Palette`"]
 
 WorkspaceDirectory
 CategoryDirectory
@@ -7,9 +7,9 @@ InitializeOrganizerPalette
 
 Begin["`Private`"]
 
-Needs["Organizer`"]
-Needs["Organizer`Utils`"]
-Needs["Organizer`LogNotebookRuntime`"]
+Needs["ConnorGray`Organizer`"]
+Needs["ConnorGray`Organizer`Utils`"]
+Needs["ConnorGray`Organizer`LogNotebookRuntime`"]
 
 
 NotebooksDirectory[] := Try @ Module[{dir},
@@ -258,7 +258,7 @@ OpenOrganizerPalette[] := Try @ Module[{
 	]; *)
 
 
-	organizerPacletLocation = Confirm[PacletObject["Organizer"]]["Location"];
+	organizerPacletLocation = Confirm[PacletObject["ConnorGray__Organizer"]]["Location"];
 	paletteLocation = FileNameJoin[{
 		organizerPacletLocation,
 		"FrontEnd", "Palettes", "Organizer.nb"
@@ -425,7 +425,7 @@ createOrganizerPalette[] := Try @ With[{
 			PersistentValue["CG:Organizer:Category"] = category;
 
 			(* OpenOrganizerPalette[] automatically refreshes the organizer palette. *)
-			Organizer`OpenOrganizerPalette[]
+			ConnorGray`Organizer`OpenOrganizerPalette[]
 		),
 		FrameMargins -> 2,
 		Appearance -> "Palette",
@@ -498,10 +498,10 @@ commandDropdownContents[close_Function] := Try @ With[{
                 (
                     ReleaseHold[loadOrFail];
 
-                    Assert[MemberQ[$Packages, "Organizer`"]];
+					Assert[MemberQ[$Packages, "ConnorGray`Organizer`"]];
 
                     (* OpenOrganizerPalette[] automatically refreshes the palettte. *)
-                    Organizer`OpenOrganizerPalette[]
+					ConnorGray`Organizer`OpenOrganizerPalette[]
                 ),
                 Method -> "Queued",
                 Background -> LightBlue
@@ -519,7 +519,7 @@ commandDropdownContents[close_Function] := Try @ With[{
                         PersistentValue["CG:Organizer:Category"] = First[Categories[]];
 
 						(* OpenOrganizerPalette[] automatically refreshes the palette. *)
-                        Organizer`OpenOrganizerPalette[]
+						ConnorGray`Organizer`OpenOrganizerPalette[]
                     )&,
                     Confirm @ Workspaces[]
                 ]

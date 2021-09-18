@@ -1,4 +1,4 @@
-BeginPackage["Organizer`"]
+BeginPackage["ConnorGray`Organizer`"]
 
 OpenOrganizerPalette
 UpdateLogNotebooks
@@ -11,16 +11,16 @@ If[$VersionNumber >= 12.3,
 	Off[PersistentValue::obs]
 ];
 
-Needs["Organizer`LogNotebookRuntime`"];
-Needs["Organizer`Palette`"]
-Needs["Organizer`Utils`"]
+Needs["ConnorGray`Organizer`LogNotebookRuntime`"];
+Needs["ConnorGray`Organizer`Palette`"]
+Needs["ConnorGray`Organizer`Utils`"]
 
 (* This function is meant to be called manually whenever there is a change to the standard
    set of docked cells or StyleDefinitions. *)
 UpdateLogNotebooks[] := Try @ Module[{nbs, nbObj},
     nbs = FileNames[
         "Log.nb",
-        Confirm @ Organizer`Palette`WorkspaceDirectory[],
+        Confirm @ ConnorGray`Organizer`Palette`WorkspaceDirectory[],
         Infinity
     ];
 

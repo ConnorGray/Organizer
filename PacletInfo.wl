@@ -1,11 +1,19 @@
 PacletObject[<|
-    "Name" -> "Organizer",
-    "Version" -> "0.2.0",
-    "WolframVersion" -> "12.2+",
-    "Extensions" -> {
-        {"Kernel", "Root" -> "Source", "Context" -> "Organizer`"},
+	"Name" -> "ConnorGray__Organizer",
+	"Version" -> "0.2.0",
+	"WolframVersion" -> "12.2+",
+	"Extensions" -> {
+		{
+			"Kernel",
+			"Root" -> "Source",
+			"Context" -> {
+				{"ConnorGray`Organizer`", "Organizer.wl"},
+				{"ConnorGray`Organizer`LogNotebookRuntime`", "LogNotebookRuntime.wl"},
+				{"ConnorGray`Organizer`Palette`", "Palette.wl"},
+				{"ConnorGray`Organizer`Utils`", "Utils.wl"}
+			}
+		},
 		{"FrontEnd"},
-
-        {"Resource", "Resources" -> {{"Icons", "./Icons"}}}
-    }
+		{"Resource", "Resources" -> {{"Icons", "./Icons"}}}
+	}
 |>]

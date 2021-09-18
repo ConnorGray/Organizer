@@ -1,4 +1,4 @@
-BeginPackage["Organizer`Utils`"]
+BeginPackage["ConnorGray`Organizer`Utils`"]
 
 Try
 FailureMessage
@@ -11,8 +11,8 @@ NotebookProcess
     ensures that the check does not rely on any function from the Organizer` paclet itself.
 *)
 $HeldLoadOrFail = Hold[
-    If[FailureQ @ PacletObject["Organizer"] || FailureQ @ Needs["Organizer`"],
-        MessageDialog["The Organizer` paclet is either not installed, or failed to load."];
+    If[FailureQ @ PacletObject["ConnorGray__Organizer"] || FailureQ @ Needs["ConnorGray`Organizer`"],
+        MessageDialog["The Organizer paclet is either not installed, or failed to load."];
         Abort[];
     ];
 ]
