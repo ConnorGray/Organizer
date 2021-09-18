@@ -8,7 +8,7 @@
 (*Runtime*)
 
 
-BeginPackage["Organizer`LogNotebookRuntime`"]
+BeginPackage["ConnorGray`Organizer`LogNotebookRuntime`"]
 
 FindQueueChapterCell
 FindDailyChapterCell
@@ -25,8 +25,8 @@ InsertTodoAtTopOfQueue
 
 Begin["`Private`"]
 
-Needs["Organizer`"]
-Needs["Organizer`Utils`"]
+Needs["ConnorGray`Organizer`"]
+Needs["ConnorGray`Organizer`Utils`"]
 
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
@@ -57,9 +57,9 @@ importIcon[filename_?StringQ] := importSVG[
 ]
 *)
 
-importIcon[filename_?StringQ] := Get[
+importIcon[filename_?StringQ] := Try @ Get[
 	FileNameJoin[{
-		PacletObject["Organizer"]["AssetLocation", "Icons"],
+		Confirm[Confirm[PacletObject["ConnorGray__Organizer"]]["AssetLocation", "Icons"]],
 		filename <> ".wl"
 	}]
 ]

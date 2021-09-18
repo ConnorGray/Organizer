@@ -9,9 +9,9 @@ Notebook[
 		"CG:Organizer" -> {"DocumentType" -> "MainOrganizerPalette"}
 	},
 	Initialization :> (
-		Needs["Organizer`"];
-		Organizer`Utils`HandleUIFailure[
-			Organizer`Palette`InitializeOrganizerPalette[EvaluationNotebook[]]
+		Needs["ConnorGray`Organizer`"];
+		ConnorGray`Organizer`Utils`HandleUIFailure[
+			ConnorGray`Organizer`Palette`InitializeOrganizerPalette[EvaluationNotebook[]]
 		]
 	),
 	(*---------------*)
