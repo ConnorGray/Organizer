@@ -488,7 +488,7 @@ createOrganizerPalette[] := Try @ With[{
 			categoryPicker
 		}
 		,
-		Spacings -> 0.15
+		Spacings -> 0.1
 	];
 
 	paletteContents = Pane[paletteContents, ImageSize -> $PaletteWidth];
@@ -575,31 +575,39 @@ buttonListToOpenActiveProjectLogs[] := Try @ Module[{projects, metaProjs},
             },
                 If[FileExistsQ[path],
                     {
-                        Button[Style[StringTrim[proj, "+"], 16],
-                            (
-                                ReleaseHold[loadOrFail];
-                                Module[{nb},
-                                    nb = NotebookOpen[path];
-                                    If[MatchQ[nb, _NotebookObject],
-                                        SetOptions[nb, Visible -> True];
-                                    ];
-                                ]
-                            ),
-                            Method -> "Queued",
-                            Background -> If[StringStartsQ[proj, "+"],
-                                Lighter@Lighter@Lighter@Blue,
-                                LightBlue
-                            ]
-                        ],
-                        Button[Style["./", 16, Bold],
-                            (
-                                ReleaseHold[loadOrFail];
-                                RunProcess[{"open", FileNameDrop[path, -1]}];
-                            ),
-                            Method -> "Queued",
-                            Background -> Lighter@Orange,
-                            ImageSize -> {30, 30}
-                        ]
+                        Pane[
+							Button[
+								Pane[
+									Style[StringTrim[proj, "+"], 16],
+									ImageSize -> Full,
+									Alignment -> Center
+								],
+								(
+									ReleaseHold[loadOrFail];
+									Module[{nb},
+										nb = NotebookOpen[path];
+										If[MatchQ[nb, _NotebookObject],
+											SetOptions[nb, Visible -> True];
+										];
+									]
+								),
+								Method -> "Queued",
+								Background -> If[StringStartsQ[proj, "+"],
+									Lighter@Lighter@Lighter@Blue,
+									LightBlue
+								]
+							],
+							ImageSize -> Full
+						],
+						Pane @ Button[Style["./", 16, Bold],
+							(
+								ReleaseHold[loadOrFail];
+								RunProcess[{"open", FileNameDrop[path, -1]}];
+							),
+							Method -> "Queued",
+							Background -> Lighter@Orange,
+							ImageSize -> {30, 30}
+						]
                     }
                     ,
                     {Panel[path, Background -> Darker@LightBlue]}
