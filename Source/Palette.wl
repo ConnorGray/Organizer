@@ -12,8 +12,9 @@ Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`LogNotebookRuntime`"]
 
 
-NotebooksDirectory[] := Try @ Module[{dir},
+NotebooksDirectory[] := Try @ Module[{dir, error},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
+
     If[!DirectoryQ[dir],
 		If[$SynchronousEvaluation,
 			(* ChoiceDialog and SystemDialogInput don't work if this is a pre-emptive
@@ -26,12 +27,18 @@ NotebooksDirectory[] := Try @ Module[{dir},
 			];
 		];
 
-		(* Ask the user if they would like to pick a new root directory. *)
-		If[
-			!ChoiceDialog[ToString @ StringForm[
+		error = If[MissingQ[dir],
+			"Setup: No Organizer root directory has been chosen. Please choose a directory to hold your Organizer notebooks."
+			,
+			ToString @ StringForm[
 				"Error: saved Organizer root directory does not exist: ``. Would you like to pick a new root directory?",
 				InputForm[dir]
-			]],
+			]
+		];
+
+		(* Ask the user if they would like to pick a new root directory. *)
+		If[
+			!ChoiceDialog[error],
 			(* The user decided not to pick a root directory. Return an error. *)
 			Confirm @ FailureMessage[
 				Organizer::canceled,
