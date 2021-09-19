@@ -13,6 +13,7 @@ PacletObject[<|
 				{"ConnorGray`Organizer`Utils`", "Utils.wl"}
 			}
 		},
+		{"Documentation"},
 		{"FrontEnd"},
 		{"Resource", "Resources" -> {{"Icons", "./Icons"}}}
 	}
