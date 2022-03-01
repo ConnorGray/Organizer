@@ -432,7 +432,7 @@ createOrganizerPalette[] := Try @ With[{
 			PersistentValue["CG:Organizer:Category"] = category;
 
 			(* OpenOrganizerPalette[] automatically refreshes the organizer palette. *)
-			ConnorGray`Organizer`OpenOrganizerPalette[]
+			HandleUIFailure @ ConnorGray`Organizer`OpenOrganizerPalette[]
 		),
 		FrameMargins -> 2,
 		Appearance -> "Palette",
@@ -508,7 +508,7 @@ commandDropdownContents[close_Function] := Try @ With[{
 					Assert[MemberQ[$Packages, "ConnorGray`Organizer`"]];
 
                     (* OpenOrganizerPalette[] automatically refreshes the palettte. *)
-					ConnorGray`Organizer`OpenOrganizerPalette[]
+					HandleUIFailure @ ConnorGray`Organizer`OpenOrganizerPalette[]
                 ),
                 Method -> "Queued",
                 Background -> LightBlue
@@ -526,7 +526,7 @@ commandDropdownContents[close_Function] := Try @ With[{
                         PersistentValue["CG:Organizer:Category"] = First[Categories[]];
 
 						(* OpenOrganizerPalette[] automatically refreshes the palette. *)
-						ConnorGray`Organizer`OpenOrganizerPalette[]
+						HandleUIFailure @ ConnorGray`Organizer`OpenOrganizerPalette[]
                     )&,
                     Confirm @ Workspaces[]
                 ]
@@ -678,7 +678,7 @@ handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
     NotebookSave[logNB, FileNameJoin[{dirPath, "Log.nb"}] ];
 
     (* Refresh the organizer palette in-place. *)
-    OpenOrganizerPalette[];
+    HandleUIFailure @ OpenOrganizerPalette[];
 ]
 
 (**************************************)
