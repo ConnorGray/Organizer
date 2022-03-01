@@ -1,7 +1,8 @@
 PacletObject[<|
-	"Name" -> "ConnorGray__Organizer",
-	"Version" -> "0.2.0",
-	"WolframVersion" -> "12.2+",
+	"Name" -> "ConnorGray/Organizer",
+	"Version" -> "0.3.0",
+	"WolframVersion" -> "13.0+",
+	"PublisherID" -> "ConnorGray",
 	"Extensions" -> {
 		{
 			"Kernel",

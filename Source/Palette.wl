@@ -265,7 +265,7 @@ OpenOrganizerPalette[] := Try @ Module[{
 	]; *)
 
 
-	organizerPacletLocation = Confirm[PacletObject["ConnorGray__Organizer"]]["Location"];
+	organizerPacletLocation = Confirm[PacletObject["ConnorGray/Organizer"]]["Location"];
 	paletteLocation = FileNameJoin[{
 		organizerPacletLocation,
 		"FrontEnd", "Palettes", "Organizer.nb"
