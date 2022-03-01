@@ -59,7 +59,7 @@ importIcon[filename_?StringQ] := importSVG[
 
 importIcon[filename_?StringQ] := Try @ Get[
 	FileNameJoin[{
-		Confirm[Confirm[PacletObject["ConnorGray__Organizer"]]["AssetLocation", "Icons"]],
+		Confirm[Confirm[PacletObject["ConnorGray/Organizer"]]["AssetLocation", "Icons"]],
 		filename <> ".wl"
 	}]
 ]

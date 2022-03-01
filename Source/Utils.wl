@@ -11,7 +11,7 @@ NotebookProcess
     ensures that the check does not rely on any function from the Organizer` paclet itself.
 *)
 $HeldLoadOrFail = Hold[
-    If[FailureQ @ PacletObject["ConnorGray__Organizer"] || FailureQ @ Needs["ConnorGray`Organizer`"],
+    If[FailureQ @ PacletObject["ConnorGray/Organizer"] || FailureQ @ Needs["ConnorGray`Organizer`"],
         MessageDialog["The Organizer paclet is either not installed, or failed to load."];
         Abort[];
     ];
