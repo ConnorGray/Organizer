@@ -1,6 +1,24 @@
 # Personal Organizer System
 
-This paclet provides a palette and notebook organizer system.
+This repository contains the source code for the
+[`ConnorGray/Organizer`](https://resources.wolframcloud.com/PacletRepository/resources/ConnorGray/Organizer/)
+paclet.
+
+`ConnorGray/Organizer` provides a notebook interface application for organizing project
+notes and to-dos.
+
+## Installation
+
+`ConnorGray/Organizer` is available for installation from the [Wolfram Paclet Repository][WPR]:
+
+```wolfram
+PacletInstall[ResourceObject["ConnorGray/Organizer"]]
+```
+
+*Note: Installing from the Wolfram Paclet Repository currently requires Wolfram Language
+v13.0 or later.*
+
+[WPR]: https://resources.wolframcloud.com/PacletRepository/
 
 ## First-time setup
 
