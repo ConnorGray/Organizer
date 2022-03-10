@@ -35,7 +35,7 @@ Next, evaluate `` Needs["Organizer`"] ``. If this is your first time setting up 
 a file selection dialog will appear asking you to select a directory.
 
 ```wolfram
-Needs["Organizer`];
+Needs["Organizer`"];
 ```
 
 > If you've previously set-up the organizer system, but would like to change the root
