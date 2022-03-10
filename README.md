@@ -22,21 +22,12 @@ v13.0 or later.*
 
 ## First-time setup
 
-Begin by cloning this paclet to your local computer. Next, use `CreatePacletArchive` and
-`PacletInstall` to install it to your system.
+After [installing Organizer](#installation), you can perform first-time setup by opening the main
+palette window. Once installed, Organizer will automatically appear in the system
+**Palettes > Organizer** menu item. Click it to open the Organizer palette.
 
-```wolfram
-CreatePacletArchive["/path/to/Organizer"];
-
-PacletInstall["/path/to/Organizer-0.1.0.paclet"];
-```
-
-Next, evaluate `` Needs["Organizer`"] ``. If this is your first time setting up the system,
-a file selection dialog will appear asking you to select a directory.
-
-```wolfram
-Needs["Organizer`"];
-```
+Read the [Organizer Overview tutorial](https://resources.wolframcloud.com/PacletRepository/resources/ConnorGray/Organizer/Organizer/tutorial/Overview.html)
+to learn more.
 
 > If you've previously set-up the organizer system, but would like to change the root
 > directory the system uses, you do so by evaluating:
@@ -47,15 +38,6 @@ Needs["Organizer`"];
 >
 > Support for multiple organizer roots is not currently implemented. Instead it's suggested
 > that you use the "workspaces" feature to split a single directory into distinct areas.
-
-Once you've chosen a root directory, you may open the palette by evaluating:
-
-```wolfram
-CreateOrganizerPalette[]
-```
-
-This should open a new empty palette window. New projects may be added by clicking the
-"New Project" button and entering a name in the dialog window.
 
 ### On-disk directory structure
 
