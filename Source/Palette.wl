@@ -844,7 +844,7 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 					],
 					PopupMenu[
 						Dynamic[timePeriod],
-						{"This Week", "Last Week", "Yesterday", "Past 7 Days", "Past 30 Days"}
+						{"This Week", "Last Week", "Yesterday", "Past 7 Days", "Past 14 Days", "Past 30 Days"}
 					]
 				}],
 				"Daily's Report Settings"
@@ -869,6 +869,10 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 	Replace[timePeriod, {
 		"Past 7 Days" :> (
 			startDate = Today - Quantity[7, "Days"];
+			endDate = Today;
+		),
+		"Past 14 Days" :> (
+			startDate = Today - Quantity[14, "Days"];
 			endDate = Today;
 		),
 		"Past 30 Days" :> (
@@ -922,7 +926,7 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 	workspaceName = FileNameTake[Confirm @ WorkspaceDirectory[], -1];
 
 	timestamp = DateString[Now, {
-		"DayName", " ", "MonthName", " ", "Day",
+		"DayName", " ", "MonthName", " ", "Day", ", ", "Year",
 		" at ", "Hour12Short", ":", "Minute", "AMPMLowerCase"
 	}];
 
@@ -1007,7 +1011,19 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 		(* Replace the temporary docked cell with a permanent one. *)
 		DockedCells -> {
 			Cell[
-				BoxData @ ToBoxes @ Style["All Daily's: " <> workspaceName <> ": " <> timestamp],
+				BoxData @ ToBoxes @ Row[{
+					Style["All Daily's: " <> workspaceName <> ": " <> timestamp],
+					(* This notebook is not editable by default, to prevent confusion of
+					   the generated content with the source content. Clicking this button
+					   makes it possible to opt-in to editing, e.g. for the purpose of
+					   editing or rearranging the Daily's report before sharing it. *)
+					Button[
+						"Make Editable",
+						(
+							SetOptions[EvaluationNotebook[], Editable -> True];
+						)
+					]
+				}],
 				"Text",
 				FontSize -> 14,
 				FontColor -> GrayLevel[0.2],
