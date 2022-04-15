@@ -1011,7 +1011,19 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 		(* Replace the temporary docked cell with a permanent one. *)
 		DockedCells -> {
 			Cell[
-				BoxData @ ToBoxes @ Style["All Daily's: " <> workspaceName <> ": " <> timestamp],
+				BoxData @ ToBoxes @ Row[{
+					Style["All Daily's: " <> workspaceName <> ": " <> timestamp],
+					(* This notebook is not editable by default, to prevent confusion of
+					   the generated content with the source content. Clicking this button
+					   makes it possible to opt-in to editing, e.g. for the purpose of
+					   editing or rearranging the Daily's report before sharing it. *)
+					Button[
+						"Make Editable",
+						(
+							SetOptions[EvaluationNotebook[], Editable -> True];
+						)
+					]
+				}],
 				"Text",
 				FontSize -> 14,
 				FontColor -> GrayLevel[0.2],
