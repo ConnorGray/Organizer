@@ -926,7 +926,7 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 	workspaceName = FileNameTake[Confirm @ WorkspaceDirectory[], -1];
 
 	timestamp = DateString[Now, {
-		"DayName", " ", "MonthName", " ", "Day",
+		"DayName", " ", "MonthName", " ", "Day", ", ", "Year",
 		" at ", "Hour12Short", ":", "Minute", "AMPMLowerCase"
 	}];
 
