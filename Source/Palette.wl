@@ -844,7 +844,7 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 					],
 					PopupMenu[
 						Dynamic[timePeriod],
-						{"This Week", "Last Week", "Yesterday", "Past 7 Days", "Past 30 Days"}
+						{"This Week", "Last Week", "Yesterday", "Past 7 Days", "Past 14 Days", "Past 30 Days"}
 					]
 				}],
 				"Daily's Report Settings"
@@ -869,6 +869,10 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 	Replace[timePeriod, {
 		"Past 7 Days" :> (
 			startDate = Today - Quantity[7, "Days"];
+			endDate = Today;
+		),
+		"Past 14 Days" :> (
+			startDate = Today - Quantity[14, "Days"];
 			endDate = Today;
 		),
 		"Past 30 Days" :> (
