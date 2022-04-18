@@ -27,6 +27,7 @@ Begin["`Private`"]
 
 Needs["ConnorGray`Organizer`"]
 Needs["ConnorGray`Organizer`Utils`"]
+Needs["ConnorGray`Organizer`Toolbar`"]
 
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 	PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"] = {
@@ -38,54 +39,6 @@ If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 (*********)
 (* Icons *)
 (*********)
-
-(*
-importSVG[path_?StringQ] := Module[{func},
-	func = ResourceFunction["SVGImport"];
-	If[FailureQ[func],
-		Throw["ResourceFunction[\"SVGImport\"] could not be loaded."];
-	];
-
-	func[path]
-]
-
-importIcon[filename_?StringQ] := importSVG[
-	FileNameJoin[{
-		PacletObject["Organizer"]["AssetLocation", "Icons"],
-		filename
-	}]
-]
-*)
-
-importIcon[filename_?StringQ] := Try @ Get[
-	FileNameJoin[{
-		Confirm[Confirm[PacletObject["ConnorGray/Organizer"]]["AssetLocation", "Icons"]],
-		filename <> ".wl"
-	}]
-]
-
-LoadIcons[] := (
-	$iconCalendarWithPlus;
-	$iconUnfinishedTodoList;
-	$iconPlus;
-	$iconFileLink;
-	$iconLinkArea;
-	$iconOpenFolder;
-	$iconMessageLink;
-	$iconBrowserLink;
-)
-
-(* Delay loading the icon (SetDelayed) until it's really needed. Then cache the loaded
-   value. *)
-$iconCalendarWithPlus   := $iconCalendarWithPlus   = importIcon["CalendarWithPlus.svg"]
-$iconUnfinishedTodoList := $iconUnfinishedTodoList = importIcon["UnfinishedTodoList.svg"]
-$iconPlus               := $iconPlus               = importIcon["Plus.svg"]
-$iconFileLink           := $iconFileLink           = importIcon["FileLink.svg"]
-$iconLinkArea           := $iconLinkArea           = importIcon["LinkArea.svg"]
-$iconOpenFolder         := $iconOpenFolder         = importIcon["OpenFolder.svg"]
-$iconMessageLink        := $iconMessageLink        = importIcon["MessageLink.svg"]
-$iconBrowserLink        := $iconBrowserLink        = importIcon["BrowserLink.svg"]
-
 
 (* ::Text:: *)
 
@@ -392,47 +345,6 @@ findChapterCell[nb_NotebookObject, contents_?StringQ] := Try @ Module[{cell},
 	cell
 ]
 
-(**************************************)
-(* ::Subsubsection:: *)
-(*Links*)
-(**************************************)
-
-shortenURLLabel[label_?StringQ] := StringReplace[
-  label,
-  (* Personal set of URL shortening rules. *)
-  "Pull Request #" ~~ content___ ~~ "- Wolfram Stash" :> "PR #" <> content
-]
-
-createSystemOpenCell[] := Try @ With[{
-	filepath = SystemDialogInput["FileOpen", NotebookDirectory[]]
-},
-	If[filepath === $Canceled,
-		Return[$Canceled];
-	];
-
-	If[!StringQ[filepath],
-		Confirm @ FailureMessage[
-			Organizer::error,
-			"Invalid file path: ``",
-			{filepath}
-		];
-	];
-
-	Cell[
-		BoxData @ ToBoxes @ Framed[
-			Button[
-				Style[(* label *)FileNameTake[filepath, -1], "Hyperlink", Bold],
-				SystemOpen[File[filepath]],
-				Appearance -> None
-			],
-			RoundingRadius -> 5,
-			Background -> LightBlue,
-			FrameStyle -> Directive[Thick, Darker@Green]
-		],
-		CellMargins -> {{66, 0}, {0, 1}}
-	]
-]
-
 insertCellAfterSelection[cell_] := Try @ Module[{nb},
 	If[cell === $Canceled,
 		Return[$Canceled, Module];
@@ -452,252 +364,10 @@ insertCellAfterSelection[cell_] := Try @ Module[{nb},
 	NotebookWrite[nb, cell];
 ]
 
-getDraggedHyperlink[] := Try @ Module[{path, res, data, hyperlink},
-	(* TODO: Make path cross-platform. *)
-	If[$SystemID =!= "MacOSX-x86-64",
-		Confirm @ FailureMessage[
-			Organizer::error,
-			"Cannot get dragged link on non-MacOSX platforms."
-		];
-	];
-
-	path = FileNameJoin[{$HomeDirectory, "Desktop/dragged_link.html"}];
-	CreateFile[path];
-	RunProcess[{"open", "-a", "TextEdit", path}];
-
-	(* Block on a dialog window until the user clicks to proceed.
-	prevents us from reading from `dragged_link.html` before the
-	user has actually had time to drag/paste anything in. *)
-	res = DialogInput[DialogNotebook[{
-		Button[
-			Style["Finished Dragged Link", 30],
-			DialogReturn[1],
-			Background -> LightGreen,
-			ImageMargins -> {{20,20},{30,20}},
-			FrameMargins -> 120
-		]
-	}]];
-
-	If[res === $Canceled,
-		Return[$Canceled];
-	];
-
-	data = Import[path, {{"Hyperlinks", "Plaintext"}}];
-
-	DeleteFile[path];
-
-	hyperlink = Replace[data, {
-		{{link_}, label_} :> Hyperlink[Style[shortenURLLabel[label], 12], URL[link]],
-		_ :> Confirm @ FailureMessage[
-			Organizer::error,
-			"Dragged link did not have the expected format after Import: ``",
-			{InputForm[data]}
-		]
-	}];
-
-	Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"]
-]
-
-(**************************************)
-(* AppleScripts                       *)
-(**************************************)
-
-$getMailLinkScript = "
-tell application \"Mail\"
-	(* open (get first message of inbox) *)
-
-	set _selectedMsgs to selected messages of message viewer 0
-
-	if (_selectedMsgs is equal to missing value) then
-		log \"Missing[\\\"NotAvailable\\\"]\"
-		return
-	end if
-
-	log \"{\"
-	repeat with _theMsg in _selectedMsgs
-		set _id to (message id of _theMsg)
-		set _subject to (subject of _theMsg)
-		set _date to (date received of _theMsg)
-		set _sender to (sender of _theMsg)
-
-		log \"<|\"
-		log \"\\\"ID\\\" -> \\\"\"           & _id      & \"\\\", \"
-		log \"\\\"Subject\\\" -> \\\"\"      & _subject & \"\\\", \"
-		log \"\\\"DateReceived\\\" -> \\\"\" & _date    & \"\\\", \"
-		log \"\\\"Sender\\\" -> \\\"\"       & _sender  & \"\\\"\"
-		log \"|>, \"
-	end repeat
-	log \"Sequence[]}\"
-
-	(*if (_msgs is not equal to missing value) then
-		set _msg to last item of _msgs
-		set _msgID to (message id of _msg)
-
-		return _msgID
-	end if
-	*)
-end tell
-";
-
-$getSafariLinkScript = "
-tell application \"Safari\"
-	log \"{\"
-	repeat with _theDoc in every document
-		set _title to (name of _theDoc)
-		set _url to (URL of _theDoc)
-
-		log \"<|\"
-		log \"\\\"Title\\\" -> \\\"\" & _title as «class utf8»      & \"\\\", \"
-		log \"\\\"URL\\\" -> \\\"\"   & _url  & \"\\\"\"
-		log \"|>, \"
-	end repeat
-	log \"Sequence[]}\"
-end tell
-"
-
-$getChromeLinkScript = "
-if application \"Google Chrome\" is running then
-	tell application \"Google Chrome\"
-		log \"{\"
-		repeat with _window in every window
-			set _title to the title of active tab of _window
-			set _url to the URL of active tab of _window
-
-			log \"<|\"
-			log \"\\\"Title\\\" -> \\\"\" & _title as «class utf8»      & \"\\\", \"
-			log \"\\\"URL\\\" -> \\\"\"   & _url  & \"\\\"\"
-			log \"|>, \"
-		end repeat
-		log \"Sequence[]}\"
-	end tell
-else
-	log \"{}\"
-end if
-"
-
-getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
-	data = RunProcess[{"osascript", "-e", $getMailLinkScript}, "StandardError"];
-	If[FailureQ[data],
-		Return[data];
-	];
-	Assert[StringQ[data]];
-
-	data = ToExpression[data];
-
-	If[MissingQ[data],
-		Return[data];
-	];
-
-	If[!ListQ[data] || data === {},
-		Return[$Failed];
-	];
-
-	If[Length[data] === 1,
-		message = data[[1]];
-		url = URL["message://%3C" <> URLEncode[message["ID"]] <> "%3E"];
-		hyperlink = Hyperlink[Style[message["Subject"], 12], url];
-
-		Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
-	];
-
-	(* TODO: Support showing a listing of possible emails to link to when Length[data] > 1 *)
-	Return[$Failed];
-]
-
-
-getOpenPages[script_?StringQ] := Try @ Module[{data},
-	data = RunProcess[{"osascript", "-e", script}, "StandardError"];
-
-	(* Echo[InputForm[data], "data A"] *)
-
-	If[FailureQ[data],
-		Confirm @ FailureMessage[
-			Organizer::error,
-			"Invocation of 'osascript' failed: ``",
-			{InputForm[data]}
-		];
-	];
-	Assert[StringQ[data]];
-
-	If[StringContainsQ[data, "missing value"],
-		Confirm @ FailureMessage[
-			Organizer::error,
-			"Data returned from 'osascript' contains missing value: ``",
-			{InputForm[data]}
-		];
-	];
-
-	data = ToExpression[data];
-
-	(* Echo[data, "data B"]; *)
-
-	If[!MatchQ[data, {KeyValuePattern[{"Title" -> _?StringQ, "URL" -> _?StringQ}]...}],
-		Confirm @ FailureMessage[
-			Organizer::error,
-			"Data returned from 'osascript' does not have the expected Association form: ``",
-			{InputForm[data]}
-		];
-	];
-
-	Return[data];
-]
-
-
-getBrowserHyperlink[] := Try @ Module[{safariData, chromeData, data, pair, hyperlink},
-	safariData = Confirm @ getOpenPages[$getSafariLinkScript];
-	chromeData = Confirm @ getOpenPages[$getChromeLinkScript];
-
-	data = Join[safariData, chromeData];
-
-	pair = Which[
-		Length[data] === 0,
-			Confirm @ FailureMessage[
-				Organizer::error,
-				"Data returned from 'osascript' was an empty list: ``. Perhaps you have no browser windows open?",
-				{InputForm[data]}
-			];
-		,
-		Length[data] === 1,
-			data[[1]]
-		,
-		True,
-			DialogInput[DialogNotebook[{
-				Column[
-					Map[
-						Function[{pair},
-							Button[pair["Title"], DialogReturn[pair]]
-						],
-						data
-					]
-				]
-			}]]
-	];
-
-	If[pair === $Canceled,
-		Return[$Canceled];
-	];
-
-	hyperlink = Hyperlink[
-		Style[shortenURLLabel[pair["Title"]], 12],
-		pair["URL"]
-	];
-
-	Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
-]
-
 (**************************************)
 (* ::Chapter:: *)
 (* New Notebook Setup                 *)
 (**************************************)
-
-iconButtonContent[icon_, tooltip_?StringQ] := Tooltip[
-	Show[
-		icon,
-		ImageSize -> 20
-	],
-	tooltip,
-	TooltipDelay -> 0.333
-]
 
 setSelectedCellsBackground[color_] := Module[{selectedCells},
 	selectedCells = SelectedCells[];
@@ -752,109 +422,47 @@ Module[{
 	buttonOptions, newTODObutton,
 	newTodayTodoButton,
 	newTodoAtTopOfQueueButton,
-	newFileLinkButton,
-	newDraggedLinkButton,
-	newMessageLinkButton,
-	newBrowserLinkButton,
 	openFolderButton, row, cell
 },
-	buttonBarOptions = Sequence[
-		Background -> Blend[{Darker@Orange,Red}],
-		ContentPadding -> None,
-		FrameMargins -> 7
-	];
-
 	(* Options shared by all buttons in the toolbar *)
 	buttonOptions = Sequence[
-		buttonBarOptions,
+		$ButtonBarOptions,
 		ImageMargins -> {{10,10},{10,10}}
 	];
 
 	newTODObutton = Button[
-		iconButtonContent[$iconPlus, "Insert new TODO after current selection"],
+		IconButtonContent[GetIcon["Plus"], "Insert new TODO after current selection"],
 		(
 			ReleaseHold[loadOrFail];
 			InsertTodoAfterSelection[];
 		),
-		buttonBarOptions
+		$ButtonBarOptions
 	];
 
 	newTodayTodoButton = Button[
-		iconButtonContent[$iconCalendarWithPlus, "Insert new TODO item for today"],
+		IconButtonContent[GetIcon["CalendarWithPlus"], "Insert new TODO item for today"],
 		(
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertTodoForToday[SelectedNotebook[]];
 		),
-		buttonBarOptions
+		$ButtonBarOptions
 	];
 
 	newTodoAtTopOfQueueButton = Button[
-		iconButtonContent[
-			$iconUnfinishedTodoList,
+		IconButtonContent[
+			GetIcon["UnfinishedTodoList"],
 			"Insert new TODO item at the top of the Queue"
 		],
 		(
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertTodoAtTopOfQueue[SelectedNotebook[]];
 		),
-		buttonBarOptions
-	];
-
-	newFileLinkButton = Button[
-		iconButtonContent[
-			$iconFileLink,
-			"Insert a link to a file chosen from the file system"
-		],
-		(
-			ReleaseHold[loadOrFail];
-			HandleUIFailure @ insertCellAfterSelection[HandleUIFailure @ createSystemOpenCell[]];
-		),
-		buttonBarOptions,
-		Method -> "Queued"
-	];
-
-	newMessageLinkButton = Button[
-		iconButtonContent[
-			$iconMessageLink,
-			"Insert a link to the selected Apple Mail message"
-		],
-		(
-			ReleaseHold[loadOrFail];
-			HandleUIFailure @ insertCellAfterSelection[HandleUIFailure @ getAppleMailHyperlink[]];
-		),
-		buttonBarOptions,
-		Method -> "Queued"
-	];
-
-	newBrowserLinkButton = Button[
-		iconButtonContent[
-			$iconBrowserLink,
-			"Insert a link to a web page open in Safari or Google Chrome"
-		],
-		(
-			ReleaseHold[loadOrFail];
-			HandleUIFailure @ insertCellAfterSelection[HandleUIFailure @ getBrowserHyperlink[]];
-		),
-		buttonBarOptions,
-		Method -> "Queued"
-	];
-
-	newDraggedLinkButton = Button[
-		iconButtonContent[
-			$iconLinkArea,
-			"Insert a link dragged into a popup TextEdit window"
-		],
-		(
-			ReleaseHold[loadOrFail];
-			HandleUIFailure @ insertCellAfterSelection[HandleUIFailure @ getDraggedHyperlink[]];
-		),
-		buttonBarOptions,
-		Method -> "Queued"
+		$ButtonBarOptions
 	];
 
 	openFolderButton = Button[
-		iconButtonContent[
-			$iconOpenFolder,
+		IconButtonContent[
+			GetIcon["OpenFolder"],
 			"Open the folder containing the current Log notebook"
 		],
 		Function[
@@ -889,12 +497,7 @@ Module[{
 			newTodayTodoButton,
 			newTodoAtTopOfQueueButton
 		}, ImageMargins -> 10],
-		Row[{
-			newFileLinkButton,
-			newMessageLinkButton,
-			newBrowserLinkButton,
-			newDraggedLinkButton
-		}, ImageMargins -> 10],
+		Confirm @ MakeLinkButtonRow[],
 		openFolderButton,
 		Confirm @ colorPickerButtonGrid[]
 	}];
