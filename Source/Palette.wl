@@ -657,7 +657,7 @@ handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
     NotebookWrite[
         logNB,
         Cell[
-            "Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day"}],
+            "Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day", ", ", "Year"}],
             "Subtitle"
         ]
     ];
