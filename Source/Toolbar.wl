@@ -13,12 +13,8 @@ LoadIcons
 Begin["`Private`"]
 
 Needs["ConnorGray`Organizer`"]
+Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Utils`"]
-
-(* TODO:
-	Move this function out of LogNotebookRuntime.wl and into a more general cell
-    manipulation utilities package. *)
-InsertCellAfterSelection = ConnorGray`Organizer`LogNotebookRuntime`insertCellAfterSelection;
 
 
 (*========================================================*)
