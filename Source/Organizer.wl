@@ -15,6 +15,7 @@ Needs["ConnorGray`Organizer`LogNotebookRuntime`"];
 Needs["ConnorGray`Organizer`Palette`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`Notebook`"]
+Needs["ConnorGray`Organizer`Notebook`Tasklist`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 
 (* This function is meant to be called manually whenever there is a change to the standard
