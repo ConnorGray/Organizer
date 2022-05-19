@@ -114,7 +114,11 @@ Module[{
 (*====================================*)
 
 createSystemOpenCell[] := Try @ With[{
-	filepath = SystemDialogInput["FileOpen", NotebookDirectory[]]
+	filepath = SystemDialogInput[
+		"FileOpen",
+		(* This can fail if the notebook has not been saved yet. *)
+		Confirm @ NotebookDirectory[]
+	]
 },
 	If[filepath === $Canceled,
 		Return[$Canceled];
