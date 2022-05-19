@@ -1,5 +1,6 @@
 BeginPackage["ConnorGray`Organizer`Palette`"]
 
+OrganizerDirectory = NotebooksDirectory
 WorkspaceDirectory
 CategoryDirectory
 RefreshOrganizerPalette

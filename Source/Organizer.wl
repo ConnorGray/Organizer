@@ -24,7 +24,7 @@ Needs["ConnorGray`Organizer`Toolbar`"]
 UpdateLogNotebooks[] := Try @ Module[{nbs, nbObj},
     nbs = FileNames[
         "Log.nb",
-        Confirm @ ConnorGray`Organizer`Palette`WorkspaceDirectory[],
+        Confirm @ ConnorGray`Organizer`Palette`OrganizerDirectory[],
         Infinity
     ];
 
