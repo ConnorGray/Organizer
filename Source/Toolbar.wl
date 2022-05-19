@@ -21,14 +21,18 @@ Needs["ConnorGray`Organizer`Utils`"]
 (*========================================================*)
 
 $ButtonBarOptions = Sequence[
-	Background -> Blend[{Darker@Orange,Red}],
 	ContentPadding -> None,
 	FrameMargins -> 7
 ];
 
 (*------------------------------------*)
 
-MakeLinkButtonRow[] := Try @ With[{
+Options[MakeLinkButtonRow] = {
+	Background -> Automatic
+}
+
+MakeLinkButtonRow[OptionsPattern[]] := Try @ With[{
+	background = OptionValue[Background],
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
@@ -47,6 +51,7 @@ Module[{
 			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ createSystemOpenCell[]];
 		),
 		$ButtonBarOptions,
+		Background -> background,
 		Method -> "Queued"
 	];
 
@@ -60,6 +65,7 @@ Module[{
 			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ getAppleMailHyperlink[]];
 		),
 		$ButtonBarOptions,
+		Background -> background,
 		Method -> "Queued"
 	];
 
@@ -73,6 +79,7 @@ Module[{
 			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ getBrowserHyperlink[]];
 		),
 		$ButtonBarOptions,
+		Background -> background,
 		Method -> "Queued"
 	];
 
@@ -86,6 +93,7 @@ Module[{
 			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ getDraggedHyperlink[]];
 		),
 		$ButtonBarOptions,
+		Background -> background,
 		Method -> "Queued"
 	];
 

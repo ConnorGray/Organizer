@@ -29,7 +29,7 @@ Needs["ConnorGray`Organizer`Toolbar`"]
 (* UI construction *)
 (*-----------------*)
 
-MakeNewTodoButton[] := With[{
+MakeNewTodoButton[background_] := With[{
 	loadOrFail = $HeldLoadOrFail
 },
 	Button[
@@ -38,6 +38,7 @@ MakeNewTodoButton[] := With[{
 			ReleaseHold[loadOrFail];
 			InsertTodoAfterSelection[];
 		),
+		Background -> background,
 		$ButtonBarOptions
 	]
 ]

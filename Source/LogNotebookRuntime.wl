@@ -14,6 +14,8 @@ FindQueueChapterCell
 FindDailyChapterCell
 GroupSelectionMove
 
+$LogNotebookBackground = Blend[{Darker@Orange, Red}]
+
 InstallLogNotebookDockedCells
 InstallLogNotebookStyles
 
@@ -203,6 +205,7 @@ Module[{
 	(* Options shared by all buttons in the toolbar *)
 	buttonOptions = Sequence[
 		$ButtonBarOptions,
+		Background -> $LogNotebookBackground,
 		ImageMargins -> {{10,10},{10,10}}
 	];
 
@@ -212,6 +215,7 @@ Module[{
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertTodoForToday[SelectedNotebook[]];
 		),
+		Background -> $LogNotebookBackground,
 		$ButtonBarOptions
 	];
 
@@ -224,6 +228,7 @@ Module[{
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertTodoAtTopOfQueue[SelectedNotebook[]];
 		),
+		Background -> $LogNotebookBackground,
 		$ButtonBarOptions
 	];
 
@@ -260,18 +265,18 @@ Module[{
 			Appearance -> None
 		],
 		Row[{
-			MakeNewTodoButton[],
+			MakeNewTodoButton[$LogNotebookBackground],
 			newTodayTodoButton,
 			newTodoAtTopOfQueueButton
 		}, ImageMargins -> 10],
-		Confirm @ MakeLinkButtonRow[],
+		Confirm @ MakeLinkButtonRow[Background -> $LogNotebookBackground],
 		openFolderButton,
 		Confirm @ MakeColorPickerButtonGrid[]
 	}];
 
 	cell = Cell[
 		BoxData[ToBoxes@row],
-		Background -> Blend[{Darker@Orange,Red}]
+		Background -> $LogNotebookBackground
 	];
 
 	SetOptions[nbObj, DockedCells->{cell}]
