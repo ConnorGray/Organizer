@@ -145,7 +145,7 @@ createSystemOpenCell[] := Try @ With[{
 
 getDraggedHyperlink[] := Try @ Module[{path, res, data, hyperlink},
 	(* TODO: Make path cross-platform. *)
-	If[$SystemID =!= "MacOSX-x86-64",
+	If[$OperatingSystem =!= "MacOSX",
 		Confirm @ FailureMessage[
 			Organizer::error,
 			"Cannot get dragged link on non-MacOSX platforms."

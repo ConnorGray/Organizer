@@ -238,14 +238,14 @@ Module[{
 			"Open the folder containing the current Log notebook"
 		],
 		Function[
-			Switch[$SystemID,
-				"MacOSX-x86-64",
+			Switch[$OperatingSystem,
+				"MacOSX",
 					RunProcess[{"open", NotebookDirectory[]}],
 				_,
 					Confirm @ FailureMessage[
 						Organizer::error,
-						"Unhandled $SystemID for opening folder: ``",
-						{InputForm[$SystemID]}
+						"Unhandled $OperatingSystem for opening folder: ``",
+						{InputForm[$OperatingSystem]}
 					];
 			]
 		],
