@@ -9439,8 +9439,10 @@ Cell[BoxData[
         {
          StyleBox[
           TemplateBox[{
-            CheckboxBox[False, {False, "Notebook Documents & Presentation"}], 
-            "\" \"", "\"Notebook Documents & Presentation\""},
+            CheckboxBox[
+            "Notebook Documents & Presentation", {
+             False, "Notebook Documents & Presentation"}], "\" \"", 
+            "\"Notebook Documents & Presentation\""},
            "RowDefault"],
           StripOnInput->False,
           FontSize->12]},
@@ -9471,8 +9473,10 @@ Cell[BoxData[
         {
          StyleBox[
           TemplateBox[{
-            CheckboxBox[False, {False, "User Interface Construction"}], 
-            "\" \"", "\"User Interface Construction\""},
+            CheckboxBox[
+            "User Interface Construction", {
+             False, "User Interface Construction"}], "\" \"", 
+            "\"User Interface Construction\""},
            "RowDefault"],
           StripOnInput->False,
           FontSize->12]},
@@ -9498,6 +9502,7 @@ HIPqUI3eXu1R5CRlw1Aj7NrALXMKhnlG+\
 cJw2tLsrSpusYVyIiiqwXQQrWULeeevQc4RjLRif1iuk5G0dK2to2n686+\
 yDRsqvo2IxJJTdhCb8EsUFNf4yawGrw2L+A8+NYfTOJ+\
 2aAEVlIoSBMPU79Ug2eImP6NIjnZDp5Bu0Gkuz"},
+ CellChangeTimes->{{3.861982798939608*^9, 3.861982802875697*^9}},
  CellTags->{"Categories", "Categories-Checkboxes", "CheckboxCell"},
  CellID->969880382,ExpressionUUID->"5cd99f7a-2c5e-4328-bff5-392bfb31cccc"]
 }, Open  ]],
@@ -9976,7 +9981,7 @@ Cell[BoxData[
         {
          StyleBox[
           TemplateBox[{
-            CheckboxBox["WebEvaluation", {False, "WebEvaluation"}], "\" \"", 
+            CheckboxBox[False, {False, "WebEvaluation"}], "\" \"", 
             
             TemplateBox[{
              "\"WebEvaluation\"", 
@@ -10014,7 +10019,7 @@ Cell[BoxData[
         {
          StyleBox[
           TemplateBox[{
-            CheckboxBox["WebAPI", {False, "WebAPI"}], "\" \"", 
+            CheckboxBox[False, {False, "WebAPI"}], "\" \"", 
             
             TemplateBox[{
              "\"WebAPI\"", "\"API called through an HTTP request\""}, 
@@ -10042,7 +10047,7 @@ Cell[BoxData[
         {
          StyleBox[
           TemplateBox[{
-            CheckboxBox["Scheduled", {False, "Scheduled"}], "\" \"", 
+            CheckboxBox[False, {False, "Scheduled"}], "\" \"", 
             
             TemplateBox[{"\"Scheduled\"", "\"Scheduled task\""}, 
              "PrettyTooltipTemplate"]},
@@ -10072,6 +10077,7 @@ ImlBd8nwjlsa7CRNtj5xV2kL4JbvtP0wSninGgRffyQLtzGFn1FxCZxXB+Y3+zwAoj+2+nv+\
 WqPa86vxvtuPoKIxvTbHOltTMWHY/wWpjBBp9GKsnj6lrqm3RGD6inA5/\
 s1KNJdHsISstOsmgC2n8IRRiJ7B0Vbpnpl4zyg6biMYeXSjM668LIPXF21GM4C2EwezojGe9a/\
 B5tCF2LNij9AojVrVE="},
+ CellChangeTimes->{{3.861982824024268*^9, 3.861982831601101*^9}},
  CellTags->{
   "CheckboxCell", "CompatibilityEvaluationEnvironment", 
    "CompatibilityEvaluationEnvironment-Checkboxes"},
@@ -10211,7 +10217,7 @@ Cell[BoxData[
         {
          StyleBox[
           TemplateBox[{
-            CheckboxBox[False, {False, "LocalFiles"}], "\" \"", 
+            CheckboxBox["LocalFiles", {False, "LocalFiles"}], "\" \"", 
             TemplateBox[{
               TemplateBox[{"DisclosuresLocalFiles", 
                 Cell[
@@ -10267,6 +10273,7 @@ fFc7pi8BGNLJB0TBqg53B8fidMzA3KgnxVGF3ekrSSOKhJmgi4Kvv567E12sKa11UNFtwohoB2/\
 TL40WSjE3644TvkvWuXJBOabfPBVRa9V3vbT/G/\
 iVFX7AKcJvU8Wrapdv8yLgt9LvWyAd0LYTw81ZqlJ/0XaGJl/aO+Dvnx2AZwtSNsLkf/\
 1DY83nig72QwBU9PtoRZU9O/c53l/wdcjJ+8"},
+ CellChangeTimes->{{3.861982852413725*^9, 3.861982852501227*^9}},
  CellTags->{"CheckboxCell", "LocalFiles", "LocalFiles-Checkboxes"},
  CellID->454797044,ExpressionUUID->"52ff00ae-1925-42ba-afe2-26b2e0e86633"],
 
@@ -10655,7 +10662,8 @@ the following:\n\[FilledSmallSquare] Executes Shell or RUN commands\n\
                    FrameMargins -> 20, FrameStyle -> GrayLevel[0.9], 
                    RoundingRadius -> 5, ImageSize -> {
                     Scaled[0.65], Automatic}]], "MoreInfoText", Deletable -> 
-                 True, CellTags -> {
+                 True, 
+                 CellTags -> {
                   "SectionMoreInfoDisclosuresLocalSystemInteractions"}, 
                  CellMargins -> {{66, 66}, {15, 15}}], 
                 HoldComplete[
