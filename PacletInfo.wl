@@ -11,6 +11,10 @@ PacletObject[<|
 				{"ConnorGray`Organizer`", "Organizer.wl"},
 				{"ConnorGray`Organizer`LogNotebookRuntime`", "LogNotebookRuntime.wl"},
 				{"ConnorGray`Organizer`Palette`", "Palette.wl"},
+				{"ConnorGray`Organizer`Notebook`", "Notebook.wl"},
+				{"ConnorGray`Organizer`Notebook`Log`", "Notebook/Log.wl"},
+				{"ConnorGray`Organizer`Notebook`Tasklist`", "Notebook/Tasklist.wl"},
+				{"ConnorGray`Organizer`Toolbar`", "Toolbar.wl"},
 				{"ConnorGray`Organizer`Utils`", "Utils.wl"}
 			}
 		},
