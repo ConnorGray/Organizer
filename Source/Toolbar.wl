@@ -1,6 +1,7 @@
 BeginPackage["ConnorGray`Organizer`Toolbar`"]
 
 MakeLinkButtonRow
+MakeColorPickerButtonGrid
 
 IconButtonContent
 
@@ -374,6 +375,57 @@ shortenURLLabel[label_?StringQ] := StringReplace[
   (* Personal set of URL shortening rules. *)
   "Pull Request #" ~~ content___ ~~ "- Wolfram Stash" :> "PR #" <> content
 ]
+
+(*====================================*)
+(* Cell Background Color Picker       *)
+(*====================================*)
+
+setSelectedCellsBackground[color_] := Module[{selectedCells},
+	selectedCells = SelectedCells[];
+	Assert[MatchQ[selectedCells, {___CellObject}]];
+	Map[SetOptions[#, Background -> color] &, selectedCells]
+]
+
+MakeColorPickerButtonGrid[] := Try @ With[{
+	loadOrFail = $HeldLoadOrFail
+},
+Module[{colors, grid},
+	colors = PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"];
+
+	If[MissingQ[colors],
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"No \"CG:Organizer:BackgroundColorPalette\" PersistentValue is set."
+		];
+	];
+
+	If[!MatchQ[colors, {{___RGBColor}..}],
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"\"CG:Organizer:BackgroundColorPalette\" PersistentValue is not a valid array of colors."
+		];
+	];
+
+	grid = Map[
+		Button[
+			"",
+			(
+				ReleaseHold[loadOrFail];
+				setSelectedCellsBackground[#];
+			),
+			ImageSize -> {20, 20},
+			Background -> #,
+			ImageMargins -> 0,
+			ContentPadding -> None
+		] &,
+		colors,
+		{2}
+	];
+
+	Grid[grid, Spacings -> {0.0, .0}, ItemSize -> All, Frame -> True, FrameStyle -> Thickness[2.5]]
+]
+]
+
 
 (*========================================================*)
 (* Icons                                                  *)

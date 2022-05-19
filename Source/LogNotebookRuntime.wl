@@ -191,52 +191,6 @@ findChapterCell[nb_NotebookObject, contents_?StringQ] := Try @ Module[{cell},
 (* New Notebook Setup                 *)
 (**************************************)
 
-setSelectedCellsBackground[color_] := Module[{selectedCells},
-	selectedCells = SelectedCells[];
-	Assert[MatchQ[selectedCells, {___CellObject}]];
-	Map[SetOptions[#, Background -> color] &, selectedCells]
-]
-
-colorPickerButtonGrid[] := Try @ With[{
-	loadOrFail = $HeldLoadOrFail
-},
-Module[{colors, grid},
-	colors = PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"];
-
-	If[MissingQ[colors],
-		Confirm @ FailureMessage[
-			Organizer::error,
-			"No \"CG:Organizer:BackgroundColorPalette\" PersistentValue is set."
-		];
-	];
-
-	If[!MatchQ[colors, {{___RGBColor}..}],
-		Confirm @ FailureMessage[
-			Organizer::error,
-			"\"CG:Organizer:BackgroundColorPalette\" PersistentValue is not a valid array of colors."
-		];
-	];
-
-	grid = Map[
-		Button[
-			"",
-			(
-				ReleaseHold[loadOrFail];
-				setSelectedCellsBackground[#];
-			),
-			ImageSize -> {20, 20},
-			Background -> #,
-			ImageMargins -> 0,
-			ContentPadding -> None
-		] &,
-		colors,
-		{2}
-	];
-
-	Grid[grid, Spacings -> {0.0, .0}, ItemSize -> All, Frame -> True, FrameStyle -> Thickness[2.5]]
-]
-]
-
 InstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Try @ With[{
 	loadOrFail = $HeldLoadOrFail
 },
@@ -312,7 +266,7 @@ Module[{
 		}, ImageMargins -> 10],
 		Confirm @ MakeLinkButtonRow[],
 		openFolderButton,
-		Confirm @ colorPickerButtonGrid[]
+		Confirm @ MakeColorPickerButtonGrid[]
 	}];
 
 	cell = Cell[
