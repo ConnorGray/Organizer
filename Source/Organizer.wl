@@ -36,6 +36,13 @@ UpdateLogNotebooks[] := Try @ Module[{nbs, nbObj},
 			Function[nbObj, (
 				InstallLogNotebookDockedCells[nbObj, FileNameSplit[nbPath][[-2]]];
 				InstallLogNotebookStyles[nbObj];
+
+				SetOptions[
+					nbObj,
+					TaggingRules -> {
+						"CG:Organizer" -> {"DocumentType" -> "Log"}
+					}
+				];
 			)],
 			(* We're editing the notebooks, so save the notebook automatically, without
 			   interactively prompting the user. *)
