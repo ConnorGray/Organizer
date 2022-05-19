@@ -10,6 +10,7 @@ Begin["`Private`"]
 Needs["ConnorGray`Organizer`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`LogNotebookRuntime`"]
+Needs["ConnorGray`Organizer`Notebook`Log`"]
 
 
 NotebooksDirectory[] := Try @ Module[{dir, error},
@@ -651,29 +652,7 @@ handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
 
     CreateDirectory[dirPath];
 
-    logNB = CreateNotebook[];
-
-    NotebookWrite[logNB, Cell[projName, "Title"] ];
-    NotebookWrite[
-        logNB,
-        Cell[
-            "Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day", ", ", "Year"}],
-            "Subtitle"
-        ]
-    ];
-
-    NotebookWrite[logNB, Cell["Context", "Chapter"] ];
-
-    NotebookWrite[logNB, Cell["Daily", "Chapter"] ];
-    NotebookWrite[logNB, Cell[DateString[Now, {"MonthName", " ", "Year"}], "Subsection"] ];
-    NotebookWrite[logNB, Cell[DateString[Now, {"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"] ];
-
-    NotebookWrite[logNB, Cell["Queue", "Chapter"] ];
-
-    InstallLogNotebookStyles[logNB];
-    InstallLogNotebookDockedCells[logNB, projName];
-
-    (* TODO: Set DockedCells *)
+	logNB = Confirm @ CreateLogNotebook[projName];
 
     NotebookSave[logNB, FileNameJoin[{dirPath, "Log.nb"}] ];
 

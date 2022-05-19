@@ -15,6 +15,7 @@ Needs["ConnorGray`Organizer`LogNotebookRuntime`"];
 Needs["ConnorGray`Organizer`Palette`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`Notebook`"]
+Needs["ConnorGray`Organizer`Notebook`Log`"]
 Needs["ConnorGray`Organizer`Notebook`Tasklist`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 

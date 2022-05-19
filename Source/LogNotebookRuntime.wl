@@ -14,11 +14,6 @@ FindQueueChapterCell
 FindDailyChapterCell
 GroupSelectionMove
 
-$LogNotebookBackground = Blend[{Darker@Orange, Red}]
-
-InstallLogNotebookDockedCells
-InstallLogNotebookStyles
-
 (* These functions are part of the DockedCells toolbar. Renaming them is a
    backwards-incompatible change. *)
 InsertTodoAfterSelection = ConnorGray`Organizer`Notebook`InsertTodoAfterSelection;
@@ -30,6 +25,7 @@ Begin["`Private`"]
 Needs["ConnorGray`Organizer`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`Notebook`"]
+Needs["ConnorGray`Organizer`Notebook`Log`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 
 If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
@@ -192,100 +188,6 @@ findChapterCell[nb_NotebookObject, contents_?StringQ] := Try @ Module[{cell},
 (* ::Chapter:: *)
 (* New Notebook Setup                 *)
 (**************************************)
-
-InstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Try @ With[{
-	loadOrFail = $HeldLoadOrFail
-},
-Module[{
-	buttonOptions,
-	newTodayTodoButton,
-	newTodoAtTopOfQueueButton,
-	openFolderButton, row, cell
-},
-	(* Options shared by all buttons in the toolbar *)
-	buttonOptions = Sequence[
-		$ButtonBarOptions,
-		Background -> $LogNotebookBackground,
-		ImageMargins -> {{10,10},{10,10}}
-	];
-
-	newTodayTodoButton = Button[
-		IconButtonContent[GetIcon["CalendarWithPlus"], "Insert new TODO item for today"],
-		(
-			ReleaseHold[loadOrFail];
-			HandleUIFailure @ InsertTodoForToday[SelectedNotebook[]];
-		),
-		Background -> $LogNotebookBackground,
-		$ButtonBarOptions
-	];
-
-	newTodoAtTopOfQueueButton = Button[
-		IconButtonContent[
-			GetIcon["UnfinishedTodoList"],
-			"Insert new TODO item at the top of the Queue"
-		],
-		(
-			ReleaseHold[loadOrFail];
-			HandleUIFailure @ InsertTodoAtTopOfQueue[SelectedNotebook[]];
-		),
-		Background -> $LogNotebookBackground,
-		$ButtonBarOptions
-	];
-
-	openFolderButton = Button[
-		IconButtonContent[
-			GetIcon["OpenFolder"],
-			"Open the folder containing the current Log notebook"
-		],
-		Function[
-			Switch[$OperatingSystem,
-				"MacOSX",
-					RunProcess[{"open", NotebookDirectory[]}],
-				_,
-					Confirm @ FailureMessage[
-						Organizer::error,
-						"Unhandled $OperatingSystem for opening folder: ``",
-						{InputForm[$OperatingSystem]}
-					];
-			]
-		],
-		buttonOptions
-	];
-
-	row = Row[{
-		(* Make the Log.nb title a hidden button which opens the organizer palette. This
-		   is a quick and convenient way to access the palette without needing to keep
-		   it open all of the time. *)
-		Button[
-			Style[Pane[projName, ImageMargins -> 10], "Subchapter", White],
-			(
-				ReleaseHold[loadOrFail];
-				OpenOrganizerPalette[]
-			),
-			Appearance -> None
-		],
-		Row[{
-			MakeNewTodoButton[$LogNotebookBackground],
-			newTodayTodoButton,
-			newTodoAtTopOfQueueButton
-		}, ImageMargins -> 10],
-		Confirm @ MakeLinkButtonRow[Background -> $LogNotebookBackground],
-		openFolderButton,
-		Confirm @ MakeColorPickerButtonGrid[]
-	}];
-
-	cell = Cell[
-		BoxData[ToBoxes@row],
-		Background -> $LogNotebookBackground
-	];
-
-	SetOptions[nbObj, DockedCells->{cell}]
-]
-]
-
-(* This definition kept for backwards compatibility, and potential future customization. *)
-InstallLogNotebookStyles[nb_NotebookObject] :=
-	InstallNotebookStyles[nb]
 
 
 End[]
