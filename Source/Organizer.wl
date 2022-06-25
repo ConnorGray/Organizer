@@ -3,6 +3,8 @@ BeginPackage["ConnorGray`Organizer`"]
 OpenOrganizerPalette
 UpdateLogNotebooks
 
+CreateOrganizerNotebook::usage = "CreateOrganizerNotebook[type, title] creates a new Organizer notebook of the specified type."
+
 Begin["`Private`"]
 
 If[$VersionNumber >= 12.3,
@@ -18,6 +20,16 @@ Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Notebook`Log`"]
 Needs["ConnorGray`Organizer`Notebook`Tasklist`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
+
+(*====================================*)
+
+CreateOrganizerNotebook[type_?StringQ, title_?StringQ] := Replace[type, {
+	"Log" :> CreateLogNotebook[title],
+	"Tasklist" :> CreateTasklistNotebook[title],
+	_ :> Failure["UnknownOrganizerNotebookType", <||>]
+}]
+
+(*====================================*)
 
 (* This function is meant to be called manually whenever there is a change to the standard
    set of docked cells or StyleDefinitions. *)
