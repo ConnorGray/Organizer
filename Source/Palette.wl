@@ -738,6 +738,9 @@ handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, pa
         (* Disable editing. If the user wants to edit these queues, they should do it in
            the source notebook. *)
         Editable -> False,
+		TaggingRules -> {
+			"CG:Organizer" -> {"DocumentType" -> "GeneratedQueueReport"}
+		},
         (* Add a temporary docked cell warning the user that the notebook is still having
            content copied into it. This is removed later. *)
         DockedCells -> {
@@ -930,6 +933,9 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 		(* Disable editing. If the user wants to edit these queues, they should do it in
 		the source notebook. *)
 		Editable -> False,
+		TaggingRules -> {
+			"CG:Organizer" -> {"DocumentType" -> "GeneratedDailysReport"}
+		},
 		(* Add a temporary docked cell warning the user that the notebook is still having
 		content copied into it. This is removed later. *)
 		DockedCells -> {

@@ -44,13 +44,13 @@ CreateLogNotebook[projName_?StringQ] := Try @ Module[{
 	Confirm @ InstallLogNotebookDockedCells[logNB, projName];
 
 	SetOptions[
-		nbObj,
+		logNB,
 		TaggingRules -> {
 			"CG:Organizer" -> {"DocumentType" -> "Log"}
 		}
 	];
 
-	nbObj
+	logNB
 ]
 
 (*----------------------------------------------------------------------------*)
