@@ -32,13 +32,13 @@ CreateLogNotebook[projName_?StringQ] := Try @ Module[{
 		]
 	];
 
-	NotebookWrite[logNB, Cell["Context", "Chapter"] ];
+	NotebookWrite[logNB, Cell["Context", "Chapter", Deletable -> False, Editable -> False] ];
 
-	NotebookWrite[logNB, Cell["Daily", "Chapter"] ];
+	NotebookWrite[logNB, Cell["Daily", "Chapter", Deletable -> False, Editable -> False] ];
 	NotebookWrite[logNB, Cell[DateString[Now, {"MonthName", " ", "Year"}], "Subsection"] ];
 	NotebookWrite[logNB, Cell[DateString[Now, {"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"] ];
 
-	NotebookWrite[logNB, Cell["Queue", "Chapter"] ];
+	NotebookWrite[logNB, Cell["Queue", "Chapter", Deletable -> False, Editable -> False] ];
 
 	Confirm @ InstallLogNotebookStyles[logNB];
 	Confirm @ InstallLogNotebookDockedCells[logNB, projName];
