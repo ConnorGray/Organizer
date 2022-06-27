@@ -313,7 +313,7 @@ InstallNotebookStyles[nb_NotebookObject] := With[{
 				todoDefinitions
 			],
 			(*====================================*)
-			(* Toolbar button TemplateBox styles *)
+			(* Toolbar button TemplateBox styles  *)
 			(*====================================*)
 			Cell[
 				StyleData["Organizer:IconAndLabelButtonTemplate"],
