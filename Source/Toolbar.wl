@@ -173,18 +173,38 @@ createSystemOpenCell[] := Try @ With[{
 		];
 	];
 
-	Cell[
-		BoxData @ ToBoxes @ Framed[
-			Button[
-				Style[(* label *)FileNameTake[filepath, -1], "Hyperlink", Bold],
-				SystemOpen[File[filepath]],
-				Appearance -> None
+	With[{
+		(* Note:
+			Make links to .nb files open with NotebookOpen instead of
+			SystemOpen. Use SystemOpen for all other types of files.
+
+			Using NotebookOpen is significant because of a subtle behavior of
+			SystemOpen: If two different versions of Mathematica are running
+			(e.g. a released version and a nightly build), and
+			SystemOpen[".../SomeNotebook.nb"] is executed in the older version,
+			the notebook will be opened in the newer version of Mathematica,
+			which is unexpected.
+		*)
+		openerFunction = Which[
+			FileExtension[filepath] === "nb",
+				NotebookOpen,
+			True,
+				SystemOpen
+		]
+	},
+		Cell[
+			BoxData @ ToBoxes @ Framed[
+				Button[
+					Style[(* label *)FileNameTake[filepath, -1], "Hyperlink", Bold],
+					openerFunction[File[filepath]],
+					Appearance -> None
+				],
+				RoundingRadius -> 5,
+				Background -> LightBlue,
+				FrameStyle -> Directive[Thick, Darker@Green]
 			],
-			RoundingRadius -> 5,
-			Background -> LightBlue,
-			FrameStyle -> Directive[Thick, Darker@Green]
-		],
-		CellMargins -> {{66, 0}, {0, 1}}
+			CellMargins -> {{66, 0}, {0, 1}}
+		]
 	]
 ]
 
