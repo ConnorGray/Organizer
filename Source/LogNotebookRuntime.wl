@@ -19,6 +19,7 @@ GroupSelectionMove
 InsertTodoAfterSelection = ConnorGray`Organizer`Notebook`InsertTodoAfterSelection;
 InsertTodoForToday
 InsertTodoAtTopOfQueue
+HandleCreateNewFile
 
 Begin["`Private`"]
 
@@ -182,6 +183,67 @@ findChapterCell[nb_NotebookObject, contents_?StringQ] := Try @ Module[{cell},
 	];
 
 	cell
+]
+
+(*====================================*)
+(* Creating new files in this project *)
+(*====================================*)
+
+HandleCreateNewFile[
+	logNBObj_NotebookObject,
+	type_?StringQ
+] := Try @ Module[{
+	title,
+	projectDir,
+	notebookFile
+},
+	title = InputString[];
+
+	If[!StringQ[title],
+		If[title === $Canceled,
+			Return[Null, Module];
+		];
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Invalid `` notebook title: ``",
+			{type, InputForm[title]}
+		];
+	];
+
+	nbObj = Confirm @ CreateOrganizerNotebook[type, title];
+
+	projectDir = Quiet[
+		NotebookDirectory[logNBObj],
+		{NotebookDirectory::nosv}
+	];
+
+	(* If the project notebook isn't saved, don't save this new notebook to
+	   a relative location. *)
+	If[!StringQ[projectDir],
+		Return[Null, Module];
+	];
+
+	(* Offer the user the choice to save to a custom location. *)
+	notebookFile = Replace[type, {
+		"Tasklist" :> FileNameJoin[{projectDir, "Tasklists", title <> ".nb"}],
+		(* Unrecognized notebook type. Don't save it for the user automatically. *)
+		_ :> Return[Null, Module]
+	}];
+
+	(* Prevent NotebookSave from overwriting an existing file. *)
+	If[FileType[notebookFile] =!= None,
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Unable to save new `` notebook: file with that name already exists: ``",
+			{type, InputForm[notebookFile]}
+		];
+	];
+
+	If[!DirectoryQ[FileNameDrop[notebookFile]],
+		Confirm @ CreateDirectory[FileNameDrop[notebookFile]];
+	];
+
+	NotebookSave[nbObj, notebookFile]
 ]
 
 (**************************************)

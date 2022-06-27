@@ -4,6 +4,7 @@ MakeLinkButtonRow
 MakeColorPickerButtonGrid
 
 MakeToolbarButtonBoxes
+MakeToolbarDropdownBoxes
 IconButtonContent
 
 GetIcon
@@ -119,6 +120,33 @@ MakeToolbarButtonBoxes[
 			buttonAccentColor
 		},
 		"Organizer:IconAndLabelButtonTemplate"
+	]
+]
+
+(*====================================*)
+
+MakeToolbarDropdownBoxes[
+	icon_Graphics,
+	label_?StringQ,
+	tooltip_?StringQ,
+	choiceActions_?AssociationQ,
+	buttonMethod0 : _?StringQ | Automatic : Automatic,
+	buttonDefaultBackground : _ : White,
+	buttonAccentColor : _ : RGBColor["#60993e"]
+] := Module[{
+	buttonMethod = Replace[buttonMethod0, Automatic -> "Preemptive"]
+},
+	TemplateBox[
+		{
+			ToBoxes @ Show[icon, ImageSize -> 15, BaselinePosition -> Center],
+			label,
+			tooltip,
+			Normal[choiceActions],
+			buttonMethod,
+			buttonDefaultBackground,
+			buttonAccentColor
+		},
+		"Organizer:IconAndLabelDropdownTemplate"
 	]
 ]
 

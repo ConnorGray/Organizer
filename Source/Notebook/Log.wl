@@ -113,6 +113,25 @@ Module[{
 		GrayLevel[0.3]
 	];
 
+	newFileButton = MakeToolbarDropdownBoxes[
+		(* FIXME: Use NewFile icon *)
+		GetIcon["Plus"],
+		"New File",
+		"Create a new Organizer file associated with this project",
+		<|
+			"New Tasklist" :> (
+				ReleaseHold[loadOrFail];
+				HandleUIFailure @ HandleCreateNewFile[
+					EvaluationNotebook[],
+					"Tasklist"
+				];
+			)
+		|>,
+		"Queued",
+		RGBColor["#F7C4A5"],
+		GrayLevel[0.3]
+	];
+
 	toolbarRow = GridBox[{{
 		MakeNewTodoButton[],
 		newTodayTodoButton,
@@ -140,7 +159,7 @@ Module[{
 		BoxData @ MakeTitleBarCellBoxes[
 			projName,
 			"Log",
-			{openFolderButton}
+			{newFileButton, openFolderButton}
 		],
 		Background -> $LogNotebookBackground
 	];

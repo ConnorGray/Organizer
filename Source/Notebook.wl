@@ -320,6 +320,12 @@ InstallNotebookStyles[nb_NotebookObject] := With[{
 				TemplateBoxOptions -> {
 					DisplayFunction -> $iconAndLabelButtonTemplate
 				}
+			],
+			Cell[
+				StyleData["Organizer:IconAndLabelDropdownTemplate"],
+				TemplateBoxOptions -> {
+					DisplayFunction -> $iconAndLabelDropdownTemplate
+				}
 			]
 		}]
 	];
@@ -396,6 +402,88 @@ $iconAndLabelButtonTemplate = Function[
 ]
 
 (*------------------------------------*)
+
+(*
+	Parameters: {
+		icon, label, tooltip,
+		choiceActions, buttonMethod,
+		buttonDefaultBackground, buttonAccentColor
+	}
+
+	(TemplateBox DisplayFunction's are 'evaluated' by the FrontEnd, whose
+	very basic evaluator doesn't not support named Function parameters.)
+*)
+$iconAndLabelDropdownTemplate = Function[
+	DynamicModuleBox[{state = "default"},
+		TagBox[
+			ActionMenuBox[
+				FrameBox[
+					GridBox[
+						{{
+							StyleBox[
+								#1,
+								GraphicsBoxOptions -> {
+									BaseStyle -> Dynamic[
+										Switch[state,
+											"hovered", White,
+											_, #7
+										]
+									]
+								}
+							],
+							TemplateBox[
+								{
+									#2,
+									"\"\[ThinSpace]\[ThinSpace]\[FilledDownTriangle]\""
+								},
+								"RowDefault"
+							]
+						}},
+						GridBoxAlignment -> {
+							"Columns" -> {{Left}},
+							"Rows" -> {{Center}}
+						}
+					],
+					BaseStyle -> {
+						FontSize -> 10,
+						FontWeight -> Automatic,
+						FontColor -> Dynamic[Switch[state,
+							"hovered", White,
+							_, #7
+						]]
+					},
+					FrameMargins -> {{2, 2}, {2, 1}},
+					FrameStyle -> Directive[Thickness[1], #7],
+					Background -> Dynamic[Switch[state,
+						"default",
+							#6,
+						"hovered",
+							RGBColor[1, 0.5, 0],
+						"pressed",
+							Gray
+					]],
+					RoundingRadius -> 3
+				],
+				#4,
+				Appearance -> None,
+				Method -> #5,
+				Evaluator -> Automatic
+			],
+			EventHandlerTag[{		
+				"MouseEntered" :> (state = "hovered"),
+				"MouseExited" :> (state = "default"),
+				{"MouseDown", 1} :> (state = "pressed"),
+				{"MouseUp", 1} :> (state = "hovered"),
+				PassEventsDown -> True,
+				PassEventsUp -> True,
+				Method -> "Preemptive"
+			}]
+		],
+		DynamicModuleValues :> {}
+	]
+]
+
+(*====================================*)
 
 (* NOTE: Setting an explicit `Background -> White` here is required because CellFrameLabels
          inherit their styling from the parent cell, and we don't want the checkbox cell
