@@ -7,6 +7,7 @@ InstallNotebookStyles::usage = "InstallNotebookStyles[nb] will set the StyleDefi
 
 InsertCellAfterSelection::usage = "InsertCellAfterSelection[cell] will insert cell after the current selection point in the current evaluation notebook."
 
+MakeTitleBarCellBoxes
 MakeNewTodoButton
 
 WriteTodoAndSelect
@@ -18,6 +19,7 @@ InsertTodoAfterSelection::usage = "InsertTodoAfterSelection[] insters a new TODO
 
 Begin["`Private`"]
 
+Needs["ConnorGray`Organizer`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 
@@ -29,17 +31,17 @@ Needs["ConnorGray`Organizer`Toolbar`"]
 (* UI construction *)
 (*-----------------*)
 
-MakeNewTodoButton[background_] := With[{
+MakeNewTodoButton[] := With[{
 	loadOrFail = $HeldLoadOrFail
 },
-	Button[
-		IconButtonContent[GetIcon["Plus"], "Insert new TODO after current selection"],
-		(
+	MakeToolbarButtonBoxes[
+		GetIcon["Plus"],
+		"Insert Todo",
+		"Insert new TODO after current selection",
+		Function[
 			ReleaseHold[loadOrFail];
 			InsertTodoAfterSelection[];
-		),
-		Background -> background,
-		$ButtonBarOptions
+		]
 	]
 ]
 
@@ -156,6 +158,75 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 
 (*====================================*)
 
+MakeTitleBarCellBoxes[
+	title_?StringQ,
+	type_?StringQ,
+	inserts : _?ListQ : {}
+] := Module[{},
+	GridBox[
+		{{
+			ItemBox[
+				(*
+					Make the title of every Organizer notebook a hidden button
+					that opens the organizer palette. This is a quick and
+					convenient way to access the palette without needing to keep
+					it open all of the time.
+				*)
+				ToBoxes @ Button[
+					Style[title, "Subchapter", White],
+					(
+						ReleaseHold[loadOrFail];
+						OpenOrganizerPalette[]
+					),
+					Appearance -> None
+				],
+				(* Force this item to take up the maximum possible width. This
+				   makes items that come after this appear aligned to the right
+				   side of the notebook. *)
+				ItemSize -> Fit
+			],
+			Splice[inserts],
+			StyleBox[
+				GridBox[
+					{{
+						StyleBox[
+							"\"Organizer\"",
+							FontFamily -> "Source Sans Pro",
+							FontWeight -> "SemiBold",
+							StripOnInput -> False
+						],
+						StyleBox[
+							"\"" <> ToUpperCase[type] <> " NOTEBOOK\"",
+							FontFamily -> "Source Sans Pro",
+							FontTracking -> "SemiCondensed",
+							FontVariations -> {"CapsType" -> "AllSmallCaps"},
+							StripOnInput -> False
+						]
+					}},
+					AutoDelete -> False,
+					GridBoxDividers -> {
+						"ColumnsIndexed" -> {2 -> RGBColor[1., 1., 1.]},
+						"Rows" -> {{None}}
+					},
+					GridBoxItemSize -> {
+						"Columns" -> {{Automatic}},
+						"Rows" -> {{Automatic}}
+					}
+				],
+				FontSize -> 12,
+				FontColor -> GrayLevel[0.9]
+			]
+		}},
+		GridBoxAlignment -> {
+			"Columns" -> {{Left}},
+			"ColumnsIndexed" -> {-1 -> Right},
+			"Rows" -> {{Center}}
+		}
+	]
+]
+
+(*====================================*)
+
 InstallNotebookStyles[nb_NotebookObject] := With[{
 	todoDefinitions = Sequence[
 		TaggingRules -> {"CG:Organizer" -> {"TODOCompletedQ" -> False}},
@@ -174,6 +245,9 @@ InstallNotebookStyles[nb_NotebookObject] := With[{
 	SetOptions[nb,
 		StyleDefinitions -> Notebook[{
 			Cell[StyleData[StyleDefinitions -> "Default.nb"] ],
+			(*==================*)
+			(* TODO cell styles *)
+			(*==================*)
 			Cell[StyleData["TODO", StyleDefinitions -> StyleData["Text"] ],
 				todoDefinitions,
 				"ReturnCreatesNewCell" -> True,
@@ -237,9 +311,88 @@ InstallNotebookStyles[nb_NotebookObject] := With[{
 				StyleKeyMapping -> {"Backspace" -> "TODO:Subitem"},
 
 				todoDefinitions
+			],
+			(*====================================*)
+			(* Toolbar button TemplateBox styles *)
+			(*====================================*)
+			Cell[
+				StyleData["Organizer:IconAndLabelButtonTemplate"],
+				TemplateBoxOptions -> {
+					DisplayFunction -> $iconAndLabelButtonTemplate
+				}
 			]
 		}]
 	];
+]
+
+(*
+	Parameters: {icon, label, tooltip, action, buttonMethod, buttonDefaultBackground, buttonAccentColor}
+
+	(TemplateBox DisplayFunction's are 'evaluated' by the FrontEnd, whose
+	very basic evaluator doesn't not support named Function parameters.)
+*)
+$iconAndLabelButtonTemplate = Function[
+	DynamicModuleBox[{state = "default"},
+		TagBox[
+			ButtonBox[
+				FrameBox[
+					GridBox[
+						{{
+							StyleBox[
+								#1,
+								GraphicsBoxOptions -> {
+									BaseStyle -> Dynamic[
+										Switch[state,
+											"hovered", White,
+											_, #7
+										]
+									]
+								}
+							],
+							PaneBox[#2]
+						}},
+						GridBoxAlignment -> {
+							"Columns" -> {{Left}},
+							"Rows" -> {{Center}}
+						}
+					],
+					BaseStyle -> {
+						FontSize -> 10,
+						FontWeight -> Automatic,
+						FontColor -> Dynamic[Switch[state,
+							"hovered", White,
+							_, #7
+						]]
+					},
+					FrameMargins -> {{2, 2}, {2, 1}},
+					FrameStyle -> Directive[Thickness[1], #7],
+					Background -> Dynamic[Switch[state,
+						"default",
+							#6,
+						"hovered",
+							RGBColor[1, 0.5, 0],
+						"pressed",
+							Gray
+					]],
+					RoundingRadius -> 3
+				],
+				Appearance -> None,
+				ButtonFunction :> #4,
+				Method -> #5,
+				Evaluator -> Automatic
+			],
+			EventHandlerTag[{		
+				"MouseEntered" :> (state = "hovered"),
+				"MouseExited" :> (state = "default"),
+				{"MouseDown", 1} :> (state = "pressed"),
+				{"MouseUp", 1} :> (state = "hovered"),
+				PassEventsDown -> True,
+				PassEventsUp -> True,
+				Method -> "Preemptive"
+			}]
+		],
+		DynamicModuleValues :> {}
+	]
 ]
 
 (*------------------------------------*)

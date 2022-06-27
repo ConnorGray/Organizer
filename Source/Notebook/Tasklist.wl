@@ -51,35 +51,49 @@ InstallTasklistDockedCells[
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
-	row,
-
-	cell
+	toolbarRow,
+	titleCell,
+	toolbarCell
 },
-	row = Row[{
-		(* Make the Log.nb title a hidden button which opens the organizer palette. This
-		is a quick and convenient way to access the palette without needing to keep
-		it open all of the time. *)
-		Button[
-			Style[Pane[listName, ImageMargins -> 10], "Subchapter", White],
-			(
-				ReleaseHold[loadOrFail];
-				OpenOrganizerPalette[]
-			),
-			Appearance -> None
-		],
-		Row[{
-			MakeNewTodoButton[$TasklistNotebookBackground]
-		}],
-		Confirm @ MakeLinkButtonRow[Background -> $TasklistNotebookBackground],
-		Confirm @ MakeColorPickerButtonGrid[]
-	}];
+	toolbarRow = GridBox[{{
+		MakeNewTodoButton[],
+		Splice @ Confirm @ MakeLinkButtonRow[],
+		ToBoxes @ Confirm @ MakeColorPickerButtonGrid[]
+	}},
+		GridBoxDividers -> {
+			"Rows" -> {{None}},
+			"ColumnsIndexed" -> {
+				2 -> GrayLevel[0.7],
+				5 -> GrayLevel[0.7]
+			}
+		},
+		GridBoxSpacings -> {
+			"Columns" -> {{0.2}},
+			"ColumnsIndexed" -> {
+				2 -> 1,
+				5 -> 1
+			}
+		}
+	];
 
-	cell = Cell[
-		BoxData[ToBoxes[row]],
+	titleCell = Cell[
+		BoxData @ MakeTitleBarCellBoxes[
+			listName,
+			"Tasklist"
+		],
 		Background -> $TasklistNotebookBackground
 	];
 
-	SetOptions[nbObj, DockedCells -> {cell}]
+	toolbarCell = Cell[
+		BoxData[toolbarRow],
+		Background -> GrayLevel[0.9],
+		CellFrameMargins -> {{Inherited, Inherited}, {-1, 1}}
+	];
+
+	SetOptions[nbObj, DockedCells -> {
+		titleCell,
+		toolbarCell	
+	}]
 ]]
 
 

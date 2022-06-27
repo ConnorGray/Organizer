@@ -65,46 +65,37 @@ InstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Try @ With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
-	buttonOptions,
 	newTodayTodoButton,
 	newTodoAtTopOfQueueButton,
-	openFolderButton, row, cell
+	openFolderButton,
+	toolbarRow,
+	titleCell,
+	toolbarCell
 },
-	(* Options shared by all buttons in the toolbar *)
-	buttonOptions = Sequence[
-		$ButtonBarOptions,
-		Background -> $LogNotebookBackground,
-		ImageMargins -> {{10,10},{10,10}}
-	];
-
-	newTodayTodoButton = Button[
-		IconButtonContent[GetIcon["CalendarWithPlus"], "Insert new TODO item for today"],
-		(
+	newTodayTodoButton = MakeToolbarButtonBoxes[
+		GetIcon["CalendarWithPlus"],
+		"Today",
+		"Insert new TODO item for today",
+		Function[
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertTodoForToday[SelectedNotebook[]];
-		),
-		Background -> $LogNotebookBackground,
-		$ButtonBarOptions
+		]
 	];
 
-	newTodoAtTopOfQueueButton = Button[
-		IconButtonContent[
-			GetIcon["UnfinishedTodoList"],
-			"Insert new TODO item at the top of the Queue"
-		],
-		(
+	newTodoAtTopOfQueueButton = MakeToolbarButtonBoxes[
+		GetIcon["UnfinishedTodoList"],
+		"Queue",
+		"Insert new TODO item at the top of the Queue",
+		Function[
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertTodoAtTopOfQueue[SelectedNotebook[]];
-		),
-		Background -> $LogNotebookBackground,
-		$ButtonBarOptions
+		]
 	];
 
-	openFolderButton = Button[
-		IconButtonContent[
-			GetIcon["OpenFolder"],
-			"Open the folder containing the current Log notebook"
-		],
+	openFolderButton = MakeToolbarButtonBoxes[
+		GetIcon["OpenFolder"],
+		"Open Project Folder",
+		"Open the folder containing the current Log notebook",
 		Function[
 			Switch[$OperatingSystem,
 				"MacOSX",
@@ -117,37 +108,53 @@ Module[{
 					];
 			]
 		],
-		buttonOptions
+		Automatic,
+		RGBColor["#F7C4A5"],
+		GrayLevel[0.3]
 	];
 
-	row = Row[{
-		(* Make the Log.nb title a hidden button which opens the organizer palette. This
-		is a quick and convenient way to access the palette without needing to keep
-		it open all of the time. *)
-		Button[
-			Style[Pane[projName, ImageMargins -> 10], "Subchapter", White],
-			(
-				ReleaseHold[loadOrFail];
-				OpenOrganizerPalette[]
-			),
-			Appearance -> None
-		],
-		Row[{
-			MakeNewTodoButton[$LogNotebookBackground],
-			newTodayTodoButton,
-			newTodoAtTopOfQueueButton
-		}, ImageMargins -> 10],
-		Confirm @ MakeLinkButtonRow[Background -> $LogNotebookBackground],
-		openFolderButton,
-		Confirm @ MakeColorPickerButtonGrid[]
-	}];
+	toolbarRow = GridBox[{{
+		MakeNewTodoButton[],
+		newTodayTodoButton,
+		newTodoAtTopOfQueueButton,
+		Splice @ Confirm @ MakeLinkButtonRow[],
+		ToBoxes @ Confirm @ MakeColorPickerButtonGrid[]
+	}},
+		GridBoxDividers -> {
+			"Rows" -> {{None}},
+			"ColumnsIndexed" -> {
+				4 -> GrayLevel[0.7],
+				7 -> GrayLevel[0.7]
+			}
+		},
+		GridBoxSpacings -> {
+			"Columns" -> {{0.2}},
+			"ColumnsIndexed" -> {
+				4 -> 1,
+				7 -> 1
+			}
+		}
+	];
 
-	cell = Cell[
-		BoxData[ToBoxes@row],
+	titleCell = Cell[
+		BoxData @ MakeTitleBarCellBoxes[
+			projName,
+			"Log",
+			{openFolderButton}
+		],
 		Background -> $LogNotebookBackground
 	];
 
-	SetOptions[nbObj, DockedCells->{cell}]
+	toolbarCell = Cell[
+		BoxData[toolbarRow],
+		Background -> GrayLevel[0.9],
+		CellFrameMargins -> {{Inherited, Inherited}, {-1, 1}}
+	];
+
+	SetOptions[nbObj, DockedCells -> {
+		titleCell,
+		toolbarCell	
+	}]
 ]
 ]
 

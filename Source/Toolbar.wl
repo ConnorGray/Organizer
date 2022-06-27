@@ -3,9 +3,8 @@ BeginPackage["ConnorGray`Organizer`Toolbar`"]
 MakeLinkButtonRow
 MakeColorPickerButtonGrid
 
+MakeToolbarButtonBoxes
 IconButtonContent
-
-$ButtonBarOptions
 
 GetIcon
 LoadIcons
@@ -20,69 +19,60 @@ Needs["ConnorGray`Organizer`Utils`"]
 
 (*========================================================*)
 
-$ButtonBarOptions = Sequence[
-	ContentPadding -> None,
-	FrameMargins -> 7
-];
-
 (*------------------------------------*)
 
-Options[MakeLinkButtonRow] = {
-	Background -> Automatic
-}
-
-MakeLinkButtonRow[OptionsPattern[]] := Try @ With[{
-	background = OptionValue[Background],
+MakeLinkButtonRow[] := Try @ With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
+	linkButtonAccentColor = RGBColor["#3da5d9"],
 	newFileLinkButton,
 	newMessageLinkButton,
 	newBrowserLinkButton,
 	newDraggedLinkButton
 },
-	newFileLinkButton = Button[
-		IconButtonContent[
-			GetIcon["FileLink"],
-			"Insert a link to a file chosen from the file system"
-		],
-		(
+	newFileLinkButton = MakeToolbarButtonBoxes[
+		GetIcon["FileLink"],
+		"File",
+		"Insert a link to a file chosen from the file system",
+		Function[
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ createSystemOpenCell[]];
-		),
-		$ButtonBarOptions,
-		Background -> background,
-		Method -> "Queued"
+		],
+		"Queued",
+		White,
+		linkButtonAccentColor
 	];
 
-	newMessageLinkButton = Button[
-		IconButtonContent[
-			GetIcon["MessageLink"],
-			"Insert a link to the selected Apple Mail message"
-		],
-		(
+	newMessageLinkButton = MakeToolbarButtonBoxes[
+		GetIcon["MessageLink"],
+		"Email",
+		"Insert a link to the selected Apple Mail message",
+		Function[
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ getAppleMailHyperlink[]];
-		),
-		$ButtonBarOptions,
-		Background -> background,
-		Method -> "Queued"
+		],
+		Automatic,
+		White,
+		linkButtonAccentColor
 	];
 
-	newBrowserLinkButton = Button[
-		IconButtonContent[
-			GetIcon["BrowserLink"],
-			"Insert a link to a web page open in Safari or Google Chrome"
-		],
-		(
+	newBrowserLinkButton = MakeToolbarButtonBoxes[
+		GetIcon["BrowserLink"],
+		"Web Page",
+		"Insert a link to a web page open in Safari or Google Chrome",
+		Function @ (
 			ReleaseHold[loadOrFail];
 			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ getBrowserHyperlink[]];
 		),
-		$ButtonBarOptions,
-		Background -> background,
-		Method -> "Queued"
+		"Queued",
+		White,
+		linkButtonAccentColor
 	];
 
+	(* FIXME: Support dragged links in some other way?
+		E.g. have a button within the popup that shows the browser links. That
+		button should appear whether or not the automatic link assembly suceeds.
 	newDraggedLinkButton = Button[
 		IconButtonContent[
 			GetIcon["LinkArea"],
@@ -96,18 +86,41 @@ Module[{
 		Background -> background,
 		Method -> "Queued"
 	];
+	*)
 
-	Row[
-		{
-			newFileLinkButton,
-			newMessageLinkButton,
-			newBrowserLinkButton,
-			newDraggedLinkButton
-		},
-		ImageMargins -> 10
-	]
+	{
+		newBrowserLinkButton,
+		newFileLinkButton,
+		newMessageLinkButton
+	}
 ]]
 
+(*====================================*)
+
+MakeToolbarButtonBoxes[
+	icon_Graphics,
+	label_?StringQ,
+	tooltip_?StringQ,
+	buttonFunction_Function,
+	buttonMethod0 : _?StringQ | Automatic : Automatic,
+	buttonDefaultBackground : _ : White,
+	buttonAccentColor : _ : RGBColor["#60993e"]
+] := Module[{
+	buttonMethod = Replace[buttonMethod0, Automatic -> "Preemptive"]
+},
+	TemplateBox[
+		{
+			ToBoxes @ Show[icon, ImageSize -> 15, BaselinePosition -> Center],
+			label,
+			tooltip,
+			buttonFunction,
+			buttonMethod,
+			buttonDefaultBackground,
+			buttonAccentColor
+		},
+		"Organizer:IconAndLabelButtonTemplate"
+	]
+]
 
 (*====================================*)
 (* Link Button Handlers               *)
@@ -401,7 +414,10 @@ setSelectedCellsBackground[color_] := Module[{selectedCells},
 MakeColorPickerButtonGrid[] := Try @ With[{
 	loadOrFail = $HeldLoadOrFail
 },
-Module[{colors, grid},
+Module[{
+	colors,
+	buttonGroups
+},
 	colors = PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"];
 
 	If[MissingQ[colors],
@@ -418,7 +434,7 @@ Module[{colors, grid},
 		];
 	];
 
-	grid = Map[
+	buttonGroups = Map[
 		Button[
 			"",
 			(
@@ -428,13 +444,35 @@ Module[{colors, grid},
 			ImageSize -> {20, 20},
 			Background -> #,
 			ImageMargins -> 0,
-			ContentPadding -> None
+			ContentPadding -> None,
+			Appearance -> None
 		] &,
 		colors,
 		{2}
 	];
 
-	Grid[grid, Spacings -> {0.0, .0}, ItemSize -> All, Frame -> True, FrameStyle -> Thickness[2.5]]
+	dividers = FoldList[Plus, 1, Length /@ buttonGroups];
+	(* dividers = Part[dividers, 2 ;; -2]; *)
+
+	Grid[
+		{Flatten[buttonGroups]},
+		Spacings -> {0.0, .0},
+		ItemSize -> All,
+		Frame -> True,
+		FrameStyle -> Thickness[1],
+		Dividers -> {
+			{
+				(* Use light colored dividers by default. *)
+				Directive[GrayLevel[0.7]],
+				(* Use dark dividers to separate sections. *)
+				Map[
+					index |-> (index -> Black),
+					dividers
+				]
+			},
+			{}
+		}
+	]
 ]
 ]
 
