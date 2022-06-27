@@ -326,6 +326,44 @@ InstallNotebookStyles[nb_NotebookObject] := With[{
 				TemplateBoxOptions -> {
 					DisplayFunction -> $iconAndLabelDropdownTemplate
 				}
+			],
+			(*====================================*)
+			(* Special link TemplateBox styles    *)
+			(*====================================*)
+			With[{
+				icon = ToBoxes @ Show[
+					GetIcon["MessageLink"],
+					BaseStyle -> Gray,
+					ImageSize -> 10
+				]
+			},
+				Cell[
+					StyleData["Organizer:EmailLinkTemplate"],
+					TemplateBoxOptions -> {
+						DisplayFunction -> Function[
+							TemplateBox[
+								{
+									(* GridBox[
+										{{
+											icon,
+											StyleBox[#1, 12]
+										}},
+										GridBoxAlignment -> {
+											"Columns" -> {{Left}},
+											"Rows" -> {{Center}}
+										}
+									], *)
+									TemplateBox[
+										{StyleBox[#1, 12], icon},
+										"Superscript"
+									],
+									#2
+								},
+								"HyperlinkURL"
+							]
+						]
+					}
+				]
 			]
 		}]
 	];

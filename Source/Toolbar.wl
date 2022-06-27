@@ -311,7 +311,7 @@ else
 end if
 "
 
-getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
+getAppleMailHyperlink[] := Module[{data, message, url, box},
 	data = RunProcess[{"osascript", "-e", $getMailLinkScript}, "StandardError"];
 	If[FailureQ[data],
 		Return[data];
@@ -330,10 +330,17 @@ getAppleMailHyperlink[] := Module[{data, message, url, hyperlink},
 
 	If[Length[data] === 1,
 		message = data[[1]];
-		url = URL["message://%3C" <> URLEncode[message["ID"]] <> "%3E"];
-		hyperlink = Hyperlink[Style[message["Subject"], 12], url];
+		url = "message://%3C" <> URLEncode[message["ID"]] <> "%3E";
 
-		Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
+		box = TemplateBox[
+			{
+				message["Subject"],
+				url
+			},
+			"Organizer:EmailLinkTemplate"
+		];
+
+		Return[ Cell[BoxData[box], "Subitem"] ]
 	];
 
 	(* TODO: Support showing a listing of possible emails to link to when Length[data] > 1 *)
