@@ -354,7 +354,7 @@ getAppleMailHyperlink[] := Module[{data, message, url, box},
 
 		box = TemplateBox[
 			{
-				message["Subject"],
+				ToBoxes @ message["Subject"],
 				url
 			},
 			"Organizer:EmailLinkTemplate"
