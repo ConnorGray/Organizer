@@ -19,6 +19,7 @@ Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Notebook`Log`"]
 Needs["ConnorGray`Organizer`Notebook`Tasklist`"]
+Needs["ConnorGray`Organizer`Notebook`BugReport`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 
 (*====================================*)
@@ -26,6 +27,7 @@ Needs["ConnorGray`Organizer`Toolbar`"]
 CreateOrganizerNotebook[type_?StringQ, title_?StringQ] := Replace[type, {
 	"Log" :> CreateLogNotebook[title],
 	"Tasklist" :> CreateTasklistNotebook[title],
+	"BugReport" :> CreateBugReportNotebook[title],
 	_ :> Failure["UnknownOrganizerNotebookType", <||>]
 }]
 

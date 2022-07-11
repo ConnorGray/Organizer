@@ -161,7 +161,7 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 
 MakeTitleBarCellBoxes[
 	title_?StringQ,
-	type_?StringQ,
+	typeName_?StringQ,
 	inserts : _?ListQ : {}
 ] := Module[{},
 	GridBox[
@@ -197,7 +197,7 @@ MakeTitleBarCellBoxes[
 							StripOnInput -> False
 						],
 						StyleBox[
-							"\"" <> ToUpperCase[type] <> " NOTEBOOK\"",
+							"\"" <> ToUpperCase[typeName] <> " NOTEBOOK\"",
 							FontFamily -> "Source Sans Pro",
 							FontTracking -> "SemiCondensed",
 							FontVariations -> {"CapsType" -> "AllSmallCaps"},

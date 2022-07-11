@@ -120,6 +120,13 @@ Module[{
 					EvaluationNotebook[],
 					"Tasklist"
 				];
+			),
+			"New Bug Report" :> (
+				ReleaseHold[loadOrFail];
+				HandleUIFailure @ HandleCreateNewFile[
+					EvaluationNotebook[],
+					"BugReport"
+				]
 			)
 		|>,
 		"Queued",
