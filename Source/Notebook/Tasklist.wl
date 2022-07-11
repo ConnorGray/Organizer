@@ -32,12 +32,7 @@ CreateTasklistNotebook[listName_?StringQ] := Try @ Module[{
 	Confirm @ InstallNotebookStyles[nbObj];
 	Confirm @ InstallTasklistDockedCells[nbObj, listName];
 
-	SetOptions[
-		nbObj,
-		TaggingRules -> {
-			"CG:Organizer" -> {"DocumentType" -> "Tasklist"}
-		}
-	];
+	Confirm @ SetNotebookTaggingRules[nbObj, "Tasklist"];
 
 	nbObj
 ]

@@ -11,6 +11,7 @@ Begin["`Private`"]
 Needs["ConnorGray`Organizer`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`LogNotebookRuntime`"]
+Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Notebook`Log`"]
 
 
@@ -738,9 +739,6 @@ handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, pa
         (* Disable editing. If the user wants to edit these queues, they should do it in
            the source notebook. *)
         Editable -> False,
-		TaggingRules -> {
-			"CG:Organizer" -> {"DocumentType" -> "GeneratedQueueReport"}
-		},
         (* Add a temporary docked cell warning the user that the notebook is still having
            content copied into it. This is removed later. *)
         DockedCells -> {
@@ -755,6 +753,8 @@ handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, pa
             ]
         }
     ];
+
+	Confirm @ SetNotebookTaggingRules[nb, "GeneratedQueueReport"];
 
     Scan[
         Function[proj,
@@ -933,9 +933,6 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 		(* Disable editing. If the user wants to edit these queues, they should do it in
 		the source notebook. *)
 		Editable -> False,
-		TaggingRules -> {
-			"CG:Organizer" -> {"DocumentType" -> "GeneratedDailysReport"}
-		},
 		(* Add a temporary docked cell warning the user that the notebook is still having
 		content copied into it. This is removed later. *)
 		DockedCells -> {
@@ -950,6 +947,8 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 			]
 		}
 	];
+
+	Confirm @ SetNotebookTaggingRules[nb, "GeneratedDailysReport"];
 
 	Scan[
 		Function[proj,

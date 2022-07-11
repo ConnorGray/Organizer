@@ -16,6 +16,7 @@ WriteTodoAndSelect
    backwards-incompatible change. *)
 InsertTodoAfterSelection::usage = "InsertTodoAfterSelection[] insters a new TODO cell after the current selection point in the current selected notebook."
 
+SetNotebookTaggingRules
 
 Begin["`Private`"]
 
@@ -224,6 +225,24 @@ MakeTitleBarCellBoxes[
 		}
 	]
 ]
+
+(*====================================*)
+
+SetNotebookTaggingRules[
+	nbObj_NotebookObject,
+	documentType_?StringQ
+] := Try @ Module[{},
+	SetOptions[
+		nbObj,
+		TaggingRules -> {
+			"CG:Organizer" -> {"DocumentType" -> documentType}
+		}
+	]
+]
+
+SetNotebookTaggingRules[args___] := Throw[Row[{
+	"Unexpected arguments: ", {args}
+}]]
 
 (*====================================*)
 
