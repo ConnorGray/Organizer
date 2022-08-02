@@ -121,6 +121,13 @@ Module[{
 					"Tasklist"
 				];
 			),
+			"New Design" :> (
+				ReleaseHold[loadOrFail];
+				HandleUIFailure @ HandleCreateNewFile[
+					EvaluationNotebook[],
+					"Design"
+				]
+			),
 			"New Bug Report" :> (
 				ReleaseHold[loadOrFail];
 				HandleUIFailure @ HandleCreateNewFile[
