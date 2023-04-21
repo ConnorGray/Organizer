@@ -297,34 +297,26 @@ end tell
 
 $getSafariLinkScript = "
 tell application \"Safari\"
-	log \"{\"
 	repeat with _theDoc in every document
 		set _title to (name of _theDoc)
 		set _url to (URL of _theDoc)
 
-		log \"<|\"
-		log \"\\\"Title\\\" -> \\\"\" & _title as «class utf8»      & \"\\\", \"
-		log \"\\\"URL\\\" -> \\\"\"   & _url  & \"\\\"\"
-		log \"|>, \"
+		log \"Title: \" & _title as «class utf8»
+		log \"URL: \" & _url
 	end repeat
-	log \"Sequence[]}\"
 end tell
 "
 
 $getChromeLinkScript = "
 if application \"Google Chrome\" is running then
 	tell application \"Google Chrome\"
-		log \"{\"
 		repeat with _window in every window
 			set _title to the title of active tab of _window
 			set _url to the URL of active tab of _window
 
-			log \"<|\"
-			log \"\\\"Title\\\" -> \\\"\" & _title as «class utf8»      & \"\\\", \"
-			log \"\\\"URL\\\" -> \\\"\"   & _url  & \"\\\"\"
-			log \"|>, \"
+			log \"Title: \" & _title as «class utf8»
+			log \"URL: \" & _url
 		end repeat
-		log \"Sequence[]}\"
 	end tell
 else
 	log \"{}\"
@@ -370,8 +362,6 @@ getAppleMailHyperlink[] := Module[{data, message, url, box},
 getOpenPages[script_?StringQ] := Try @ Module[{data},
 	data = RunProcess[{"osascript", "-e", script}, "StandardError"];
 
-	(* Echo[InputForm[data], "data A"] *)
-
 	If[FailureQ[data],
 		Confirm @ FailureMessage[
 			Organizer::error,
@@ -389,7 +379,27 @@ getOpenPages[script_?StringQ] := Try @ Module[{data},
 		];
 	];
 
-	data = ToExpression[data];
+	data = StringSplit[data, "\n"];
+
+	data = Partition[data, 2];
+
+	data = Map[
+		Replace[{
+			{
+				title_?StringQ /; StringStartsQ[title, "Title: "],
+				url_?StringQ /; StringStartsQ[url, "URL: "]
+			} :> <|
+				"Title" -> StringDrop[title, 7],
+				"URL" -> StringDrop[url, 5]
+			|>,
+			other_ :> Confirm @ FailureMessage[
+				Organizer::error,
+				"Data returned from 'osascript' does not have the expected form:",
+				{InputForm[data]}
+			]
+		}],
+		data
+	];
 
 	(* Echo[data, "data B"]; *)
 
