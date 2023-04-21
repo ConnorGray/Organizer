@@ -1,5 +1,7 @@
 # Personal Organizer System
 
+#### [Documentation][Overview] | [Changelog](./docs/CHANGELOG.md)
+
 This repository contains the source code for the
 [`ConnorGray/Organizer`](https://resources.wolframcloud.com/PacletRepository/resources/ConnorGray/Organizer/)
 paclet.
@@ -26,8 +28,7 @@ After [installing Organizer](#installation), you can perform first-time setup by
 palette window. Once installed, Organizer will automatically appear in the system
 **Palettes > Organizer** menu item. Click it to open the Organizer palette.
 
-Read the [Organizer Overview tutorial](https://resources.wolframcloud.com/PacletRepository/resources/ConnorGray/Organizer/Organizer/tutorial/Overview.html)
-to learn more.
+Read the [Organizer Overview tutorial][Overview] to learn more.
 
 > If you've previously set-up the organizer system, but would like to change the root
 > directory the system uses, you do so by evaluating:
@@ -60,3 +61,6 @@ The icons:
 
 are from [www.onlinewebfonts.com/icon](http://www.onlinewebfonts.com/icon), licensed as
 CC BY 3.0.
+
+
+[Overview]: https://resources.wolframcloud.com/PacletRepository/resources/ConnorGray/Organizer/tutorial/Overview.html
