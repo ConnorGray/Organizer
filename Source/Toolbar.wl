@@ -265,25 +265,20 @@ tell application \"Mail\"
 	set _selectedMsgs to selected messages of message viewer 0
 
 	if (_selectedMsgs is equal to missing value) then
-		log \"Missing[\\\"NotAvailable\\\"]\"
 		return
 	end if
 
-	log \"{\"
 	repeat with _theMsg in _selectedMsgs
 		set _id to (message id of _theMsg)
 		set _subject to (subject of _theMsg)
 		set _date to (date received of _theMsg)
 		set _sender to (sender of _theMsg)
 
-		log \"<|\"
-		log \"\\\"ID\\\" -> \\\"\"           & _id      & \"\\\", \"
-		log \"\\\"Subject\\\" -> \\\"\"      & _subject & \"\\\", \"
-		log \"\\\"DateReceived\\\" -> \\\"\" & _date    & \"\\\", \"
-		log \"\\\"Sender\\\" -> \\\"\"       & _sender  & \"\\\"\"
-		log \"|>, \"
+		log \"ID: \"           & _id
+		log \"Subject: \"      & _subject
+		log \"DateReceived: \" & _date
+		log \"Sender: \"       & _sender
 	end repeat
-	log \"Sequence[]}\"
 
 	(*if (_msgs is not equal to missing value) then
 		set _msg to last item of _msgs
@@ -297,55 +292,66 @@ end tell
 
 $getSafariLinkScript = "
 tell application \"Safari\"
-	log \"{\"
 	repeat with _theDoc in every document
 		set _title to (name of _theDoc)
 		set _url to (URL of _theDoc)
 
-		log \"<|\"
-		log \"\\\"Title\\\" -> \\\"\" & _title as «class utf8»      & \"\\\", \"
-		log \"\\\"URL\\\" -> \\\"\"   & _url  & \"\\\"\"
-		log \"|>, \"
+		log \"Title: \" & _title as «class utf8»
+		log \"URL: \" & _url
 	end repeat
-	log \"Sequence[]}\"
 end tell
 "
 
 $getChromeLinkScript = "
 if application \"Google Chrome\" is running then
 	tell application \"Google Chrome\"
-		log \"{\"
 		repeat with _window in every window
 			set _title to the title of active tab of _window
 			set _url to the URL of active tab of _window
 
-			log \"<|\"
-			log \"\\\"Title\\\" -> \\\"\" & _title as «class utf8»      & \"\\\", \"
-			log \"\\\"URL\\\" -> \\\"\"   & _url  & \"\\\"\"
-			log \"|>, \"
+			log \"Title: \" & _title as «class utf8»
+			log \"URL: \" & _url
 		end repeat
-		log \"Sequence[]}\"
 	end tell
 else
 	log \"{}\"
 end if
 "
 
-getAppleMailHyperlink[] := Module[{data, message, url, box},
+getAppleMailHyperlink[] := Try @ Module[{
+	data, message, url, box
+},
 	data = RunProcess[{"osascript", "-e", $getMailLinkScript}, "StandardError"];
 	If[FailureQ[data],
 		Return[data];
 	];
 	Assert[StringQ[data]];
 
-	data = ToExpression[data];
+	data = StringSplit[data, "\n"];
+	data = Partition[data, 4];
+	data = Map[parseKeyValueLine, data, {2}];
+	data = Map[Association, data];
 
-	If[MissingQ[data],
-		Return[data];
+	If[
+		!MatchQ[
+			data,
+			{KeyValuePattern[{
+				"ID" -> _?StringQ,
+				"Subject" -> _?StringQ,
+				"DateReceived" -> _?StringQ,
+				"Sender" -> _?StringQ
+			}]...}
+		]
+	,
+		Confirm @ FailureMessage[
+			Organizer::error,
+			"Data returned from 'osascript' does not have the expected form: ``",
+			{InputForm[data]}
+		];
 	];
 
-	If[!ListQ[data] || data === {},
-		Return[$Failed];
+	If[data === {},
+		Return[Missing["NotAvailable"]];
 	];
 
 	If[Length[data] === 1,
@@ -370,8 +376,6 @@ getAppleMailHyperlink[] := Module[{data, message, url, box},
 getOpenPages[script_?StringQ] := Try @ Module[{data},
 	data = RunProcess[{"osascript", "-e", script}, "StandardError"];
 
-	(* Echo[InputForm[data], "data A"] *)
-
 	If[FailureQ[data],
 		Confirm @ FailureMessage[
 			Organizer::error,
@@ -389,7 +393,10 @@ getOpenPages[script_?StringQ] := Try @ Module[{data},
 		];
 	];
 
-	data = ToExpression[data];
+	data = StringSplit[data, "\n"];
+	data = Partition[data, 2];
+	data = Map[parseKeyValueLine, data, {2}];
+	data = Map[Association, data];
 
 	(* Echo[data, "data B"]; *)
 
@@ -444,6 +451,16 @@ getBrowserHyperlink[] := Try @ Module[{safariData, chromeData, data, pair, hyper
 	];
 
 	Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
+]
+
+(*====================================*)
+
+parseKeyValueLine[line_?StringQ] := Module[{},
+	StringReplace[
+		line,
+		StartOfString ~~ key:Repeated[LetterCharacter] ~~ ": " ~~ value___
+			:> Return[key -> value, Module]
+	]
 ]
 
 (*====================================*)
