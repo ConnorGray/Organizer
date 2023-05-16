@@ -1,6 +1,6 @@
 # Personal Organizer System
 
-#### [Documentation][Overview] | [Changelog](./docs/CHANGELOG.md)
+#### [Documentation][Overview] | [Changelog](./docs/CHANGELOG.md) | [Contributing](#contributing)
 
 This repository contains the source code for the
 [`ConnorGray/Organizer`](https://resources.wolframcloud.com/PacletRepository/resources/ConnorGray/Organizer/)
@@ -64,3 +64,8 @@ CC BY 3.0.
 
 
 [Overview]: https://resources.wolframcloud.com/PacletRepository/resources/ConnorGray/Organizer/tutorial/Overview.html
+
+### Contributing
+
+See [**Development.md**](./docs/Development.md) for instructions on how to
+perform common development tasks when contributing to this project.
