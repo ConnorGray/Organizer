@@ -1,0 +1,368 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     15660,        359]
+NotebookOptionsPosition[     14433,        341]
+NotebookOutlinePosition[     14719,        354]
+CellTagsIndexPosition[     14676,        351]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[StyleData[StyleDefinitions -> "Default.nb"]],
+
+Cell[StyleData["TODO", StyleDefinitions -> StyleData["Text"]],
+ CellFrame->{{2, 0}, {0, 0}},
+ CellMargins->{{66, 0}, {2, 2}},
+ ReturnCreatesNewCell->True,
+ StyleKeyMapping->{"Tab" -> "TODO:Item", "*" -> "TODO:Item"},
+ TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
+ CellFrameMargins->5,
+ CellFrameColor->GrayLevel[0.7],
+ CellFrameLabels->{{
+    Cell[
+     BoxData[
+      CheckboxBox[
+       Dynamic[
+        Or[
+         TrueQ[
+          CurrentValue[
+           ParentCell[
+            EvaluationCell[]], {TaggingRules, "TODOCompletedQ"}]], 
+         TrueQ[
+          CurrentValue[
+           ParentCell[
+            EvaluationCell[]], {
+           TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]], 
+        Function[$CellContext`val, 
+         Module[{$CellContext`cell}, $CellContext`cell = ParentCell[
+             EvaluationCell[]]; 
+          SetOptions[$CellContext`cell, TaggingRules -> Replace[
+              CurrentValue[$CellContext`cell, TaggingRules], {
+                Pattern[$CellContext`most, 
+                 BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                Pattern[$CellContext`rest, 
+                 
+                 BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+          CurrentValue[$CellContext`cell, {
+             TaggingRules, "CG:Organizer", 
+              "TODOCompletedQ"}] = $CellContext`val; Null]]]]], Background -> 
+     GrayLevel[1]], None}, {None, None}},
+ CellFrameLabelMargins->3,
+ LineSpacing->{0.95, 0}],
+
+Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Text"]],
+ CellFrame->{{0, 0}, {0, 0}},
+ CellDingbat->StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
+   RGBColor[0.8, 0.043, 0.008]],
+ CellMargins->{{81, 0}, {2, 2}},
+ ReturnCreatesNewCell->True,
+ StyleKeyMapping->{
+  "Tab" -> "TODO:Subitem", "*" -> "TODO:Subitem", "Backspace" -> "TODO"},
+ TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
+ CellFrameMargins->5,
+ CellFrameColor->GrayLevel[0.7],
+ CellFrameLabels->{{
+    Cell[
+     BoxData[
+      CheckboxBox[
+       Dynamic[
+        Or[
+         TrueQ[
+          CurrentValue[
+           ParentCell[
+            EvaluationCell[]], {TaggingRules, "TODOCompletedQ"}]], 
+         TrueQ[
+          CurrentValue[
+           ParentCell[
+            EvaluationCell[]], {
+           TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]], 
+        Function[$CellContext`val, 
+         Module[{$CellContext`cell}, $CellContext`cell = ParentCell[
+             EvaluationCell[]]; 
+          SetOptions[$CellContext`cell, TaggingRules -> Replace[
+              CurrentValue[$CellContext`cell, TaggingRules], {
+                Pattern[$CellContext`most, 
+                 BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                Pattern[$CellContext`rest, 
+                 
+                 BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+          CurrentValue[$CellContext`cell, {
+             TaggingRules, "CG:Organizer", 
+              "TODOCompletedQ"}] = $CellContext`val; Null]]]]], Background -> 
+     GrayLevel[1]], None}, {None, None}},
+ CellFrameLabelMargins->3,
+ LineSpacing->{0.95, 0}],
+
+Cell[StyleData["TODO:Subitem", StyleDefinitions -> StyleData["Text"]],
+ CellFrame->{{0, 0}, {0, 0}},
+ CellDingbat->StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
+   RGBColor[0.8, 0.043, 0.008]],
+ CellMargins->{{105, 0}, {2, 2}},
+ ReturnCreatesNewCell->True,
+ StyleKeyMapping->{
+  "Tab" -> "TODO:Subsubitem", "*" -> "TODO:Subsubitem", "Backspace" -> 
+   "TODO:Item"},
+ TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
+ CellFrameMargins->5,
+ CellFrameColor->GrayLevel[0.7],
+ CellFrameLabels->{{
+    Cell[
+     BoxData[
+      CheckboxBox[
+       Dynamic[
+        Or[
+         TrueQ[
+          CurrentValue[
+           ParentCell[
+            EvaluationCell[]], {TaggingRules, "TODOCompletedQ"}]], 
+         TrueQ[
+          CurrentValue[
+           ParentCell[
+            EvaluationCell[]], {
+           TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]], 
+        Function[$CellContext`val, 
+         Module[{$CellContext`cell}, $CellContext`cell = ParentCell[
+             EvaluationCell[]]; 
+          SetOptions[$CellContext`cell, TaggingRules -> Replace[
+              CurrentValue[$CellContext`cell, TaggingRules], {
+                Pattern[$CellContext`most, 
+                 BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                Pattern[$CellContext`rest, 
+                 
+                 BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+          CurrentValue[$CellContext`cell, {
+             TaggingRules, "CG:Organizer", 
+              "TODOCompletedQ"}] = $CellContext`val; Null]]]]], Background -> 
+     GrayLevel[1]], None}, {None, None}},
+ CellFrameLabelMargins->3,
+ LineSpacing->{0.95, 0}],
+
+Cell[StyleData["TODO:Subsubitem", StyleDefinitions -> StyleData["Text"]],
+ CellFrame->{{0, 0}, {0, 0}},
+ CellDingbat->StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
+   RGBColor[0.6, 0.6, 0.6]],
+ CellMargins->{{129, 0}, {2, 2}},
+ ReturnCreatesNewCell->True,
+ StyleKeyMapping->{"Backspace" -> "TODO:Subitem"},
+ TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
+ CellFrameMargins->5,
+ CellFrameColor->GrayLevel[0.7],
+ CellFrameLabels->{{
+    Cell[
+     BoxData[
+      CheckboxBox[
+       Dynamic[
+        Or[
+         TrueQ[
+          CurrentValue[
+           ParentCell[
+            EvaluationCell[]], {TaggingRules, "TODOCompletedQ"}]], 
+         TrueQ[
+          CurrentValue[
+           ParentCell[
+            EvaluationCell[]], {
+           TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]], 
+        Function[$CellContext`val, 
+         Module[{$CellContext`cell}, $CellContext`cell = ParentCell[
+             EvaluationCell[]]; 
+          SetOptions[$CellContext`cell, TaggingRules -> Replace[
+              CurrentValue[$CellContext`cell, TaggingRules], {
+                Pattern[$CellContext`most, 
+                 BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                Pattern[$CellContext`rest, 
+                 
+                 BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+          CurrentValue[$CellContext`cell, {
+             TaggingRules, "CG:Organizer", 
+              "TODOCompletedQ"}] = $CellContext`val; Null]]]]], Background -> 
+     GrayLevel[1]], None}, {None, None}},
+ CellFrameLabelMargins->3,
+ LineSpacing->{0.95, 0}],
+
+Cell[StyleData["Organizer:IconAndLabelButtonTemplate"],
+ TemplateBoxOptions->{
+ DisplayFunction->(DynamicModuleBox[{$CellContext`state = "default"}, 
+   TagBox[
+    ButtonBox[
+     FrameBox[
+      GridBox[{{
+         StyleBox[#, GraphicsBoxOptions -> {BaseStyle -> Dynamic[
+              Switch[$CellContext`state, "hovered", White, 
+               Blank[], #7]]}], 
+         PaneBox[#2]}}, 
+       GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Center}}}], 
+      BaseStyle -> {
+       FontSize -> 10, FontWeight -> Automatic, FontColor -> Dynamic[
+          Switch[$CellContext`state, "hovered", White, 
+           Blank[], #7]]}, FrameMargins -> {{2, 2}, {2, 1}}, FrameStyle -> 
+      Directive[
+        Thickness[1], #7], Background -> Dynamic[
+        Switch[$CellContext`state, "default", #6, "hovered", 
+         RGBColor[1, 0.5, 0], "pressed", Gray]], RoundingRadius -> 3], 
+     Appearance -> None, ButtonFunction :> #4, Method -> #5, Evaluator -> 
+     Automatic], 
+    EventHandlerTag[{
+     "MouseEntered" :> ($CellContext`state = "hovered"), 
+      "MouseExited" :> ($CellContext`state = "default"), {
+       "MouseDown", 1} :> ($CellContext`state = "pressed"), {
+       "MouseUp", 1} :> ($CellContext`state = "hovered"), PassEventsDown -> 
+      True, PassEventsUp -> True, Method -> "Preemptive"}]], 
+   DynamicModuleValues :> {}]& )}],
+
+Cell[StyleData["Organizer:IconAndLabelDropdownTemplate"],
+ TemplateBoxOptions->{
+ DisplayFunction->(DynamicModuleBox[{$CellContext`state = "default"}, 
+   TagBox[
+    ActionMenuBox[
+     FrameBox[
+      GridBox[{{
+         StyleBox[#, GraphicsBoxOptions -> {BaseStyle -> Dynamic[
+              Switch[$CellContext`state, "hovered", White, 
+               Blank[], #7]]}], 
+         TemplateBox[{#2, 
+           "\"\[ThinSpace]\[ThinSpace]\[FilledDownTriangle]\""}, 
+          "RowDefault"]}}, 
+       GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Center}}}], 
+      BaseStyle -> {
+       FontSize -> 10, FontWeight -> Automatic, FontColor -> Dynamic[
+          Switch[$CellContext`state, "hovered", White, 
+           Blank[], #7]]}, FrameMargins -> {{2, 2}, {2, 1}}, FrameStyle -> 
+      Directive[
+        Thickness[1], #7], Background -> Dynamic[
+        Switch[$CellContext`state, "default", #6, "hovered", 
+         RGBColor[1, 0.5, 0], "pressed", Gray]], RoundingRadius -> 3], #4, 
+     Appearance -> None, Method -> #5, Evaluator -> Automatic], 
+    EventHandlerTag[{
+     "MouseEntered" :> ($CellContext`state = "hovered"), 
+      "MouseExited" :> ($CellContext`state = "default"), {
+       "MouseDown", 1} :> ($CellContext`state = "pressed"), {
+       "MouseUp", 1} :> ($CellContext`state = "hovered"), PassEventsDown -> 
+      True, PassEventsUp -> True, Method -> "Preemptive"}]], 
+   DynamicModuleValues :> {}]& )}],
+
+Cell[StyleData["Organizer:EmailLinkTemplate"],
+ TemplateBoxOptions->{DisplayFunction->(TemplateBox[{
+    TemplateBox[{
+      StyleBox[#, 12], 
+      GraphicsBox[{
+        Thickness[0.001], 
+        StyleBox[{
+          
+          FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {0, 1, 
+           0}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 
+           0}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {0, 1, 
+           0}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}}}, CompressedData["
+1:eJxdVVtIFGEUXgtJ6qGCjKCLKV2M6KHMsotxnlx9qVzMioR2veSl1N3RNR13
+bNx1nR1HW/OpJAgy6KGo6IIWRGUlBIUPSYpQaQhFWpFgFzFqznx/I/XDsHvm
+P5fv+875/0nMr3QVzXU4HDHmU2E+c8wnc1Recu17Dn1Lzov2PjJosMubPr87
+k7J7VoXHTxnE205PCrX3TiXnhVqo23ydnZZMVlypThw2lbyWhjhus05N42Zk
+7Bpi92hHs21vYL8B1baXXnOOyhMVyD+aRM95HfISp+95k0olx8zVV06cpvdO
+OjVz3NRx4tfHMpw0n4EOlyKudS/qvy0hC86KA8C1v5jO8cpy0QQTKigGr9Iq
+2z7C/pJq204GdFglM9tg18MS+s1ruwq8l8qIYYR3qKjnrKAExpun0tYUcy30
+0nVOcE9F/YhECxhnTyNx+JJgNfJ9DYLnNj/q7gpRJ+P0+MHnagj9KPcjrjAM
+/oqfGH62rCEu6kfdhDA5eI3V0WNLsCD80hpgZwTpHeucrgBPbiP299cDf42K
+OrJMKy27Afq6ZOLuyGP16P96GfNxpQ71FtVj//xJ+sR4livQLVBj17f0dXsx
+Dxdr6SzzjCnD/Jj4rf5sLkS9zxLe9xegz30SdBzJR3yZRPVc8J4HepVLmMch
+N/Tol6DHy6PAtbUKv4VHwe9mFeK3uKFvquhHpRt8vNWYx7tFdImJfKmh3Qxs
+ZTmxLKuyhB4OCf4lCubgZTUxbe+vU7Zt5ZkrdH1VjXzzVCpmXtM+5OlspEoO
+/HGCXnDfgyH0f6YI9Y6H0Z91gt8CDXzj3GQdm9UajfAfn+Cbq+F8bXIj3w0N
+fD+66TQL2K9hHnZ6kP+1hv5MeIDvvfCX8m3b4nOhwLat+u0e9KMigvPkk2gP
+898Ywn6tjPpnFcxLpUyvrDwK+C4LYB7jFeifoGB+HgTQv/EG9PdpAHrNUaFv
+ooLzZd4j7JZyRYE+kyrFM/8PCvSbbEL9nL96NqMfZ8LQqS8i9NbwfjwCfS9r
+mLsk3daHYQ9u1//lXzZrRy1dZ22r3rIW3HcR4e8Q9jqN4liQaR31FmvA06ID
+hy5wxuo4bz/DmJ8Pgk9tI/xXCLtT3FPDIXJxHw6oOE/RkD1vVh1fM/R8JqO/
+OTrOp+oHnohh29b83G+z7Sfc55428nGduCD6dasN+fbp4Nch9m+L78HeNnGf
+tOD8dLeir5sMCnD9uFbwaDLQP5eoP2JAz8RW3OPDBvxmFOQfMjCP+wqQb9AA
+vyMH4T9g0P/fsz/BpEDa
+           "]], 
+          
+          FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}}}, CompressedData["
+1:eJxdUjssg1EULhapYNBILBWJ0IgJi0jlm4qYajCoSv2txiPSvz8xiIT07713
+MDCJekZrxthIDMpmEeKxEol4RCweERH3OJ2c5Obc+99zvse5f40R6xkqcjgc
+BXrV61XoyMd3Erk3T//CmYXkkz/rbkvidtq10zFoQX/NvY3aWEnpqIqj40Zf
+VNjYo81GDFcZ0+s8TKAn6xZPrePwU84kIAlnfQQEmztJMN5DFEf0wWmjqVnH
+qoEWyqVJDEd1TAXxp6dBoJF4lwPMfymwSAJn+0Bl0TuJWqEJXgJ89im8EvHY
+APcvKeb3hkCyU7bCgIbxRAy4qa9WoXJHG2gJs+9HiWvysRtGJ/mblyAbfk8Y
+M1r2zY/get3/V3cgkNbpqtsAXU/3ChTTIPYNlFBO22h36o2IsL+4zTzpcc5l
+gnX4TFC7yxJ4Jv2bJuNXS8ZdM/k9lATRZWBy3b3EJw3mIsY66xSOCfcrBioz
+g4rnNmdy35xiX+cm6xGK+z7z+LOK9QbjPM9JxTrf48zXpVinz2K8U8nvvZU/
+hyS/z4cFgvGOCmzTRfkE/v9fvyiJFMo=
+           "]], 
+          
+          FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+           3}}}, CompressedData["
+1:eJxdUT9IAnEU1hoyIQiSiEIriDJoiGrSgm8JaUs3SQf/VwieBg1WQ5CDd55n
+W7UU2ezSkEMEimMUDaFjRpuNWWvv9Wrpwbu737vvvj/vJsMpX6zXZDKZqcep
+e6gbXWfAcGh491YduccMbBVPOzuh4pPG9dWMzGt5lOoEdKflvUvF2SnVmoJ7
+rqwKH8E6xynBn6u4VFasTS2FP35i6zqXFMTiVIMF4etL47lMwBkd1iY9uBQc
+dYjA0IXvKQl7jgYNHcOs+7ENutoqNR0vdPOkN+X7vA7OYrqIC96m44F9vYXF
+n6WAE/Z7GMIX5xrQsM9BfBFYWLekim93VPT9Kl6ZfzaKZTZm/z33R3DFua7z
+WFikGgohRcfytIpbsuttBZHgfHMa1tl/ewMs11UK+Al44Jf9VXVMsc9iELye
+eroo+mMR4RsxxK85IXsbNWTfW0ncsM5uUXjnFcHf6WA5bzQj80ABLd7L3g7+
+/99vcmHkUg==
+           "]], 
+          
+          FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {0, 1, 
+           0}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 
+           0}}}, CompressedData["
+1:eJxTTMoPSmVmYGBgBGIxIGYC4jQQ+NTqUCWyzv1hVbbDjcUFtlwnWx1Acgwv
+shwCd8i1vt7f6pABUjcPwQfLn8iE82fMBIKPGQ4tr4EiQP0g4cAVGQ4w8224
+ri8uEM1wmHDoq0aMcpvDIqA115PTHa6D7DvdAefLA7XtKOqG8/OB1OIF3Q7n
+zgDBHyh/V7cDyJj+IKh9l7sd3oAdkuHwAOSRm90Q+3wzIeJPux02AH0nYpbl
+8B2o7dDeboc2kL7ebAcTYyDo7nbQAgp/fQHlF3Y7BIGMk8xxqAGFy6wuhzig
+tIZOjkM1iH+kA86H+QfGRw9PAMHDoXs=
+           "]]}, {
+          Thickness[0.001]}, StripOnInput -> False]}, {
+       BaseStyle -> GrayLevel[0.5], ImageSize -> 10, 
+        ImageSize -> {1000., 1000.}, PlotRange -> {{0., 1000.}, {0., 1000.}}, 
+        AspectRatio -> Automatic}]}, "Superscript"], #2}, "HyperlinkURL"]& )}]
+},
+FrontEndVersion->"13.2 for Mac OS X ARM (64-bit) (November 18, 2022)",
+StyleDefinitions->"PrivateStylesheetFormatting.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 49, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"d1c188f5-c1c7-4304-ad25-0cb8c68d5ad8"],
+Cell[610, 22, 1507, 39, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"93ae5cd1-876c-4c17-9d6a-4da599333e61"],
+Cell[2120, 63, 1648, 42, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"cf8c3259-af9b-4804-a987-2413ab2c600f"],
+Cell[3771, 107, 1667, 43, 70, 70, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"16b90fdf-317a-4b18-9d02-7c9c6e01ebb7"],
+Cell[5441, 152, 1608, 41, 70, 73, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"1f056d2f-6d29-4041-8f40-0677bf5879b0"],
+Cell[7052, 195, 1359, 28, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"44fb5a06-c79b-4dee-8b18-2f8ab87382d1"],
+Cell[8414, 225, 1437, 29, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"d9651f6b-73be-4a88-bcf8-6daa32a50255"],
+Cell[9854, 256, 4575, 83, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"b5b46c27-5c95-4086-bd12-7712419ebf05"]
+}
+]
+*)
+
+(* End of internal cache information *)
