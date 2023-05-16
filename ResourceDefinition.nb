@@ -9629,7 +9629,11 @@ Cell["Resource Name (resources from any Wolfram repository)", "Item",
        SelectedNotebook[], All, CellContents, AutoScroll -> True]], 
    PassEventsDown -> False, PassEventsUp -> False},
  CellTags->{"DefaultContent", "TabNext"},
- CellID->694609509,ExpressionUUID->"5c46701f-175f-42a3-97bf-7c8a0e8a2a11"]
+ CellID->694609509,ExpressionUUID->"5c46701f-175f-42a3-97bf-7c8a0e8a2a11"],
+
+Cell["ConnorGray/CellInsertionMenu", "Item",
+ CellChangeTimes->{{3.893268876599286*^9, 3.893268881252791*^9}},
+ CellID->643348620,ExpressionUUID->"d1d073f7-45e9-460e-bea5-5ee8a768d6e0"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -10696,7 +10700,8 @@ Cell[BoxData[
         {
          StyleBox[
           TemplateBox[{
-            CheckboxBox[False, {False, "PacletDependencies"}], "\" \"", 
+            CheckboxBox["PacletDependencies", {False, "PacletDependencies"}], 
+            "\" \"", 
             TemplateBox[{"\"Paclet dependencies\"", 
               TemplateBox[{"DisclosuresPacletDependencies", 
                 Cell[
@@ -10748,6 +10753,7 @@ zA55FLDD86oxLHyMCCr+uD0BkyEqm4tnVeJ0em1yFgMuasXzGZex+\
 XbqTXaYtPfjLtBP44hONtoWT7/s9WR7F16V6APpRxskeLbNaulSY38/\
 4sUb8au0OuAastsaXYfONfDPmUt10vonoEhfGw9DyLtfuSb7Z4fo7efOBNzS1tqGMmDqQ3oC8/\
 o9fD6J7aU8YqQ/yHDORJfxRQXZcE/mzXmL0JanD8="},
+ CellChangeTimes->{{3.8932688844194107`*^9, 3.893268884503083*^9}},
  CellTags->{
   "CheckboxCell", "Disclosures", "Disclosures-Checkboxes", 
    "Disclosures-PacletDependencies"},

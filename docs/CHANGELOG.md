@@ -8,10 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+
+## [0.7.0]
+
+### Added
+
+* Added new Organizer.nb stylesheet, making it easier to use new Organizer UI
+  features in older organizer notebooks, and ensuring that new UI features are
+  available automatically when the Organizer paclet is updated.
+
+  Notebooks created with previous versions of Organizer can be updated to use
+  the new Organizer stylesheet by selecting the
+  `Format > Stylesheet... > ConnorGray > Organizer` menu item. This will clear
+  the old Organizer styles that are inlined into every notebook created by
+  older versions of Organizer.
+
+* Add new `/` style key mapping for a new cell insertion menu.
+
+  This functionality is supported by a dependency on the
+  [ConnorGray/CellInsertionMenu](https://paclets.com/ConnorGray/CellInsertionMenu)
+  paclet.
+
+* Add new `[` style key mapping to conveniently insert a new TODO cell.
+
 ### Fixed
 
 - Fixed parsing of double quote characters in 'Web Link' and 'Email' content
   returned from AppleScript. ([#44])
+
 
 
 ## [0.6.0] - 2023-06-16
