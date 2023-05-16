@@ -48,13 +48,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 0.3.0 - 2021-12-08
 
 
-
+<!-- v0.7.0 -->
+[#44]: https://github.com/ConnorGray/Organizer/pull/44
+[#47]: https://github.com/ConnorGray/Organizer/pull/47
 
 <!-- Unreleased -->
-[#44]: https://github.com/ConnorGray/Organizer/pull/44
 
 <!-- This needs to be updated for each tagged release. -->
-[Unreleased]: https://github.com/ConnorGray/Organizer/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/ConnorGray/Organizer/compare/v0.7.0...HEAD
 
+[0.7.0]: https://github.com/ConnorGray/Organizer/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ConnorGray/Organizer/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/ConnorGray/Organizer/compare/v0.4.0...v0.5.0
