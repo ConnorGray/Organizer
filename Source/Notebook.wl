@@ -7,6 +7,7 @@ InstallNotebookStyles::usage = "InstallNotebookStyles[nb] will set the StyleDefi
 
 InsertCellAfterSelection::usage = "InsertCellAfterSelection[cell] will insert cell after the current selection point in the current evaluation notebook."
 
+MakeOrganizerDockedCells
 MakeTitleBarCellBoxes
 MakeNewTodoButton
 
@@ -156,6 +157,58 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 	NotebookWrite[EvaluationCell[], cell, All];
 	SelectionMove[SelectedNotebook[], After, CellContents]
 ]
+
+(*====================================*)
+
+MakeOrganizerDockedCells[
+	title_,
+	documentType_?StringQ,
+	background_
+] := Try @ With[{
+	loadOrFail = $HeldLoadOrFail
+},
+Module[{
+	toolbarRow,
+	titleCell,
+	toolbarCell
+},
+	toolbarRow = GridBox[{{
+		MakeNewTodoButton[],
+		Splice @ Confirm @ MakeLinkButtonRow[],
+		ToBoxes @ Confirm @ MakeColorPickerButtonGrid[]
+	}},
+		GridBoxDividers -> {
+			"Rows" -> {{None}},
+			"ColumnsIndexed" -> {
+				2 -> GrayLevel[0.7],
+				5 -> GrayLevel[0.7]
+			}
+		},
+		GridBoxSpacings -> {
+			"Columns" -> {{0.2}},
+			"ColumnsIndexed" -> {
+				2 -> 1,
+				5 -> 1
+			}
+		}
+	];
+
+	titleCell = Cell[
+		BoxData @ MakeTitleBarCellBoxes[title, documentType],
+		Background -> background
+	];
+
+	toolbarCell = Cell[
+		BoxData[toolbarRow],
+		Background -> GrayLevel[0.9],
+		CellFrameMargins -> {{Inherited, Inherited}, {-1, 1}}
+	];
+
+	{
+		titleCell,
+		toolbarCell
+	}
+]]
 
 (*====================================*)
 
