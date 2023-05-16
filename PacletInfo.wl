@@ -1,6 +1,6 @@
 PacletObject[<|
 	"Name" -> "ConnorGray/Organizer",
-	"Version" -> "0.6.0",
+	"Version" -> "0.7.0",
 	"WolframVersion" -> "13.0+",
 	"PublisherID" -> "ConnorGray",
 	"License" -> "MIT",
