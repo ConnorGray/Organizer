@@ -10,15 +10,22 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     15660,        359]
-NotebookOptionsPosition[     14433,        341]
-NotebookOutlinePosition[     14719,        354]
-CellTagsIndexPosition[     14676,        351]
+NotebookDataLength[     16155,        368]
+NotebookOptionsPosition[     14684,        348]
+NotebookOutlinePosition[     14970,        361]
+CellTagsIndexPosition[     14927,        358]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
 Cell[StyleData[StyleDefinitions -> "Default.nb"]],
+
+Cell[StyleData[StyleDefinitions -> "ConnorGray/CellInsertionMenu.nb"]],
+
+Cell[StyleData["Input"],
+ StyleKeyMapping->{
+  "/" -> "ConnorGray/CellInsertionMenu", "[" -> "TODO", "=" -> 
+   "WolframAlphaShort", "*" -> "Item", ">" -> "ExternalLanguage"}],
 
 Cell[StyleData["TODO", StyleDefinitions -> StyleData["Text"]],
  CellFrame->{{2, 0}, {0, 0}},
@@ -353,14 +360,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 49, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"d1c188f5-c1c7-4304-ad25-0cb8c68d5ad8"],
-Cell[610, 22, 1507, 39, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"93ae5cd1-876c-4c17-9d6a-4da599333e61"],
-Cell[2120, 63, 1648, 42, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"cf8c3259-af9b-4804-a987-2413ab2c600f"],
-Cell[3771, 107, 1667, 43, 70, 70, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"16b90fdf-317a-4b18-9d02-7c9c6e01ebb7"],
-Cell[5441, 152, 1608, 41, 70, 73, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"1f056d2f-6d29-4041-8f40-0677bf5879b0"],
-Cell[7052, 195, 1359, 28, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"44fb5a06-c79b-4dee-8b18-2f8ab87382d1"],
-Cell[8414, 225, 1437, 29, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"d9651f6b-73be-4a88-bcf8-6daa32a50255"],
-Cell[9854, 256, 4575, 83, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"b5b46c27-5c95-4086-bd12-7712419ebf05"]
+Cell[558, 20, 49, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"7800915f-8f58-4a09-bb59-98bbf2844f62"],
+Cell[610, 22, 70, 0, 70, 70, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"27e1f2a3-e4a1-4afd-bb1f-6991e35f32b9"],
+Cell[683, 24, 175, 3, 70, 24, 0, "StyleData", "Input", "All",ExpressionUUID->"e41ce77a-2340-4484-b35c-573a5e1c3990"],
+Cell[861, 29, 1507, 39, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"712af8ab-22a1-4746-b069-bebb3ab3093d"],
+Cell[2371, 70, 1648, 42, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"5e4ff2b7-b9fc-428e-9b41-40a674c563c1"],
+Cell[4022, 114, 1667, 43, 70, 70, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"3b24046b-3c07-43e5-9751-ee298ef4e60d"],
+Cell[5692, 159, 1608, 41, 70, 73, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"d4149a8a-3041-44cc-ad14-ea0f845c19e6"],
+Cell[7303, 202, 1359, 28, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"dd2a4346-5d27-4591-9f64-0ae05be2e8f5"],
+Cell[8665, 232, 1437, 29, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"fc09da46-50cc-4cb4-9e1b-694343d609d1"],
+Cell[10105, 263, 4575, 83, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"9d84dacf-2625-4f4e-a700-73fd42661b28"]
 }
 ]
 *)

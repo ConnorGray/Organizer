@@ -14,5 +14,8 @@ PacletObject[<|
 		{"Documentation"},
 		{"FrontEnd"},
 		{"Resource", "Resources" -> {{"Icons", "./Icons"}}}
+	},
+	"Dependencies" -> {
+		"ConnorGray/CellInsertionMenu"
 	}
 |>]

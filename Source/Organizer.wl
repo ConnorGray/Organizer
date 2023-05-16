@@ -5,6 +5,8 @@ UpdateLogNotebooks
 
 CreateOrganizerNotebook::usage = "CreateOrganizerNotebook[type, title] creates a new Organizer notebook of the specified type."
 
+PacletInstall /@ PacletObject["ConnorGray/Organizer"]["Dependencies"]
+
 Begin["`Private`"]
 
 If[$VersionNumber >= 12.3,

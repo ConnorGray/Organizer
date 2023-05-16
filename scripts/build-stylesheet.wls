@@ -228,7 +228,23 @@ $iconAndLabelDropdownTemplate = Function[
 (*========================================================*)
 
 organizerStylesheetNotebook = Notebook[{
-	Cell[StyleData[StyleDefinitions -> "Default.nb"] ],
+	Cell[StyleData[StyleDefinitions -> "Default.nb"]],
+
+	Cell[StyleData[StyleDefinitions -> "ConnorGray/CellInsertionMenu.nb"]],
+
+	(*================================*)
+	(* Override built-in cell styles  *)
+	(*================================*)
+
+	Cell[StyleData["Input"],
+		StyleKeyMapping -> {
+			"/" -> "ConnorGray/CellInsertionMenu",
+			"[" -> "TODO",
+			"=" -> "WolframAlphaShort",
+			"*" -> "Item",
+			">" -> "ExternalLanguage"
+		}
+	],
 
 	(*================================*)
 	(* TODO cell styles               *)
