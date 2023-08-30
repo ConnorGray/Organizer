@@ -9,13 +9,14 @@ InitializeOrganizerPalette
 Begin["`Private`"]
 
 Needs["ConnorGray`Organizer`"]
+Needs["ConnorGray`Organizer`Errors`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`LogNotebookRuntime`"]
 Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Notebook`Log`"]
 
 
-NotebooksDirectory[] := Try @ Module[{dir, error},
+NotebooksDirectory[] := Handle[_Failure] @ Module[{dir, error},
     dir = PersistentValue["CG:Organizer:RootDirectory", "Local"];
 
     If[!DirectoryQ[dir],
@@ -23,10 +24,10 @@ NotebooksDirectory[] := Try @ Module[{dir, error},
 			(* ChoiceDialog and SystemDialogInput don't work if this is a pre-emptive
 			   evaluation, so skip trying to recover. This can happen when the hidden
 			   button in the Log.nb docked title bar is clicked. *)
-			Confirm @ FailureMessage[
-				Organizer::error,
+			Raise[
+				OrganizerError,
 				"Error: Saved Organizer root directory is not DirectoryQ: ``",
-				{dir}
+				dir
 			];
 		];
 
@@ -43,8 +44,8 @@ NotebooksDirectory[] := Try @ Module[{dir, error},
 		If[
 			!ChoiceDialog[error],
 			(* The user decided not to pick a root directory. Return an error. *)
-			Confirm @ FailureMessage[
-				Organizer::canceled,
+			Raise[
+				OrganizerError,
 				"Canceling operation. No Organizer Root directory is available."
 			];
 		];
@@ -54,16 +55,16 @@ NotebooksDirectory[] := Try @ Module[{dir, error},
 		If[!DirectoryQ[dir],
 			If[dir === $Canceled,
 				(* The user decided not to pick a root directory. Return an error. *)
-				Confirm @ FailureMessage[
-					Organizer::canceled,
+				Raise[
+					OrganizerError,
 					"Canceling operation. No Organizer Root directory is available."
 				];
 			];
 
-			Confirm @ FailureMessage[
-				Organizer::error,
+			Raise[
+				OrganizerError,
 				"Error: Saved Organizer root directory is not DirectoryQ: ``",
-				{dir}
+				dir
 			];
 		];
 
@@ -89,24 +90,27 @@ NotebooksDirectory[] := Try @ Module[{dir, error},
 
 		PersistentValue["CG:Organizer:RootDirectory", "Local"] = dir;
     ];
+
     dir
 ]
 
 (* Get the directory for the currently selected Workspace. *)
-WorkspaceDirectory[] := Try @ Module[{organizerRoot, name, dir, workspaces},
-	organizerRoot = Confirm @ NotebooksDirectory[];
+WorkspaceDirectory[] := Handle[_Failure] @ Module[{
+	organizerRoot, name, dir, workspaces
+},
+	organizerRoot = RaiseConfirm @ NotebooksDirectory[];
 
 	name = PersistentValue["CG:Organizer:Workspace", "Local"];
-	workspaces = Confirm @ Workspaces[];
+	workspaces = RaiseConfirm @ Workspaces[];
 
 	Assert[ListQ[workspaces]];
 
 	If[workspaces === {},
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"The Organizer root directory (``) does not contain any subdirectories. "
 			<> "Please create a subdirectory and try again.",
-			{InputForm[organizerRoot]}
+			InputForm[organizerRoot]
 		];
 	];
 
@@ -125,8 +129,8 @@ WorkspaceDirectory[] := Try @ Module[{organizerRoot, name, dir, workspaces},
 				Map[(# -> #)&, workspaces]
 			];
 			If[name === $Canceled,
-				Confirm @ FailureMessage[
-					Organizer::canceled,
+				Raise[
+					OrganizerError,
 					"Canceling operation. No Workspace directory is available."
 				];
 			];
@@ -141,8 +145,8 @@ WorkspaceDirectory[] := Try @ Module[{organizerRoot, name, dir, workspaces},
 				Map[(# -> #)&, workspaces]
 			];
 			If[name === $Canceled,
-				Confirm @ FailureMessage[
-					Organizer::canceled,
+				Raise[
+					OrganizerError,
 					"Canceling operation. No Workspace directory is available."
 				];
 			];
@@ -152,29 +156,29 @@ WorkspaceDirectory[] := Try @ Module[{organizerRoot, name, dir, workspaces},
 
 	dir = FileNameJoin[{organizerRoot, name}];
 	If[!DirectoryQ[dir],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Workspace directory is unexpectedly invalid: ``",
-			{InputForm[dir]}
+			InputForm[dir]
 		];
 	];
 	dir
 ];
 
-CategoryDirectory[] := Try @ Module[{workspaceDir, name, dir, categories},
-	workspaceDir = Confirm @ WorkspaceDirectory[];
+CategoryDirectory[] := Handle[_Failure] @ Module[{workspaceDir, name, dir, categories},
+	workspaceDir = RaiseConfirm @ WorkspaceDirectory[];
 
 	name = PersistentValue["CG:Organizer:Category", "Local"];
-	categories = Confirm @ Categories[];
+	categories = RaiseConfirm @ Categories[];
 
 	Assert[ListQ[categories]];
 
 	If[categories === {},
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"The current Workspace directory (``) does not contain any subdirectories. "
 			<> "Please create a subdirectory and try again.",
-			{InputForm[workspaceDir]}
+			InputForm[workspaceDir]
 		];
 	];
 
@@ -193,8 +197,8 @@ CategoryDirectory[] := Try @ Module[{workspaceDir, name, dir, categories},
 				Map[(# -> #)&, categories]
 			];
 			If[name === $Canceled,
-				Confirm @ FailureMessage[
-					Organizer::canceled,
+				Raise[
+					OrganizerError,
 					"Canceling operation. No Category directory is available."
 				];
 			];
@@ -209,8 +213,8 @@ CategoryDirectory[] := Try @ Module[{workspaceDir, name, dir, categories},
 				Map[(# -> #)&, categories]
 			];
 			If[name === $Canceled,
-				Confirm @ FailureMessage[
-					Organizer::canceled,
+				Raise[
+					OrganizerError,
 					"Canceling operation. No Category directory is available."
 				];
 			];
@@ -220,21 +224,21 @@ CategoryDirectory[] := Try @ Module[{workspaceDir, name, dir, categories},
 
 	dir = FileNameJoin[{workspaceDir, name}];
 	If[!DirectoryQ[dir],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Category directory is unexpectedly invalid: ``",
-			{InputForm[dir]}
+			InputForm[dir]
 		];
 	];
 	dir
 ]
 
-Workspaces[] := Try @ subDirectoryNames[Confirm @ NotebooksDirectory[]]
+Workspaces[] := Handle[_Failure] @ subDirectoryNames[RaiseConfirm @ NotebooksDirectory[]]
 
 (* Get a list of Categories which are a part of the current workspace. *)
-Categories[] := Try @ subDirectoryNames[Confirm @ WorkspaceDirectory[]]
+Categories[] := Handle[_Failure] @ subDirectoryNames[RaiseConfirm @ WorkspaceDirectory[]]
 
-Projects[] := Try @ subDirectoryNames[Confirm @ CategoryDirectory[]]
+Projects[] := Handle[_Failure] @ subDirectoryNames[RaiseConfirm @ CategoryDirectory[]]
 
 subDirectoryNames[dir_?DirectoryQ] := Module[{names},
     names = FileNames[All, dir];
@@ -253,7 +257,7 @@ subDirectoryNames[dir_?DirectoryQ] := Module[{names},
 
 $PaletteWidth = 220;
 
-OpenOrganizerPalette[] := Try @ Module[{
+OpenOrganizerPalette[] := Handle[_Failure] @ Module[{
 	organizerPacletLocation,
 	paletteLocation,
 	paletteNBObj
@@ -268,17 +272,17 @@ OpenOrganizerPalette[] := Try @ Module[{
 	]; *)
 
 
-	organizerPacletLocation = Confirm[PacletObject["ConnorGray/Organizer"]]["Location"];
+	organizerPacletLocation = RaiseConfirm[PacletObject["ConnorGray/Organizer"]]["Location"];
 	paletteLocation = FileNameJoin[{
 		organizerPacletLocation,
 		"FrontEnd", "Palettes", "Organizer.nb"
 	}];
 
 	If[!DirectoryQ[organizerPacletLocation] || !FileExistsQ[paletteLocation],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Unable to get location of Organizer paclet and/or palette: ``",
-			{InputForm[organizerPacletLocation]}
+			InputForm[organizerPacletLocation]
 		];
 	];
 
@@ -293,7 +297,7 @@ OpenOrganizerPalette[] := Try @ Module[{
 
 	If[!MissingQ[paletteNBObj] && MatchQ[paletteNBObj, NotebookObject[__]],
 		(* The palette is already open. Refresh its contents. *)
-		Confirm @ RefreshOrganizerPalette[paletteNBObj];
+		RaiseConfirm @ RefreshOrganizerPalette[paletteNBObj];
 		,
 		(* Open the Organizer.nb. Whether it succeeds or fails, this operation returns Null. *)
 		FrontEndTokenExecute["OpenFromPalettesMenu", "Organizer.nb"];
@@ -302,7 +306,7 @@ OpenOrganizerPalette[] := Try @ Module[{
 	(* TODO: Return the NotebookObject[..] for the open palette? *)
 ]
 
-InitializeOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
+InitializeOrganizerPalette[nb0_NotebookObject] := Handle[_Failure] @ Module[{
 	contents
 },
 	If[FailureQ[CategoryDirectory[]],
@@ -310,7 +314,7 @@ InitializeOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
 		   a `Method -> "Queued" button for the user to click. This is a workaround for
 		   the fact we cannot show dialog prompts to the user during a preemptive
 		   evaluation (which notebook `Initialization :> (..)` is). *)
-		Confirm @ SetOrganizerPaletteContent[nb0, Function[nb, (
+		RaiseConfirm @ SetOrganizerPaletteContent[nb0, Function[nb, (
 			contents = Button[
 				Style["Setup Organizer", 20],
 				(
@@ -342,7 +346,7 @@ InitializeOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
 	];
 ]
 
-RefreshOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
+RefreshOrganizerPalette[nb0_NotebookObject] := Handle[_Failure] @ Module[{
 	contents
 },
 	(* Echo["called RefreshOrganizerPalette:"]; *)
@@ -353,7 +357,7 @@ RefreshOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
 			(* Compute the new contents for the palette. *)
 			(* Do this *before* deleting the old contents to minimize the time that the palette
 			is blank. *)
-			contents = Confirm @ createOrganizerPalette[];
+			contents = createOrganizerPalette[];
 
 			(* Delete everything in the notebook! *)
 			SelectionMove[nb, All, Notebook];
@@ -368,7 +372,7 @@ RefreshOrganizerPalette[nb0_NotebookObject] := Try @ Module[{
 	]
 ]
 
-SetOrganizerPaletteContent[nb_NotebookObject, callback_] := Try @ Module[{
+SetOrganizerPaletteContent[nb_NotebookObject, callback_] := Handle[_Failure] @ Module[{
 	organizerPaletteQ, info,
 	body, contents
 },
@@ -390,12 +394,13 @@ SetOrganizerPaletteContent[nb_NotebookObject, callback_] := Try @ Module[{
 	If[!organizerPaletteQ,
 		info = Association[NotebookInformation[nb]];
 
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"CRITICAL ERROR: Unsafe attempt to refresh a notebook which was not the main "
 			<> "Organizer palette. Doing so would delete all contents of the affected notebook. "
 			<> "Notebook file path was: ``. Notebook title was: ``",
-			{InputForm[info["FileName"]], InputForm[info["WindowTitle"]]}
+			InputForm[info["FileName"]],
+			InputForm[info["WindowTitle"]]
 		];
 	];
 
@@ -411,7 +416,7 @@ SetOrganizerPaletteContent[nb_NotebookObject, callback_] := Try @ Module[{
 	SetOptions[nb, Selectable -> True];
 
 
-	Confirm @ callback[nb];
+	RaiseConfirm @ callback[nb];
 
 
 	(* Restore `Selectable -> False` *)
@@ -423,7 +428,7 @@ SetOrganizerPaletteContent[nb_NotebookObject, callback_] := Try @ Module[{
 	CurrentValue[nb, {TaggingRules, "CG:Organizer", "DocumentType"}] = "MainOrganizerPalette";
 ]
 
-createOrganizerPalette[] := Try @ With[{
+createOrganizerPalette[] := With[{
     loadOrFail = $HeldLoadOrFail
 }, Module[{
 	categoryButton, categoryPicker, paletteContents
@@ -443,7 +448,10 @@ createOrganizerPalette[] := Try @ With[{
 	];
 
 	categoryPicker = Pane[
-		Grid[{Map[categoryButton, Confirm @ Categories[]]}, Spacings -> 0],
+		Grid[
+			{Map[categoryButton, RaiseConfirm @ Categories[]]},
+			Spacings -> 0
+		],
 		$PaletteWidth,
 		ImageSizeAction -> "Scrollable",
 		Scrollbars -> {False, False}
@@ -487,7 +495,7 @@ createOrganizerPalette[] := Try @ With[{
 				ItemSize -> {{Scaled[0.75], Scaled[0.25]}},
 				Spacings -> {0, 0}
 			],
-			Grid[Confirm @ buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}],
+			Grid[buttonListToOpenActiveProjectLogs[], Spacings -> {0, 0}],
 			categoryPicker
 		}
 		,
@@ -499,7 +507,7 @@ createOrganizerPalette[] := Try @ With[{
 	paletteContents
 ]]
 
-commandDropdownContents[close_Function] := Try @ With[{
+commandDropdownContents[close_Function] := Handle[_Failure] @ With[{
     loadOrFail = $HeldLoadOrFail
 },
     Column[
@@ -531,7 +539,7 @@ commandDropdownContents[close_Function] := Try @ With[{
 						(* OpenOrganizerPalette[] automatically refreshes the palette. *)
 						HandleUIFailure @ ConnorGray`Organizer`OpenOrganizerPalette[]
                     )&,
-                    Confirm @ Workspaces[]
+                    RaiseConfirm @ Workspaces[]
                 ]
             },
                 ActionMenu[
@@ -564,8 +572,8 @@ commandDropdownContents[close_Function] := Try @ With[{
     ]
 ]
 
-buttonListToOpenActiveProjectLogs[] := Try @ Module[{projects, metaProjs},
-    projects = Confirm @ Projects[];
+buttonListToOpenActiveProjectLogs[] := Module[{projects, metaProjs},
+    projects = RaiseConfirm @ Projects[];
 
     metaProjs = Sort[Select[projects, StringStartsQ["+"]]];
     projects = Sort[Complement[projects, metaProjs]];
@@ -574,7 +582,11 @@ buttonListToOpenActiveProjectLogs[] := Try @ Module[{projects, metaProjs},
         Function[proj,
             With[{
                 loadOrFail = $HeldLoadOrFail,
-                path = FileNameJoin[{Confirm @ CategoryDirectory[], proj, "Log.nb"}]
+                path = FileNameJoin[{
+					RaiseConfirm @ CategoryDirectory[],
+					proj,
+					"Log.nb"
+				}]
             },
                 If[FileExistsQ[path],
                     {
@@ -625,7 +637,7 @@ buttonListToOpenActiveProjectLogs[] := Try @ Module[{projects, metaProjs},
 (* UI Event Handlers                                                          *)
 (******************************************************************************)
 
-handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
+handleStartNewProject[] := HandleUIFailure @ Handle[_Failure] @ Module[{
     projName, dirPath, logNB
 },
     projName = InputString[];
@@ -633,19 +645,23 @@ handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
         If[projName === $Canceled,
             Return[];
         ];
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Invalid project name: ``",
-			{InputForm[projName]}
+			InputForm[projName]
 		];
     ];
 
-	dirPath = FileNameJoin[{Confirm @ CategoryDirectory[], projName}];
+	dirPath = FileNameJoin[{
+		RaiseConfirm @ CategoryDirectory[],
+		projName
+	}];
+
     If[FileExistsQ[dirPath],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"File already exists at path ``.",
-			{InputForm[dirPath]}
+			InputForm[dirPath]
 		];
     ];
 
@@ -654,12 +670,12 @@ handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
 
     CreateDirectory[dirPath];
 
-	logNB = Confirm @ CreateLogNotebook[projName];
+	logNB = RaiseConfirm @ CreateLogNotebook[projName];
 
     NotebookSave[logNB, FileNameJoin[{dirPath, "Log.nb"}] ];
 
     (* Refresh the organizer palette in-place. *)
-    HandleUIFailure @ OpenOrganizerPalette[];
+    OpenOrganizerPalette[]
 ]
 
 (**************************************)
@@ -668,15 +684,15 @@ handleStartNewProject[] := HandleUIFailure @ Try @ Module[{
 
 (* Create and open a new NB which contains the Queue's NB section for every active project
    in the current workspace. *)
-handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, path, cells, timestamp, workspaceName},
+handleShowQueues[] := HandleUIFailure @ Module[{projects, settings, nb, path, cells, timestamp, workspaceName},
 
 	(*--------------------------------------------------------------------*)
 	(* Present the user with a DialogInput to select the projects to view *)
 	(*--------------------------------------------------------------------*)
 
-	projects = Projects[];
+	projects = RaiseConfirm @ Projects[];
 
-	Assert[MatchQ[projects, {___?StringQ}]];
+	RaiseConfirmMatch[projects, {___?StringQ}];
 
 	settings = DialogInput[{
 		selectedProjects = projects
@@ -702,10 +718,10 @@ handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, pa
 		$Canceled :> Return[Null, Module],
 		_?AssociationQ :> settings["Projects"],
 		_ :> (
-			Confirm @ FailureMessage[
-				Organizer::error,
+			Raise[
+				OrganizerError,
 				"Unexpected value returned from settings panel: ``",
-				{InputForm[settings]}
+				InputForm[settings]
 			];
 		)
 	}];
@@ -716,7 +732,7 @@ handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, pa
 
     nb = CreateNotebook[];
 
-    workspaceName = FileNameTake[Confirm @ WorkspaceDirectory[], -1];
+    workspaceName = FileNameTake[RaiseConfirm @ WorkspaceDirectory[], -1];
 
     timestamp = DateString[Now, {
         "DayName", " ", "MonthName", " ", "Day",
@@ -754,13 +770,17 @@ handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, pa
         }
     ];
 
-	Confirm @ SetNotebookTaggingRules[nb, "GeneratedQueueReport"];
+	RaiseConfirm @ SetNotebookTaggingRules[nb, "GeneratedQueueReport"];
 
     Scan[
         Function[proj,
-            path = FileNameJoin[{Confirm @ CategoryDirectory[], proj, "Log.nb"}];
+            path = FileNameJoin[{
+				RaiseConfirm @ CategoryDirectory[],
+				proj,
+				"Log.nb"
+			}];
 
-            cells = Confirm @ cellsFromChapterInNB[path, "Queue"];
+            cells = cellsFromChapterInNB[path, "Queue"];
 
             cells = Replace[
                 cells,
@@ -794,7 +814,7 @@ handleShowQueues[] := HandleUIFailure @ Try @ Module[{projects, settings, nb, pa
 (* Show Daily's Report                *)
 (**************************************)
 
-HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
+HandleShowDailys[] := HandleUIFailure @ Handle[_Failure] @ Module[{
 	settings,
 	timePeriod,
 	startDate,
@@ -809,9 +829,9 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 	(* Ask the user for the date range and projects to include *)
 	(*---------------------------------------------------------*)
 
-	projects = Projects[];
+	projects = RaiseConfirm @ Projects[];
 
-	Assert[MatchQ[projects, {___?StringQ}]];
+	RaiseConfirmMatch[projects, {___?StringQ}];
 
 	settings = DialogInput[{
 		timePeriod,
@@ -841,15 +861,12 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 		}]
 	];
 
-	If[!AssociationQ[settings],
-		(* PRE-COMMIT: Better error reporting. *)
-		Return[$Failed]
-	];
+	RaiseAssert[AssociationQ[settings]];
 
-	timePeriod = Confirm @ Lookup[settings, "TimePeriod", $Failed];
-	projects = Confirm @ Lookup[settings, "Projects", $Failed];
+	timePeriod = RaiseConfirm @ Lookup[settings, "TimePeriod", $Failed];
+	projects = RaiseConfirm @ Lookup[settings, "Projects", $Failed];
 
-	Replace[timePeriod, {
+	ConfirmReplace[timePeriod, {
 		"Past 7 Days" :> (
 			startDate = Today - Quantity[7, "Days"];
 			endDate = Today;
@@ -893,8 +910,7 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 		"Yesterday" :> (
 			startDate = Today - Quantity[1, "Day"];
 			endDate = startDate;
-		),
-		_ :> Confirm[$Failed]
+		)
 	}];
 
 	Assert[DateObjectQ[startDate] && DateObjectQ[endDate]];
@@ -906,7 +922,7 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 
 	nb = CreateNotebook[];
 
-	workspaceName = FileNameTake[Confirm @ WorkspaceDirectory[], -1];
+	workspaceName = FileNameTake[RaiseConfirm @ WorkspaceDirectory[], -1];
 
 	timestamp = DateString[Now, {
 		"DayName", " ", "MonthName", " ", "Day", ", ", "Year",
@@ -948,31 +964,23 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 		}
 	];
 
-	Confirm @ SetNotebookTaggingRules[nb, "GeneratedDailysReport"];
+	RaiseConfirm @ SetNotebookTaggingRules[nb, "GeneratedDailysReport"];
 
 	Scan[
 		Function[proj,
-			path = FileNameJoin[{Confirm @ CategoryDirectory[], proj, "Log.nb"}];
+			path = FileNameJoin[{
+				RaiseConfirm @ CategoryDirectory[],
+				proj,
+				"Log.nb"
+			}];
 
-			cells = Confirm @ cellsFromChapterInNB[path, "Daily"];
+			cells = cellsFromChapterInNB[path, "Daily"];
 
-			cells = Confirm @ Replace[
-				filterDailyCellsByInterval[cells, DateInterval[{startDate, endDate}]],
-				{
-					$Failed :> Failure["ShowDailys", <|
-						"MessageTemplate" -> "Unknown failure occurred while processing '``' project",
-						"MessageParameters" -> {proj}
-					|>],
-					Failure[tag_, KeyValuePattern[{
-						"MessageTemplate" -> template_?StringQ,
-						"MessageParameters" -> params_?ListQ
-					}]] :> Failure[tag, <|
-						"MessageTemplate" -> "Error processing '``' project: " <> template,
-						"MessageParameters" -> Join[{proj}, params]
-					|>],
-					err_?FailureQ :> err,
-					result_ :> result
-				}
+			cells = WrapRaised[OrganizerError, "Error processing '``' project", proj][
+				filterDailyCellsByInterval[
+					cells,
+					DateInterval[{startDate, endDate}]
+				]
 			];
 
 			cells = Replace[
@@ -980,9 +988,7 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 				{Cell["Daily", "Chapter", props___], rest___} :> {Cell["Daily — " <> proj, "Chapter", props], rest}
 			];
 
-			If[!MatchQ[cells, {___Cell}],
-				Confirm[$Failed];
-			];
+			RaiseConfirmMatch[cells, {___Cell}];
 
             NotebookWrite[nb, cells];
 
@@ -1023,17 +1029,18 @@ HandleShowDailys[] := HandleUIFailure @ Try @ Module[{
 filterDailyCellsByInterval[
 	cells0 : {___Cell},
 	interval_DateInterval
-] := Try @ Module[{
+] := Module[{
 	cells = cells0,
 	currentDate = None,
 	updateCurrentDate
 },
 	(* Confirm that the granularity of the interval is Day. *)
 	If[interval["Granularity"] =!= "Day",
-		Confirm[Failure["DateFilter", <|
-			"MessageTemplate" -> "Granularity of interval `` is not \"Day\"",
-			"MessageParameters" -> {ToString[InputForm[interval]]}
-		|>]];
+		Raise[
+			OrganizerError,
+			"Granularity of interval `` is not \"Day\"",
+			ToString[InputForm[interval]]
+		];
 	];
 
 	(*----------------------------------------------*)
@@ -1044,10 +1051,11 @@ filterDailyCellsByInterval[
 		date = date0
 	},
 		If[!DateObjectQ[currentDate] || !MemberQ[{"Month", "Day"}, currentDate["Granularity"]],
-			Confirm[Failure["DateFilter", <|
-				"MessageTemplate" -> "Unknown current year when filtering Daily cells by date: ``",
-				"MessageParameters" -> {InputForm[currentDate]}
-			|>]];
+			Raise[
+				OrganizerError,
+				"Unknown current year when filtering Daily cells by date: ``",
+				InputForm[currentDate]
+			];
 		];
 
 		(* TODO: Generalize these transformation rules as a user setting. *)
@@ -1069,10 +1077,11 @@ filterDailyCellsByInterval[
 			"Day"
 		];
 		If[!DateObjectQ[currentDate],
-			Confirm[Failure["DateFilter", <|
-				"MessageTemplate" -> "Cannot interpret Subsubsection as date: ``",
-				"MessageParameters" -> {InputForm[date]}
-			|>]];
+			Raise[
+				OrganizerError,
+				"Cannot interpret Subsubsection as date: ``",
+				InputForm[date]
+			];
 		];
 	];
 
@@ -1108,7 +1117,7 @@ filterDailyCellsByInterval[
 	*)
 	cells = Select[
 		cells,
-		Replace[#, {
+		ConfirmReplace[#, {
 			Cell["Daily", "Chapter", ___] -> True,
 			Cell[year_?StringQ, "Section", ___] :> (
 				DateOverlapsQ[interval, DateObject[{year, {"Year"}}, "Year"]]
@@ -1116,10 +1125,11 @@ filterDailyCellsByInterval[
 			Cell[monthYear_?StringQ, "Subsection", ___] :> (
 				currentDate = DateObject[{monthYear, {"Month", "Year"}}, "Month"];
 				If[!DateObjectQ[currentDate],
-					Confirm[Failure["DateFilter", <|
-						"MessageTemplate" -> "Cannot interpret Subsection as date: ``",
-						"MessageParameters" -> {InputForm[monthYear]}
-					|>]];
+					Raise[
+						OrganizerError,
+						"Cannot interpret Subsection as date: ``",
+						InputForm[monthYear]
+					];
 				];
 
 				DateOverlapsQ[interval, currentDate]
@@ -1138,10 +1148,11 @@ filterDailyCellsByInterval[
 				}];
 
 				If[!StringQ[date],
-					Confirm[Failure["SubsubsectionDateFormat", <|
-						"MessageTemplate" -> "Content of Subsubsection does not have the expected format:  ``",
-						"MessageParameters" -> {ToString[InputForm[date]]}
-					|>]];
+					Raise[
+						OrganizerError,
+						"Content of Subsubsection does not have the expected format: ``",
+						ToString[InputForm[date]]
+					];
 				];
 
 				updateCurrentDateFromSubsubsection[date];
@@ -1150,23 +1161,25 @@ filterDailyCellsByInterval[
 
 				DateOverlapsQ[interval, currentDate]
 			],
-			Cell[date_, "Subsubsection", ___] :> Confirm @ Failure["DateFilter", <|
-				"MessageTemplate" -> "Cannot interpret Subsubsection with non-String contents as date: ``",
-				"MessageParameters" -> {InputForm[date]}
-			|>],
+			Cell[date_, "Subsubsection", ___] :> Raise[
+				OrganizerError,
+				"Cannot interpret Subsubsection with non-String contents as date: ``",
+				InputForm[date]
+			],
 			(* Handle all the other cells types, e.g. TODO, Text, Input, Item, etc. Use
 			   the `currentDate` value computed by previous handling of
 			   Section/Subsection/Subsubsection headers which described the date. *)
 			Cell[___] :> (
 				If[!DateObjectQ[currentDate] || currentDate["Granularity"] =!= "Day",
-					Confirm[Failure["DateFilter", <|
-						"MessageTemplate" -> "Unknown current date when filtering Daily cells by date: ``: ``",
-						"MessageParameters" -> {InputForm[currentDate], #}
-					|>]];
+					Raise[
+						OrganizerError,
+						"Unknown current date when filtering Daily cells by date: ``: ``",
+						InputForm[currentDate],
+						#
+					];
 				];
 				IntervalMemberQ[interval, currentDate]
-			),
-			_ :> Confirm[$Failed]
+			)
 		}] &
 	];
 
@@ -1177,7 +1190,7 @@ filterDailyCellsByInterval[
 (* Shared utility functions                                                   *)
 (******************************************************************************)
 
-cellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Try @ Module[{
+cellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Module[{
 	cells,
 	chapterCell,
 	isAlreadyOpen
@@ -1186,10 +1199,10 @@ cellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Try @ Module
 		chapterCell = Replace[chapter, {
 			"Queue" :> FindQueueChapterCell[nbObj],
 			"Daily" :> FindDailyChapterCell[nbObj],
-			_ :> Confirm @ FailureMessage[
-				Organizer::error,
+			_ :> Raise[
+				OrganizerError,
 				"Failed to read cells from: ``",
-				{InputForm[path]}
+				InputForm[path]
 			]
 		}];
 

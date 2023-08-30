@@ -13,12 +13,13 @@ InstallLogNotebookStyles
 Begin["`Private`"]
 
 Needs["ConnorGray`Organizer`"]
+Needs["ConnorGray`Organizer`Errors`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`LogNotebookRuntime`"]
 
-CreateLogNotebook[projName_?StringQ] := Try @ Module[{
+CreateLogNotebook[projName_?StringQ] := Handle[_Failure] @ Module[{
 	logNB
 },
 	logNB = CreateNotebook[];
@@ -40,10 +41,10 @@ CreateLogNotebook[projName_?StringQ] := Try @ Module[{
 
 	NotebookWrite[logNB, Cell["Queue", "Chapter", Deletable -> False, Editable -> False] ];
 
-	Confirm @ InstallLogNotebookStyles[logNB];
-	Confirm @ InstallLogNotebookDockedCells[logNB, projName];
+	RaiseConfirm @ InstallLogNotebookStyles[logNB];
+	RaiseConfirm @ InstallLogNotebookDockedCells[logNB, projName];
 
-	Confirm @ SetNotebookTaggingRules[logNB, "Log"];
+	RaiseConfirm @ SetNotebookTaggingRules[logNB, "Log"];
 
 	logNB
 ]
@@ -56,7 +57,10 @@ InstallLogNotebookStyles[nb_NotebookObject] :=
 
 (*----------------------------------------------------------------------------*)
 
-InstallLogNotebookDockedCells[nbObj_, projName_?StringQ] := Try @ With[{
+InstallLogNotebookDockedCells[
+	nbObj_,
+	projName_?StringQ
+] := Handle[_Failure] @ With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
@@ -96,10 +100,10 @@ Module[{
 				"MacOSX",
 					RunProcess[{"open", NotebookDirectory[]}],
 				_,
-					Confirm @ FailureMessage[
-						Organizer::error,
+					Raise[
+						OrganizerError,
 						"Unhandled $OperatingSystem for opening folder: ``",
-						{InputForm[$OperatingSystem]}
+						InputForm[$OperatingSystem]
 					];
 			]
 		],
@@ -145,8 +149,8 @@ Module[{
 		MakeNewTodoButton[],
 		newTodayTodoButton,
 		newTodoAtTopOfQueueButton,
-		Splice @ Confirm @ MakeLinkButtonRow[],
-		ToBoxes @ Confirm @ MakeColorPickerButtonGrid[]
+		Splice @ MakeLinkButtonRow[],
+		ToBoxes @ MakeColorPickerButtonGrid[]
 	}},
 		GridBoxDividers -> {
 			"Rows" -> {{None}},

@@ -22,6 +22,7 @@ SetNotebookTaggingRules
 Begin["`Private`"]
 
 Needs["ConnorGray`Organizer`"]
+Needs["ConnorGray`Organizer`Errors`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 
@@ -164,7 +165,7 @@ MakeOrganizerDockedCells[
 	title_,
 	documentType_?StringQ,
 	background_
-] := Try @ With[{
+] := With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
@@ -174,8 +175,8 @@ Module[{
 },
 	toolbarRow = GridBox[{{
 		MakeNewTodoButton[],
-		Splice @ Confirm @ MakeLinkButtonRow[],
-		ToBoxes @ Confirm @ MakeColorPickerButtonGrid[]
+		Splice @ MakeLinkButtonRow[],
+		ToBoxes @ MakeColorPickerButtonGrid[]
 	}},
 		GridBoxDividers -> {
 			"Rows" -> {{None}},
@@ -284,7 +285,7 @@ MakeTitleBarCellBoxes[
 SetNotebookTaggingRules[
 	nbObj_NotebookObject,
 	documentType_?StringQ
-] := Try @ Module[{},
+] := Module[{},
 	SetOptions[
 		nbObj,
 		TaggingRules -> {
@@ -313,16 +314,16 @@ InstallNotebookStyles[nb_NotebookObject] := With[{},
 (* Utilities                          *)
 (*====================================*)
 
-InsertCellAfterSelection[cell_] := Try @ Module[{nb},
+InsertCellAfterSelection[cell_] := Handle[_Failure] @ Module[{nb},
 	If[cell === $Canceled,
 		Return[$Canceled, Module];
 	];
 
 	If[FailureQ[cell] || !MatchQ[cell, Cell[__]],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Error inserting cell after selection: ``",
-			{InputForm[cell]}
+			InputForm[cell]
 		];
 	];
 

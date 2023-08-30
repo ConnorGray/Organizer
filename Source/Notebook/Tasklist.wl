@@ -10,12 +10,13 @@ $TasklistNotebookBackground = Darker[Green];
 
 Begin["`Private`"]
 
+Needs["ConnorGray`Organizer`Errors`"]
 Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 Needs["ConnorGray`Organizer`Utils`"]
 
 
-CreateTasklistNotebook[listName_?StringQ] := Try @ Module[{
+CreateTasklistNotebook[listName_?StringQ] := Handle[_Failure] @ Module[{
 	nbObj
 },
 	nbObj = CreateNotebook[];
@@ -29,10 +30,10 @@ CreateTasklistNotebook[listName_?StringQ] := Try @ Module[{
 		]
 	];
 
-	Confirm @ InstallNotebookStyles[nbObj];
-	Confirm @ InstallTasklistDockedCells[nbObj, listName];
+	RaiseConfirm @ InstallNotebookStyles[nbObj];
+	RaiseConfirm @ InstallTasklistDockedCells[nbObj, listName];
 
-	Confirm @ SetNotebookTaggingRules[nbObj, "Tasklist"];
+	RaiseConfirm @ SetNotebookTaggingRules[nbObj, "Tasklist"];
 
 	nbObj
 ]
@@ -42,7 +43,7 @@ CreateTasklistNotebook[listName_?StringQ] := Try @ Module[{
 InstallTasklistDockedCells[
 	nbObj_NotebookObject,
 	listName_?StringQ
-] := Try @ With[{},
+] := With[{},
 	SetOptions[
 		nbObj,
 		DockedCells -> MakeOrganizerDockedCells[

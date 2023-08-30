@@ -16,6 +16,7 @@ PacletObject[<|
 		{"Resource", "Resources" -> {{"Icons", "./Icons"}}}
 	},
 	"Dependencies" -> {
+		"Wolfram/ErrorTools",
 		"ConnorGray/CellInsertionMenu"
 	}
 |>]

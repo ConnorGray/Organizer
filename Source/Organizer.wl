@@ -15,6 +15,7 @@ If[$VersionNumber >= 12.3,
 	Off[PersistentValue::obs]
 ];
 
+Needs["ConnorGray`Organizer`Errors`"];
 Needs["ConnorGray`Organizer`LogNotebookRuntime`"];
 Needs["ConnorGray`Organizer`Palette`"]
 Needs["ConnorGray`Organizer`Utils`"]
@@ -32,14 +33,14 @@ CreateOrganizerNotebook[type_?StringQ, title_?StringQ] := Replace[type, {
 	"Tasklist" :> CreateTasklistNotebook[title],
 	"BugReport" :> CreateBugReportNotebook[title],
 	"Design" :> CreateDesignNotebook[title],
-	_ :> Failure["UnknownOrganizerNotebookType", <||>]
+	_ :> CreateFailure[OrganizerError, "Unknown Organizer notebook type: ``", type]
 }]
 
 (*====================================*)
 
 (* This function is meant to be called manually whenever there is a change to the standard
    set of docked cells or StyleDefinitions. *)
-UpdateLogNotebooks[] := Try @ Module[{
+UpdateLogNotebooks[] := Handle[_Failure] @ Module[{
 	nbs,
 	nbObj,
 	updateLogNotebook,
@@ -53,11 +54,11 @@ UpdateLogNotebooks[] := Try @ Module[{
 
     nbs = FileNames[
         "Log.nb",
-        Confirm @ ConnorGray`Organizer`Palette`OrganizerDirectory[],
+        RaiseConfirm @ ConnorGray`Organizer`Palette`OrganizerDirectory[],
         Infinity
     ];
 
-	ConfirmMatchQ[nbs, {___?StringQ}];
+	RaiseConfirmMatch[nbs, {___?StringQ}];
 
 	updateLogNotebook[nbPath_?StringQ] :=
 		NotebookProcess[
@@ -66,7 +67,7 @@ UpdateLogNotebooks[] := Try @ Module[{
 				InstallLogNotebookDockedCells[nbObj, FileNameSplit[nbPath][[-2]]];
 				InstallLogNotebookStyles[nbObj];
 
-				Confirm @ SetNotebookTaggingRules[nbObj, "Log"];
+				RaiseConfirm @ SetNotebookTaggingRules[nbObj, "Log"];
 			)],
 			(* We're editing the notebooks, so save the notebook automatically, without
 			   interactively prompting the user. *)
