@@ -11,12 +11,13 @@ $DesignNotebookBackground = RGBColor["#0197f6"];
 
 Begin["`Private`"]
 
+Needs["ConnorGray`Organizer`Errors`"]
 Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 Needs["ConnorGray`Organizer`Utils`"]
 
 
-CreateDesignNotebook[listName_?StringQ] := Try @ Module[{
+CreateDesignNotebook[listName_?StringQ] := Handle[_Failure] @ Module[{
 	nbObj
 },
 	nbObj = CreateNotebook[];
@@ -30,10 +31,10 @@ CreateDesignNotebook[listName_?StringQ] := Try @ Module[{
 		]
 	];
 
-	Confirm @ InstallNotebookStyles[nbObj];
-	Confirm @ InstallDesignDockedCells[nbObj, listName];
+	RaiseConfirm @ InstallNotebookStyles[nbObj];
+	RaiseConfirm @ InstallDesignDockedCells[nbObj, listName];
 
-	Confirm @ SetNotebookTaggingRules[nbObj, "Design"];
+	RaiseConfirm @ SetNotebookTaggingRules[nbObj, "Design"];
 
 	nbObj
 ]
@@ -43,7 +44,7 @@ CreateDesignNotebook[listName_?StringQ] := Try @ Module[{
 InstallDesignDockedCells[
 	nbObj_NotebookObject,
 	listName_?StringQ
-] := Try @ With[{},
+] := With[{},
 	SetOptions[
 		nbObj,
 		DockedCells -> MakeOrganizerDockedCells[

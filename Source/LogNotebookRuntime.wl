@@ -24,6 +24,7 @@ HandleCreateNewFile
 Begin["`Private`"]
 
 Needs["ConnorGray`Organizer`"]
+Needs["ConnorGray`Organizer`Errors`"]
 Needs["ConnorGray`Organizer`Utils`"]
 Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Notebook`Log`"]
@@ -40,13 +41,13 @@ If[MissingQ @ PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"],
 (* TODO Insertion                     *)
 (**************************************)
 
-InsertTodoForToday[nb_NotebookObject] := Try @ Module[{
+InsertTodoForToday[nb_NotebookObject] := Handle[_Failure] @ Module[{
 	dailyChapterCell,
 	todaySectionCell,
 	monthSectionCell,
 	cellsAfterThisMonth
 },
-	dailyChapterCell = Confirm @ FindDailyChapterCell[nb];
+	dailyChapterCell = RaiseConfirm @ FindDailyChapterCell[nb];
 
 	(*
 		Check if the current notebook contains a Subsection for the current month.
@@ -69,8 +70,8 @@ InsertTodoForToday[nb_NotebookObject] := Try @ Module[{
 		(* Get the cell we just wrote/selected. *)
 		monthSectionCell = Replace[SelectedCells[], {
 			{cell_CellObject} :> cell,
-			_ :> Confirm @ FailureMessage[
-				Organizer::error,
+			_ :> Raise[
+				OrganizerError,
 				"Expected NotebookWrite[] / SelectedCells[] to result in the cell which was written"
 			]
 		}];
@@ -122,10 +123,10 @@ InsertTodoForToday[nb_NotebookObject] := Try @ Module[{
    longer-term than that should go in another section, e.g. Features. This implies that
    *most* of the time, we want to insert the new TODO at the *top* of the Queue, so we
    do just that. *)
-InsertTodoAtTopOfQueue[nb_NotebookObject] := Try @ Module[{
+InsertTodoAtTopOfQueue[nb_NotebookObject] := Handle[_Failure] @ Module[{
 	queueChapterCell
 },
-	queueChapterCell = Confirm @ FindQueueChapterCell[nb];
+	queueChapterCell = RaiseConfirm @ FindQueueChapterCell[nb];
 
 	SelectionMove[queueChapterCell, After, Cell];
 	WriteTodoAndSelect[nb];
@@ -165,7 +166,7 @@ GroupSelectionMove[heading_CellObject, dir_] := Module[{nb, cells},
 FindQueueChapterCell[nb_NotebookObject] := findChapterCell[nb, "Queue"]
 FindDailyChapterCell[nb_NotebookObject] := findChapterCell[nb, "Daily"]
 
-findChapterCell[nb_NotebookObject, contents_?StringQ] := Try @ Module[{cell},
+findChapterCell[nb_NotebookObject, contents_?StringQ] := Handle[_Failure] @ Module[{cell},
 	cell = SelectFirst[
 		Cells[nb, CellStyle -> "Chapter"],
 		MatchQ[
@@ -175,10 +176,11 @@ findChapterCell[nb_NotebookObject, contents_?StringQ] := Try @ Module[{cell},
 	];
 
 	If[!MatchQ[cell, CellObject[___]],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"No `` chapter exists in current notebook: ``",
-			{InputForm[contents], Information[nb]["WindowTitle"]}
+			InputForm[contents],
+			Information[nb]["WindowTitle"]
 		];
 	];
 
@@ -192,7 +194,7 @@ findChapterCell[nb_NotebookObject, contents_?StringQ] := Try @ Module[{cell},
 HandleCreateNewFile[
 	logNBObj_NotebookObject,
 	type_?StringQ
-] := Try @ Module[{
+] := Handle[_Failure] @ Module[{
 	title,
 	projectDir,
 	notebookFile
@@ -203,14 +205,15 @@ HandleCreateNewFile[
 		If[title === $Canceled,
 			Return[Null, Module];
 		];
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Invalid `` notebook title: ``",
-			{type, InputForm[title]}
+			type,
+			InputForm[title]
 		];
 	];
 
-	nbObj = Confirm @ CreateOrganizerNotebook[type, title];
+	nbObj = RaiseConfirm @ CreateOrganizerNotebook[type, title];
 
 	projectDir = Quiet[
 		NotebookDirectory[logNBObj],
@@ -232,15 +235,16 @@ HandleCreateNewFile[
 
 	(* Prevent NotebookSave from overwriting an existing file. *)
 	If[FileType[notebookFile] =!= None,
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Unable to save new `` notebook: file with that name already exists: ``",
-			{type, InputForm[notebookFile]}
+			type,
+			InputForm[notebookFile]
 		];
 	];
 
 	If[!DirectoryQ[FileNameDrop[notebookFile]],
-		Confirm @ CreateDirectory[FileNameDrop[notebookFile]];
+		RaiseConfirm @ CreateDirectory[FileNameDrop[notebookFile]];
 	];
 
 	NotebookSave[nbObj, notebookFile]

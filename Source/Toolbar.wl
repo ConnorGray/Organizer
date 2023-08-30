@@ -14,6 +14,7 @@ LoadIcons
 Begin["`Private`"]
 
 Needs["ConnorGray`Organizer`"]
+Needs["ConnorGray`Organizer`Errors`"]
 Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Utils`"]
 
@@ -22,7 +23,7 @@ Needs["ConnorGray`Organizer`Utils`"]
 
 (*------------------------------------*)
 
-MakeLinkButtonRow[] := Try @ With[{
+MakeLinkButtonRow[] := With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
@@ -38,7 +39,7 @@ Module[{
 		"Insert a link to a file chosen from the file system",
 		Function[
 			ReleaseHold[loadOrFail];
-			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ createSystemOpenCell[]];
+			HandleUIFailure @ Handle[_Failure] @ InsertCellAfterSelection[createSystemOpenCell[]];
 		],
 		"Queued",
 		White,
@@ -51,7 +52,7 @@ Module[{
 		"Insert a link to the selected Apple Mail message",
 		Function[
 			ReleaseHold[loadOrFail];
-			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ getAppleMailHyperlink[]];
+			HandleUIFailure @ Handle[_Failure] @ InsertCellAfterSelection[getAppleMailHyperlink[]];
 		],
 		Automatic,
 		White,
@@ -64,7 +65,7 @@ Module[{
 		"Insert a link to a web page open in Safari or Google Chrome",
 		Function @ (
 			ReleaseHold[loadOrFail];
-			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ getBrowserHyperlink[]];
+			HandleUIFailure @ Handle[_Failure] @ InsertCellAfterSelection[getBrowserHyperlink[]];
 		),
 		"Queued",
 		White,
@@ -81,7 +82,7 @@ Module[{
 		],
 		(
 			ReleaseHold[loadOrFail];
-			HandleUIFailure @ InsertCellAfterSelection[HandleUIFailure @ getDraggedHyperlink[]];
+			HandleUIFailure @ Handle[_Failure] @ InsertCellAfterSelection[getDraggedHyperlink[]];
 		),
 		$ButtonBarOptions,
 		Background -> background,
@@ -154,11 +155,11 @@ MakeToolbarDropdownBoxes[
 (* Link Button Handlers               *)
 (*====================================*)
 
-createSystemOpenCell[] := Try @ With[{
+createSystemOpenCell[] := With[{
 	filepath = SystemDialogInput[
 		"FileOpen",
 		(* This can fail if the notebook has not been saved yet. *)
-		Confirm @ NotebookDirectory[]
+		RaiseConfirm @ NotebookDirectory[]
 	]
 },
 	If[filepath === $Canceled,
@@ -166,10 +167,10 @@ createSystemOpenCell[] := Try @ With[{
 	];
 
 	If[!StringQ[filepath],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Invalid file path: ``",
-			{filepath}
+			filepath
 		];
 	];
 
@@ -208,11 +209,11 @@ createSystemOpenCell[] := Try @ With[{
 	]
 ]
 
-getDraggedHyperlink[] := Try @ Module[{path, res, data, hyperlink},
+getDraggedHyperlink[] := Module[{path, res, data, hyperlink},
 	(* TODO: Make path cross-platform. *)
 	If[$OperatingSystem =!= "MacOSX",
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Cannot get dragged link on non-MacOSX platforms."
 		];
 	];
@@ -244,10 +245,10 @@ getDraggedHyperlink[] := Try @ Module[{path, res, data, hyperlink},
 
 	hyperlink = Replace[data, {
 		{{link_}, label_} :> Hyperlink[Style[shortenURLLabel[label], 12], URL[link]],
-		_ :> Confirm @ FailureMessage[
-			Organizer::error,
+		_ :> Raise[
+			OrganizerError,
 			"Dragged link did not have the expected format after Import: ``",
-			{InputForm[data]}
+			InputForm[data]
 		]
 	}];
 
@@ -318,13 +319,14 @@ else
 end if
 "
 
-getAppleMailHyperlink[] := Try @ Module[{
+getAppleMailHyperlink[] := Module[{
 	data, message, url, box
 },
-	data = RunProcess[{"osascript", "-e", $getMailLinkScript}, "StandardError"];
-	If[FailureQ[data],
-		Return[data];
+	data = RaiseConfirm @ RunProcess[
+		{"osascript", "-e", $getMailLinkScript},
+		"StandardError"
 	];
+
 	Assert[StringQ[data]];
 
 	data = StringSplit[data, "\n"];
@@ -343,10 +345,10 @@ getAppleMailHyperlink[] := Try @ Module[{
 			}]...}
 		]
 	,
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Data returned from 'osascript' does not have the expected form: ``",
-			{InputForm[data]}
+			InputForm[data]
 		];
 	];
 
@@ -373,23 +375,24 @@ getAppleMailHyperlink[] := Try @ Module[{
 	Return[$Failed];
 ]
 
-getOpenPages[script_?StringQ] := Try @ Module[{data},
+getOpenPages[script_?StringQ] := Module[{data},
 	data = RunProcess[{"osascript", "-e", script}, "StandardError"];
 
+	(* TODO(cleanup): Use WrapFailure here instead? *)
 	If[FailureQ[data],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Invocation of 'osascript' failed: ``",
-			{InputForm[data]}
+			InputForm[data]
 		];
 	];
 	Assert[StringQ[data]];
 
 	If[StringContainsQ[data, "missing value"],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Data returned from 'osascript' contains missing value: ``",
-			{InputForm[data]}
+			InputForm[data]
 		];
 	];
 
@@ -401,28 +404,28 @@ getOpenPages[script_?StringQ] := Try @ Module[{data},
 	(* Echo[data, "data B"]; *)
 
 	If[!MatchQ[data, {KeyValuePattern[{"Title" -> _?StringQ, "URL" -> _?StringQ}]...}],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"Data returned from 'osascript' does not have the expected Association form: ``",
-			{InputForm[data]}
+			InputForm[data]
 		];
 	];
 
-	Return[data];
+	data
 ]
 
-getBrowserHyperlink[] := Try @ Module[{safariData, chromeData, data, pair, hyperlink},
-	safariData = Confirm @ getOpenPages[$getSafariLinkScript];
-	chromeData = Confirm @ getOpenPages[$getChromeLinkScript];
+getBrowserHyperlink[] := Module[{safariData, chromeData, data, pair, hyperlink},
+	safariData = getOpenPages[$getSafariLinkScript];
+	chromeData = getOpenPages[$getChromeLinkScript];
 
 	data = Join[safariData, chromeData];
 
 	pair = Which[
 		Length[data] === 0,
-			Confirm @ FailureMessage[
-				Organizer::error,
+			Raise[
+				OrganizerError,
 				"Data returned from 'osascript' was an empty list: ``. Perhaps you have no browser windows open?",
-				{InputForm[data]}
+				InputForm[data]
 			];
 		,
 		Length[data] === 1,
@@ -450,7 +453,7 @@ getBrowserHyperlink[] := Try @ Module[{safariData, chromeData, data, pair, hyper
 		pair["URL"]
 	];
 
-	Return[ Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"] ]
+	Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"]
 ]
 
 (*====================================*)
@@ -483,7 +486,7 @@ setSelectedCellsBackground[color_] := Module[{selectedCells},
 	Map[SetOptions[#, Background -> color] &, selectedCells]
 ]
 
-MakeColorPickerButtonGrid[] := Try @ With[{
+MakeColorPickerButtonGrid[] := With[{
 	loadOrFail = $HeldLoadOrFail
 },
 Module[{
@@ -493,15 +496,15 @@ Module[{
 	colors = PersistentValue["CG:Organizer:BackgroundColorPalette", "Local"];
 
 	If[MissingQ[colors],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"No \"CG:Organizer:BackgroundColorPalette\" PersistentValue is set."
 		];
 	];
 
 	If[!MatchQ[colors, {{___RGBColor}..}],
-		Confirm @ FailureMessage[
-			Organizer::error,
+		Raise[
+			OrganizerError,
 			"\"CG:Organizer:BackgroundColorPalette\" PersistentValue is not a valid array of colors."
 		];
 	];
@@ -566,7 +569,7 @@ LoadIcons[] := (
 	GetIcon["BrowserLink"]
 )
 
-GetIcon[name_?StringQ] := Try @ Module[{
+GetIcon[name_?StringQ] := Handle[_Failure] @ Module[{
 	icon
 },
 	(* Check if we've already loaded the icon, and if so, return the cached value. *)
@@ -574,7 +577,7 @@ GetIcon[name_?StringQ] := Try @ Module[{
 		Return[$loadedIcons[name], Module];
 	];
 
-	icon = Confirm @ importIcon[name <> ".svg"];
+	icon = importIcon[name <> ".svg"];
 
 	(* Cache the loaded icon data. *)
 	$loadedIcons[name] = icon;
@@ -600,9 +603,13 @@ importIcon[filename_?StringQ] := importSVG[
 ]
 *)
 
-importIcon[filename_?StringQ] := Try @ Get[
+importIcon[filename_?StringQ] := Get[
 	FileNameJoin[{
-		Confirm[Confirm[PacletObject["ConnorGray/Organizer"]]["AssetLocation", "Icons"]],
+		RaiseConfirm[
+			RaiseConfirm[
+				PacletObject["ConnorGray/Organizer"]
+			]["AssetLocation", "Icons"]
+		],
 		filename <> ".wl"
 	}]
 ]

@@ -1,7 +1,5 @@
 BeginPackage["ConnorGray`Organizer`Utils`"]
 
-Try
-FailureMessage
 HandleUIFailure
 AttachedPopupMenu
 NotebookProcess
@@ -11,7 +9,7 @@ NotebookProcess
     ensures that the check does not rely on any function from the Organizer` paclet itself.
 *)
 $HeldLoadOrFail = Hold[
-    If[FailureQ @ PacletObject["ConnorGray/Organizer"] || FailureQ @ Needs["ConnorGray`Organizer`"],
+    If[FailureQ @ PacletObject["ConnorGray/Organizer"] || FailureQ @ Needs["ConnorGray`Organizer`" -> None],
         MessageDialog["The Organizer paclet is either not installed, or failed to load."];
         Abort[];
     ];
@@ -19,71 +17,6 @@ $HeldLoadOrFail = Hold[
 
 Begin["`Private`"]
 
-(**************************************)
-(* Try                                *)
-(**************************************)
-
-Attributes[Try] = {HoldFirst}
-
-Try[expr_] := Enclose[
-	expr,
-	err |-> If[MissingQ[err["Expression"]],
-		err,
-		err["Expression"]
-	]
-]
-
-(**************************************)
-(* FailureMessage                     *)
-(**************************************)
-
-Attributes[FailureMessage] = {HoldFirst}
-
-(*
-	Generate a message and a Failure object.
-
-	`messageName` must be a message which requires only one template parameter. If
-	`messageName` does not already have a definition, the definition `messageName = "``"`
-	will be created automatically.
-*)
-FailureMessage[
-	messageName_MessageName,
-	formatStr_?StringQ,
-	formatParams : _?ListQ | _?AssociationQ : {}
-] := Try @ Module[{},
-	If[!StringQ[messageName],
-		messageName = "``";
-	];
-
-	(* Generate a message. Create and apply the template before generating the message,
-	   because Message/StringForm does not support named template arguments from an
-	   Association.
-
-	   We don't use `string` in the returned Failure object, so that the
-	   caller can pick the arguments out of the "MessageParameters" list programatically
-	   if they desire.
-	*)
-	Module[{template, string},
-		(* Use ToString instead of the default, which is TextString. TextString doesn't
-		   have the behavior we want (try evaluating TextString[InputForm["Hello"]] or
-		   TextString[Quantity[30, "Seconds"]]), which is to reproduce the input code
-		   exactly, though also process wrappers like InputForm. *)
-		template = StringTemplate[formatStr, InsertionFunction -> ToString];
-
-		string = TemplateApply[template, formatParams];
-
-		Message[messageName, string];
-	];
-
-	(* Return a Failure object. *)
-	Failure[
-		ToString[HoldForm[messageName]],
-		<|
-			"MessageTemplate" -> formatStr,
-			"MessageParameters" -> formatParams
-		|>
-	]
-]
 
 (**************************************)
 (* HandleUIFailure                    *)
@@ -104,6 +37,7 @@ FailureMessage[
 	Aborts the evaluations defensively, as there is no higher-level construct to handle
 	the error.
 *)
+(* TODO: Make this HoldFirst, and have it call Handle[_Failure] @ expr ? *)
 HandleUIFailure[err_?FailureQ] := (
 	errorDialog[err];
 	Abort[];
@@ -123,11 +57,24 @@ errorDialog[message_?StringQ] := MessageDialog[Row[{
 errorDialog[form_StringForm] := errorDialog[ToString[form]]
 
 errorDialog[
-	Failure[_, KeyValuePattern[{
-		"MessageTemplate" -> template_?StringQ,
-		"MessageParameters" -> params_?ListQ
-	}]]
-] := errorDialog[StringForm[template, Sequence @@ params]]
+	failure:Failure[_, assoc_?AssociationQ]
+] := Module[{failures},
+	failures = NestWhileList[
+		failure1 |-> Replace[failure1, {
+			Failure[_, KeyValuePattern[{
+				"CausedBy" -> cause_Failure
+			}]] :> cause
+		}],
+		failure,
+		expr |-> MatchQ[expr, Failure[_, KeyValuePattern[{
+			"CausedBy" -> cause_Failure
+		}]]]
+	];
+
+	failures = Map[ToString, failures];
+
+	errorDialog[ToString @ Column[failures]]
+]
 
 errorDialog[err_?FailureQ] :=
 	errorDialog[StringForm["An unknown Failure occurred: ``", InputForm[err]]]

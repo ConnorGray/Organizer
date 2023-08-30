@@ -9,7 +9,7 @@ Notebook[
 		"CG:Organizer" -> {"DocumentType" -> "MainOrganizerPalette"}
 	},
 	Initialization :> (
-		Needs["ConnorGray`Organizer`"];
+		Needs["ConnorGray`Organizer`" -> None];
 		ConnorGray`Organizer`Utils`HandleUIFailure[
 			ConnorGray`Organizer`Palette`InitializeOrganizerPalette[EvaluationNotebook[]]
 		]
