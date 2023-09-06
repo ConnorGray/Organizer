@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.7.1] — 2023-09-06
+
+### Added
+
+* Added new `File > New > Organizer Notebook` menu with `Design Notebook` and
+  `Tasklist Notebook` items.
+
+  This makes it easier to use Organizer's useful non-Log notebook types without
+  using the full Organizer directory structure.
+
+### Changed
+
+* Replace custom error handling with new dependency on
+  [Wolfram/ErrorTools](https://paclets.com/Wolfram/ErrorTools).
+
+
 
 ## [0.7.0] — 2023-05-16
 
@@ -52,11 +68,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#44]: https://github.com/ConnorGray/Organizer/pull/44
 [#47]: https://github.com/ConnorGray/Organizer/pull/47
 
+<!-- v0.7.1 -->
+[#55]: https://github.com/ConnorGray/Organizer/pull/55
+
 <!-- Unreleased -->
 
 <!-- This needs to be updated for each tagged release. -->
-[Unreleased]: https://github.com/ConnorGray/Organizer/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/ConnorGray/Organizer/compare/v0.7.1...HEAD
 
+[0.7.1]: https://github.com/ConnorGray/Organizer/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/ConnorGray/Organizer/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ConnorGray/Organizer/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/ConnorGray/Organizer/compare/v0.4.0...v0.5.0

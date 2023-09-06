@@ -28,13 +28,42 @@ Needs["ConnorGray`Organizer`Toolbar`"]
 
 (*====================================*)
 
-CreateOrganizerNotebook[type_?StringQ, title_?StringQ] := Replace[type, {
-	"Log" :> CreateLogNotebook[title],
-	"Tasklist" :> CreateTasklistNotebook[title],
-	"BugReport" :> CreateBugReportNotebook[title],
-	"Design" :> CreateDesignNotebook[title],
-	_ :> CreateFailure[OrganizerError, "Unknown Organizer notebook type: ``", type]
-}]
+CreateOrganizerNotebook[
+	type_?StringQ,
+	title0 : _?StringQ : Automatic
+] := Handle[_Failure] @ Module[{
+	title
+},
+	title = ConfirmReplace[title0, {
+		s_?StringQ :> s,
+		Automatic :> Module[{input},
+			input = InputString[
+				TemplateApply[
+					"Please enter a title for your new Organizer \"``\" notebook:",
+					{type}
+				]
+			];
+
+			If[!StringQ[input],
+				Raise[
+					OrganizerError,
+					"Error prompting user for Organizer notebook title: ``",
+					input
+				];
+			];
+
+			input
+		]
+	}];
+
+	Replace[type, {
+		"Log" :> CreateLogNotebook[title],
+		"Tasklist" :> CreateTasklistNotebook[title],
+		"BugReport" :> CreateBugReportNotebook[title],
+		"Design" :> CreateDesignNotebook[title],
+		_ :> CreateFailure[OrganizerError, "Unknown Organizer notebook type: ``", type]
+	}]
+]
 
 (*====================================*)
 
