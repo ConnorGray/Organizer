@@ -526,10 +526,10 @@ commandDropdownContents[close_Function] := Handle[_Failure] @ With[{
             ],
             With[{
                 choices = Map[
-                    # :> (
+                    workspace |-> Button[workspace, (
                         ReleaseHold[loadOrFail];
 
-                        PersistentValue["CG:Organizer:Workspace", "Local"] = #;
+                        PersistentValue["CG:Organizer:Workspace", "Local"] = workspace;
                         (* Set the category for the selected workspace. Because the
                            categories just happen to be sorted (by FileNames), "Active" is
                            typically the first category. There currently isn't a proper
@@ -538,15 +538,11 @@ commandDropdownContents[close_Function] := Handle[_Failure] @ With[{
 
 						(* OpenOrganizerPalette[] automatically refreshes the palette. *)
 						HandleUIFailure @ ConnorGray`Organizer`OpenOrganizerPalette[]
-                    )&,
+					), Background -> LightGray],
                     RaiseConfirm @ Workspaces[]
                 ]
             },
-                ActionMenu[
-                    Style["Workspace ...", 18],
-                    choices,
-                    ImageSize -> Full
-                ]
+				Splice[choices]
             ],
             Button[
                 Style["Show Queues", 20],
@@ -568,7 +564,8 @@ commandDropdownContents[close_Function] := Handle[_Failure] @ With[{
                 Method -> "Queued",
                 Background -> LightBlue
             ]
-        }
+        },
+		Spacings -> 0
     ]
 ]
 
