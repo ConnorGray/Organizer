@@ -3,202 +3,237 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Mathematica 13.2' *)
+(* CreatedBy='Mathematica 13.3' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     16155,        368]
-NotebookOptionsPosition[     14684,        348]
-NotebookOutlinePosition[     14970,        361]
-CellTagsIndexPosition[     14927,        358]
+NotebookDataLength[     17982,        407]
+NotebookOptionsPosition[     16456,        386]
+NotebookOutlinePosition[     16793,        400]
+CellTagsIndexPosition[     16750,        397]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell[StyleData[StyleDefinitions -> "Default.nb"]],
+Cell[StyleData[StyleDefinitions -> "Default.nb"],ExpressionUUID->"e7f951b3-5f37-45ec-a9b0-44b3e9a33c87"],
 
-Cell[StyleData[StyleDefinitions -> "ConnorGray/CellInsertionMenu.nb"]],
+Cell[StyleData[StyleDefinitions -> "ConnorGray/CellInsertionMenu.nb"],ExpressionUUID->"e5710882-27bd-4d6f-8a8b-33adebdd8709"],
 
 Cell[StyleData["Input"],
  StyleKeyMapping->{
   "/" -> "ConnorGray/CellInsertionMenu", "[" -> "TODO", "=" -> 
-   "WolframAlphaShort", "*" -> "Item", ">" -> "ExternalLanguage"}],
+   "WolframAlphaShort", "*" -> "Item", ">" -> 
+   "ExternalLanguage"},ExpressionUUID->"6254cb40-5037-4b0d-954d-0362280fec48"],
 
 Cell[StyleData["TODO", StyleDefinitions -> StyleData["Text"]],
- CellFrame->{{2, 0}, {0, 0}},
+ CellDingbat->Cell[
+   BoxData[
+    CheckboxBox[
+     Dynamic[
+      With[{$CellContext`todoCell = Nest[ParentCell, 
+          EvaluationCell[], 1]}, 
+       Or[
+        TrueQ[
+         CurrentValue[$CellContext`todoCell, {
+          TaggingRules, "TODOCompletedQ"}]], 
+        TrueQ[
+         CurrentValue[$CellContext`todoCell, {
+          TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]], 
+      Function[$CellContext`val$, 
+       Module[{$CellContext`cell$}, $CellContext`cell$ = Nest[ParentCell, 
+           EvaluationCell[], 1]; 
+        SetOptions[$CellContext`cell$, TaggingRules -> Replace[
+            CurrentValue[$CellContext`cell$, TaggingRules], {
+              Pattern[$CellContext`most, 
+               BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+              Pattern[$CellContext`rest, 
+               
+               BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+        CurrentValue[$CellContext`cell$, {
+           TaggingRules, "CG:Organizer", 
+            "TODOCompletedQ"}] = $CellContext`val$; Null]]]]], Background -> 
+   GrayLevel[1]],
  CellMargins->{{66, 0}, {2, 2}},
  ReturnCreatesNewCell->True,
  StyleKeyMapping->{"Tab" -> "TODO:Item", "*" -> "TODO:Item"},
  TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
- CellFrameMargins->5,
- CellFrameColor->GrayLevel[0.7],
- CellFrameLabels->{{
-    Cell[
-     BoxData[
-      CheckboxBox[
-       Dynamic[
-        Or[
-         TrueQ[
-          CurrentValue[
-           ParentCell[
-            EvaluationCell[]], {TaggingRules, "TODOCompletedQ"}]], 
-         TrueQ[
-          CurrentValue[
-           ParentCell[
-            EvaluationCell[]], {
-           TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]], 
-        Function[$CellContext`val, 
-         Module[{$CellContext`cell}, $CellContext`cell = ParentCell[
-             EvaluationCell[]]; 
-          SetOptions[$CellContext`cell, TaggingRules -> Replace[
-              CurrentValue[$CellContext`cell, TaggingRules], {
-                Pattern[$CellContext`most, 
-                 BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
-                Pattern[$CellContext`rest, 
-                 
-                 BlankNullSequence[]]} :> {$CellContext`most, \
-$CellContext`rest}]]; 
-          CurrentValue[$CellContext`cell, {
-             TaggingRules, "CG:Organizer", 
-              "TODOCompletedQ"}] = $CellContext`val; Null]]]]], Background -> 
-     GrayLevel[1]], None}, {None, None}},
- CellFrameLabelMargins->3,
- LineSpacing->{0.95, 0}],
+ LineSpacing->{0.95, 0},
+ FontVariations->{"StrikeThrough"->Dynamic[
+   TrueQ[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]},
+ FontColor->Dynamic[
+   If[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
+    GrayLevel[0.6], 
+    Inherited]],ExpressionUUID->"19477cad-99f2-4fa4-bf76-3b6514d94cc7"],
 
-Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Text"]],
- CellFrame->{{0, 0}, {0, 0}},
- CellDingbat->StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
-   RGBColor[0.8, 0.043, 0.008]],
+Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Item"]],
+ CellDingbat->Cell[
+   BoxData[
+    RowBox[{
+      Cell[
+       BoxData[
+        CheckboxBox[
+         Dynamic[
+          With[{$CellContext`todoCell = Nest[ParentCell, 
+              EvaluationCell[], 2]}, 
+           Or[
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "TODOCompletedQ"}]], 
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]], 
+          Function[$CellContext`val$, 
+           
+           Module[{$CellContext`cell$}, $CellContext`cell$ = 
+             Nest[ParentCell, 
+               EvaluationCell[], 2]; 
+            SetOptions[$CellContext`cell$, TaggingRules -> Replace[
+                CurrentValue[$CellContext`cell$, TaggingRules], {
+                  Pattern[$CellContext`most, 
+                   BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                  Pattern[$CellContext`rest, 
+                   
+                   BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+            CurrentValue[$CellContext`cell$, {
+               TaggingRules, "CG:Organizer", 
+                "TODOCompletedQ"}] = $CellContext`val$; Null]]]]], Background -> 
+       GrayLevel[1]], 
+      StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
+       RGBColor[0.8, 0.043, 0.008]]}]]],
  CellMargins->{{81, 0}, {2, 2}},
- ReturnCreatesNewCell->True,
  StyleKeyMapping->{
   "Tab" -> "TODO:Subitem", "*" -> "TODO:Subitem", "Backspace" -> "TODO"},
  TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
- CellFrameMargins->5,
- CellFrameColor->GrayLevel[0.7],
- CellFrameLabels->{{
-    Cell[
-     BoxData[
-      CheckboxBox[
-       Dynamic[
-        Or[
-         TrueQ[
-          CurrentValue[
-           ParentCell[
-            EvaluationCell[]], {TaggingRules, "TODOCompletedQ"}]], 
-         TrueQ[
-          CurrentValue[
-           ParentCell[
-            EvaluationCell[]], {
-           TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]], 
-        Function[$CellContext`val, 
-         Module[{$CellContext`cell}, $CellContext`cell = ParentCell[
-             EvaluationCell[]]; 
-          SetOptions[$CellContext`cell, TaggingRules -> Replace[
-              CurrentValue[$CellContext`cell, TaggingRules], {
-                Pattern[$CellContext`most, 
-                 BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
-                Pattern[$CellContext`rest, 
-                 
-                 BlankNullSequence[]]} :> {$CellContext`most, \
-$CellContext`rest}]]; 
-          CurrentValue[$CellContext`cell, {
-             TaggingRules, "CG:Organizer", 
-              "TODOCompletedQ"}] = $CellContext`val; Null]]]]], Background -> 
-     GrayLevel[1]], None}, {None, None}},
- CellFrameLabelMargins->3,
- LineSpacing->{0.95, 0}],
+ LineSpacing->{0.95, 0},
+ FontVariations->{"StrikeThrough"->Dynamic[
+   TrueQ[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]},
+ FontColor->Dynamic[
+   If[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
+    GrayLevel[0.6], 
+    Inherited]],ExpressionUUID->"7fe77e35-9208-416c-92cc-f02652ed0003"],
 
-Cell[StyleData["TODO:Subitem", StyleDefinitions -> StyleData["Text"]],
- CellFrame->{{0, 0}, {0, 0}},
- CellDingbat->StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
-   RGBColor[0.8, 0.043, 0.008]],
+Cell[StyleData["TODO:Subitem", StyleDefinitions -> StyleData["Subitem"]],
+ CellDingbat->Cell[
+   BoxData[
+    RowBox[{
+      Cell[
+       BoxData[
+        CheckboxBox[
+         Dynamic[
+          With[{$CellContext`todoCell = Nest[ParentCell, 
+              EvaluationCell[], 2]}, 
+           Or[
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "TODOCompletedQ"}]], 
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]], 
+          Function[$CellContext`val$, 
+           
+           Module[{$CellContext`cell$}, $CellContext`cell$ = 
+             Nest[ParentCell, 
+               EvaluationCell[], 2]; 
+            SetOptions[$CellContext`cell$, TaggingRules -> Replace[
+                CurrentValue[$CellContext`cell$, TaggingRules], {
+                  Pattern[$CellContext`most, 
+                   BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                  Pattern[$CellContext`rest, 
+                   
+                   BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+            CurrentValue[$CellContext`cell$, {
+               TaggingRules, "CG:Organizer", 
+                "TODOCompletedQ"}] = $CellContext`val$; Null]]]]], Background -> 
+       GrayLevel[1]], 
+      StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
+       RGBColor[0.8, 0.043, 0.008]]}]]],
  CellMargins->{{105, 0}, {2, 2}},
- ReturnCreatesNewCell->True,
  StyleKeyMapping->{
   "Tab" -> "TODO:Subsubitem", "*" -> "TODO:Subsubitem", "Backspace" -> 
    "TODO:Item"},
  TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
- CellFrameMargins->5,
- CellFrameColor->GrayLevel[0.7],
- CellFrameLabels->{{
-    Cell[
-     BoxData[
-      CheckboxBox[
-       Dynamic[
-        Or[
-         TrueQ[
-          CurrentValue[
-           ParentCell[
-            EvaluationCell[]], {TaggingRules, "TODOCompletedQ"}]], 
-         TrueQ[
-          CurrentValue[
-           ParentCell[
-            EvaluationCell[]], {
-           TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]], 
-        Function[$CellContext`val, 
-         Module[{$CellContext`cell}, $CellContext`cell = ParentCell[
-             EvaluationCell[]]; 
-          SetOptions[$CellContext`cell, TaggingRules -> Replace[
-              CurrentValue[$CellContext`cell, TaggingRules], {
-                Pattern[$CellContext`most, 
-                 BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
-                Pattern[$CellContext`rest, 
-                 
-                 BlankNullSequence[]]} :> {$CellContext`most, \
-$CellContext`rest}]]; 
-          CurrentValue[$CellContext`cell, {
-             TaggingRules, "CG:Organizer", 
-              "TODOCompletedQ"}] = $CellContext`val; Null]]]]], Background -> 
-     GrayLevel[1]], None}, {None, None}},
- CellFrameLabelMargins->3,
- LineSpacing->{0.95, 0}],
+ LineSpacing->{0.95, 0},
+ FontVariations->{"StrikeThrough"->Dynamic[
+   TrueQ[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]},
+ FontColor->Dynamic[
+   If[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
+    GrayLevel[0.6], 
+    Inherited]],ExpressionUUID->"b9f2c572-eccd-40ac-a49b-7e42756f706f"],
 
-Cell[StyleData["TODO:Subsubitem", StyleDefinitions -> StyleData["Text"]],
- CellFrame->{{0, 0}, {0, 0}},
- CellDingbat->StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
-   RGBColor[0.6, 0.6, 0.6]],
+Cell[StyleData["TODO:Subsubitem", StyleDefinitions -> StyleData["Subsubitem"]],
+ CellDingbat->Cell[
+   BoxData[
+    RowBox[{
+      Cell[
+       BoxData[
+        CheckboxBox[
+         Dynamic[
+          With[{$CellContext`todoCell = Nest[ParentCell, 
+              EvaluationCell[], 2]}, 
+           Or[
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "TODOCompletedQ"}]], 
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]], 
+          Function[$CellContext`val$, 
+           
+           Module[{$CellContext`cell$}, $CellContext`cell$ = 
+             Nest[ParentCell, 
+               EvaluationCell[], 2]; 
+            SetOptions[$CellContext`cell$, TaggingRules -> Replace[
+                CurrentValue[$CellContext`cell$, TaggingRules], {
+                  Pattern[$CellContext`most, 
+                   BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                  Pattern[$CellContext`rest, 
+                   
+                   BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+            CurrentValue[$CellContext`cell$, {
+               TaggingRules, "CG:Organizer", 
+                "TODOCompletedQ"}] = $CellContext`val$; Null]]]]], Background -> 
+       GrayLevel[1]], 
+      StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
+       RGBColor[0.6, 0.6, 0.6]]}]]],
  CellMargins->{{129, 0}, {2, 2}},
- ReturnCreatesNewCell->True,
  StyleKeyMapping->{"Backspace" -> "TODO:Subitem"},
  TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
- CellFrameMargins->5,
- CellFrameColor->GrayLevel[0.7],
- CellFrameLabels->{{
-    Cell[
-     BoxData[
-      CheckboxBox[
-       Dynamic[
-        Or[
-         TrueQ[
-          CurrentValue[
-           ParentCell[
-            EvaluationCell[]], {TaggingRules, "TODOCompletedQ"}]], 
-         TrueQ[
-          CurrentValue[
-           ParentCell[
-            EvaluationCell[]], {
-           TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]], 
-        Function[$CellContext`val, 
-         Module[{$CellContext`cell}, $CellContext`cell = ParentCell[
-             EvaluationCell[]]; 
-          SetOptions[$CellContext`cell, TaggingRules -> Replace[
-              CurrentValue[$CellContext`cell, TaggingRules], {
-                Pattern[$CellContext`most, 
-                 BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
-                Pattern[$CellContext`rest, 
-                 
-                 BlankNullSequence[]]} :> {$CellContext`most, \
-$CellContext`rest}]]; 
-          CurrentValue[$CellContext`cell, {
-             TaggingRules, "CG:Organizer", 
-              "TODOCompletedQ"}] = $CellContext`val; Null]]]]], Background -> 
-     GrayLevel[1]], None}, {None, None}},
- CellFrameLabelMargins->3,
- LineSpacing->{0.95, 0}],
+ LineSpacing->{0.95, 0},
+ FontVariations->{"StrikeThrough"->Dynamic[
+   TrueQ[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]},
+ FontColor->Dynamic[
+   If[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
+    GrayLevel[0.6], 
+    Inherited]],ExpressionUUID->"9cc69b26-daff-417d-b3bf-3587b3c6c60b"],
 
 Cell[StyleData["Organizer:IconAndLabelButtonTemplate"],
  TemplateBoxOptions->{
@@ -228,7 +263,8 @@ Cell[StyleData["Organizer:IconAndLabelButtonTemplate"],
        "MouseDown", 1} :> ($CellContext`state = "pressed"), {
        "MouseUp", 1} :> ($CellContext`state = "hovered"), PassEventsDown -> 
       True, PassEventsUp -> True, Method -> "Preemptive"}]], 
-   DynamicModuleValues :> {}]& )}],
+   DynamicModuleValues :> {}]& \
+)},ExpressionUUID->"cafcb133-6c2e-4eb1-9271-bc61f3736ff6"],
 
 Cell[StyleData["Organizer:IconAndLabelDropdownTemplate"],
  TemplateBoxOptions->{
@@ -259,7 +295,8 @@ Cell[StyleData["Organizer:IconAndLabelDropdownTemplate"],
        "MouseDown", 1} :> ($CellContext`state = "pressed"), {
        "MouseUp", 1} :> ($CellContext`state = "hovered"), PassEventsDown -> 
       True, PassEventsUp -> True, Method -> "Preemptive"}]], 
-   DynamicModuleValues :> {}]& )}],
+   DynamicModuleValues :> {}]& \
+)},ExpressionUUID->"e383b39d-b94b-4e73-ab31-3fe22f32743e"],
 
 Cell[StyleData["Organizer:EmailLinkTemplate"],
  TemplateBoxOptions->{DisplayFunction->(TemplateBox[{
@@ -344,10 +381,12 @@ tIZOjkM1iH+kA86H+QfGRw9PAMHDoXs=
           Thickness[0.001]}, StripOnInput -> False]}, {
        BaseStyle -> GrayLevel[0.5], ImageSize -> 10, 
         ImageSize -> {1000., 1000.}, PlotRange -> {{0., 1000.}, {0., 1000.}}, 
-        AspectRatio -> Automatic}]}, "Superscript"], #2}, "HyperlinkURL"]& )}]
+        AspectRatio -> Automatic}]}, "Superscript"], #2}, 
+   "HyperlinkURL"]& )},ExpressionUUID->"4afdf2c6-674f-44c5-950f-7ce8a0ad7f0b"]
 },
-FrontEndVersion->"13.2 for Mac OS X ARM (64-bit) (November 18, 2022)",
-StyleDefinitions->"PrivateStylesheetFormatting.nb"
+FrontEndVersion->"13.3 for Mac OS X ARM (64-bit) (June 3, 2023)",
+StyleDefinitions->"PrivateStylesheetFormatting.nb",
+ExpressionUUID->"0aaff8c8-c18d-4533-b5c0-08f5fa052444"
 ]
 (* End of Notebook Content *)
 
@@ -360,16 +399,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 49, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"7800915f-8f58-4a09-bb59-98bbf2844f62"],
-Cell[610, 22, 70, 0, 70, 70, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"27e1f2a3-e4a1-4afd-bb1f-6991e35f32b9"],
-Cell[683, 24, 175, 3, 70, 24, 0, "StyleData", "Input", "All",ExpressionUUID->"e41ce77a-2340-4484-b35c-573a5e1c3990"],
-Cell[861, 29, 1507, 39, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"712af8ab-22a1-4746-b069-bebb3ab3093d"],
-Cell[2371, 70, 1648, 42, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"5e4ff2b7-b9fc-428e-9b41-40a674c563c1"],
-Cell[4022, 114, 1667, 43, 70, 70, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"3b24046b-3c07-43e5-9751-ee298ef4e60d"],
-Cell[5692, 159, 1608, 41, 70, 73, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"d4149a8a-3041-44cc-ad14-ea0f845c19e6"],
-Cell[7303, 202, 1359, 28, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"dd2a4346-5d27-4591-9f64-0ae05be2e8f5"],
-Cell[8665, 232, 1437, 29, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"fc09da46-50cc-4cb4-9e1b-694343d609d1"],
-Cell[10105, 263, 4575, 83, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"9d84dacf-2625-4f4e-a700-73fd42661b28"]
+Cell[558, 20, 104, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"e7f951b3-5f37-45ec-a9b0-44b3e9a33c87"],
+Cell[665, 22, 125, 0, 70, 70, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"e5710882-27bd-4d6f-8a8b-33adebdd8709"],
+Cell[793, 24, 234, 4, 70, 24, 0, "StyleData", "Input", "All",ExpressionUUID->"6254cb40-5037-4b0d-954d-0362280fec48"],
+Cell[1030, 30, 1737, 43, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"19477cad-99f2-4fa4-bf76-3b6514d94cc7"],
+Cell[2770, 75, 2045, 52, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"7fe77e35-9208-416c-92cc-f02652ed0003"],
+Cell[4818, 129, 2067, 53, 70, 73, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"b9f2c572-eccd-40ac-a49b-7e42756f706f"],
+Cell[6888, 184, 2011, 51, 70, 79, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"9cc69b26-daff-417d-b3bf-3587b3c6c60b"],
+Cell[8902, 237, 1416, 29, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"cafcb133-6c2e-4eb1-9271-bc61f3736ff6"],
+Cell[10321, 268, 1494, 30, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"e383b39d-b94b-4e73-ab31-3fe22f32743e"],
+Cell[11818, 300, 4634, 84, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"4afdf2c6-674f-44c5-950f-7ce8a0ad7f0b"]
 }
 ]
 *)
