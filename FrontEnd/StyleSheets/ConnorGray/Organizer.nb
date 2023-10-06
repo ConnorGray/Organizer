@@ -10,23 +10,66 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     17982,        407]
-NotebookOptionsPosition[     16456,        386]
-NotebookOutlinePosition[     16793,        400]
-CellTagsIndexPosition[     16750,        397]
+NotebookDataLength[     27146,        628]
+NotebookOptionsPosition[     24454,        598]
+NotebookOutlinePosition[     24791,        612]
+CellTagsIndexPosition[     24748,        609]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell[StyleData[StyleDefinitions -> "Default.nb"],ExpressionUUID->"e7f951b3-5f37-45ec-a9b0-44b3e9a33c87"],
+Cell[StyleData[StyleDefinitions -> "Default.nb"],ExpressionUUID->"27cc06f0-75d2-459e-83bd-01435ad87c13"],
 
-Cell[StyleData[StyleDefinitions -> "ConnorGray/CellInsertionMenu.nb"],ExpressionUUID->"e5710882-27bd-4d6f-8a8b-33adebdd8709"],
+Cell[StyleData[StyleDefinitions -> "ConnorGray/CellInsertionMenu.nb"],ExpressionUUID->"aa22ef9a-53fe-460d-afdb-9b37ccad7627"],
 
 Cell[StyleData["Input"],
  StyleKeyMapping->{
-  "/" -> "ConnorGray/CellInsertionMenu", "[" -> "TODO", "=" -> 
-   "WolframAlphaShort", "*" -> "Item", ">" -> 
-   "ExternalLanguage"},ExpressionUUID->"6254cb40-5037-4b0d-954d-0362280fec48"],
+  "=" -> "WolframAlphaShort", "*" -> "Item", ">" -> "ExternalLanguageDefault",
+    "/" -> "ConnorGray/CellInsertionMenu", "[" -> "TODO", "." -> 
+   "ItemNumbered"},ExpressionUUID->"b3597fb6-55ba-4e78-9303-a19c8ef677a6"],
+
+Cell[StyleData["Item"],
+ StyleKeyMapping->{
+  "Tab" -> "Subitem", "*" -> "Subitem", "." -> "ItemNumbered", "[" -> 
+   "TODO:Item"},ExpressionUUID->"2d33e2c0-fa28-41c0-a184-de80d0dd9b51"],
+
+Cell[StyleData["Subitem"],
+ StyleKeyMapping->{
+  "Tab" -> "Subsubitem", "*" -> "Subsubitem", "Backspace" -> 
+   "Item", $CellContext`KeyEvent["Tab", $CellContext`Modifiers -> {"Shift"}] -> 
+   "Item", "." -> "SubitemNumbered", "[" -> 
+   "TODO:Subitem"},ExpressionUUID->"0c2920b0-0fa2-456a-b262-81eadabd73d1"],
+
+Cell[StyleData["Subsubitem"],
+ StyleKeyMapping->{
+  "Backspace" -> 
+   "Subitem", $CellContext`KeyEvent[
+    "Tab", $CellContext`Modifiers -> {"Shift"}] -> "Subitem", "." -> 
+   "SubsubitemNumbered", "[" -> 
+   "TODO:Subsubitem"},ExpressionUUID->"577371bf-8caa-43e3-b964-24be79f1ba4b"],
+
+Cell[StyleData["ItemNumbered"],
+ StyleKeyMapping->{
+  "Tab" -> "SubitemNumbered", "." -> "SubitemNumbered", "[" -> 
+   "TODO:ItemNumbered"},ExpressionUUID->"d3e96abe-cfa6-4ff1-b098-\
+ca1f8f823b26"],
+
+Cell[StyleData["SubitemNumbered"],
+ StyleKeyMapping->{
+  "Tab" -> "SubsubitemNumbered", "Backspace" -> 
+   "ItemNumbered", $CellContext`KeyEvent[
+    "Tab", $CellContext`Modifiers -> {"Shift"}] -> "ItemNumbered", "." -> 
+   "SubsubitemNumbered", "[" -> 
+   "TODO:SubitemNumbered"},ExpressionUUID->"34875951-e6f2-4913-9b53-\
+c3626a5542c2"],
+
+Cell[StyleData["SubsubitemNumbered"],
+ StyleKeyMapping->{
+  "Backspace" -> 
+   "SubitemNumbered", $CellContext`KeyEvent[
+    "Tab", $CellContext`Modifiers -> {"Shift"}] -> "SubitemNumbered", "[" -> 
+   "TODO:SubsubitemNumbered"},ExpressionUUID->"f7c9a553-c4e6-47e9-9ec7-\
+13579aa99224"],
 
 Cell[StyleData["TODO", StyleDefinitions -> StyleData["Text"]],
  CellDingbat->Cell[
@@ -59,7 +102,8 @@ $CellContext`rest}]];
    GrayLevel[1]],
  CellMargins->{{66, 0}, {2, 2}},
  ReturnCreatesNewCell->True,
- StyleKeyMapping->{"Tab" -> "TODO:Item", "*" -> "TODO:Item"},
+ StyleKeyMapping->{
+  "Tab" -> "TODO:Item", "*" -> "TODO:Item", "." -> "TODO:ItemNumbered"},
  TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
  LineSpacing->{0.95, 0},
  FontVariations->{"StrikeThrough"->Dynamic[
@@ -71,7 +115,7 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"19477cad-99f2-4fa4-bf76-3b6514d94cc7"],
+    Inherited]],ExpressionUUID->"cac398e5-4847-4ad1-a2f8-90a7f37810ea"],
 
 Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Item"]],
  CellDingbat->Cell[
@@ -113,7 +157,8 @@ $CellContext`rest}]];
        RGBColor[0.8, 0.043, 0.008]]}]]],
  CellMargins->{{81, 0}, {2, 2}},
  StyleKeyMapping->{
-  "Tab" -> "TODO:Subitem", "*" -> "TODO:Subitem", "Backspace" -> "TODO"},
+  "Tab" -> "TODO:Subitem", "*" -> "TODO:Subitem", "Backspace" -> "TODO", "." -> 
+   "TODO:ItemNumbered"},
  TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
  LineSpacing->{0.95, 0},
  FontVariations->{"StrikeThrough"->Dynamic[
@@ -125,7 +170,7 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"7fe77e35-9208-416c-92cc-f02652ed0003"],
+    Inherited]],ExpressionUUID->"ca6437aa-a14a-4494-ab97-3e2c4f8c6610"],
 
 Cell[StyleData["TODO:Subitem", StyleDefinitions -> StyleData["Subitem"]],
  CellDingbat->Cell[
@@ -168,7 +213,7 @@ $CellContext`rest}]];
  CellMargins->{{105, 0}, {2, 2}},
  StyleKeyMapping->{
   "Tab" -> "TODO:Subsubitem", "*" -> "TODO:Subsubitem", "Backspace" -> 
-   "TODO:Item"},
+   "TODO:Item", "." -> "TODO:SubitemNumbered"},
  TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
  LineSpacing->{0.95, 0},
  FontVariations->{"StrikeThrough"->Dynamic[
@@ -180,7 +225,7 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"b9f2c572-eccd-40ac-a49b-7e42756f706f"],
+    Inherited]],ExpressionUUID->"76d6e015-90f2-49de-a23c-389da45b0f95"],
 
 Cell[StyleData["TODO:Subsubitem", StyleDefinitions -> StyleData["Subsubitem"]],
  CellDingbat->Cell[
@@ -221,7 +266,8 @@ $CellContext`rest}]];
       StyleBox["\[FilledSmallSquare]", Alignment -> Baseline, 
        RGBColor[0.6, 0.6, 0.6]]}]]],
  CellMargins->{{129, 0}, {2, 2}},
- StyleKeyMapping->{"Backspace" -> "TODO:Subitem"},
+ StyleKeyMapping->{
+  "Backspace" -> "TODO:Subitem", "." -> "TODO:SubsubitemNumbered"},
  TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
  LineSpacing->{0.95, 0},
  FontVariations->{"StrikeThrough"->Dynamic[
@@ -233,7 +279,173 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"9cc69b26-daff-417d-b3bf-3587b3c6c60b"],
+    Inherited]],ExpressionUUID->"300487d2-5b01-434d-9757-f545c2dddfc5"],
+
+Cell[StyleData["TODO:ItemNumbered", StyleDefinitions -> 
+ StyleData["ItemNumbered"]],
+ CellDingbat->Cell[
+   TextData[{
+     Cell[
+      BoxData[
+       CheckboxBox[
+        Dynamic[
+         With[{$CellContext`todoCell = Nest[ParentCell, 
+             EvaluationCell[], 2]}, 
+          Or[
+           TrueQ[
+            
+            CurrentValue[$CellContext`todoCell, {
+             TaggingRules, "TODOCompletedQ"}]], 
+           TrueQ[
+            
+            CurrentValue[$CellContext`todoCell, {
+             TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]], 
+         Function[$CellContext`val$, 
+          Module[{$CellContext`cell$}, $CellContext`cell$ = Nest[ParentCell, 
+              EvaluationCell[], 2]; 
+           SetOptions[$CellContext`cell$, TaggingRules -> Replace[
+               CurrentValue[$CellContext`cell$, TaggingRules], {
+                 Pattern[$CellContext`most, 
+                  BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                 Pattern[$CellContext`rest, 
+                  
+                  BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+           CurrentValue[$CellContext`cell$, {
+              TaggingRules, "CG:Organizer", 
+               "TODOCompletedQ"}] = $CellContext`val$; Null]]]]], Background -> 
+      GrayLevel[1]], "\[NonBreakingSpace]", "\[NonBreakingSpace]", 
+     Cell[
+      TextData[{
+        CounterBox["ItemNumbered"], "."}], FontWeight -> "Bold"]}]],
+ CellMargins->{{81, 0}, {2, 2}},
+ StyleKeyMapping->{
+  "Tab" -> "TODO:SubitemNumbered", "*" -> "TODO:SubitemNumbered", "Backspace" -> 
+   "TODO"},
+ TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
+ LineSpacing->{0.95, 0},
+ FontVariations->{"StrikeThrough"->Dynamic[
+   TrueQ[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]},
+ FontColor->Dynamic[
+   If[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
+    GrayLevel[0.6], 
+    Inherited]],ExpressionUUID->"f39c3def-d3bf-42b6-960b-57432ed3ae04"],
+
+Cell[StyleData["TODO:SubitemNumbered", StyleDefinitions -> 
+ StyleData["SubitemNumbered"]],
+ CellDingbat->Cell[
+   BoxData[
+    RowBox[{
+      Cell[
+       BoxData[
+        CheckboxBox[
+         Dynamic[
+          With[{$CellContext`todoCell = Nest[ParentCell, 
+              EvaluationCell[], 2]}, 
+           Or[
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "TODOCompletedQ"}]], 
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]], 
+          Function[$CellContext`val$, 
+           
+           Module[{$CellContext`cell$}, $CellContext`cell$ = 
+             Nest[ParentCell, 
+               EvaluationCell[], 2]; 
+            SetOptions[$CellContext`cell$, TaggingRules -> Replace[
+                CurrentValue[$CellContext`cell$, TaggingRules], {
+                  Pattern[$CellContext`most, 
+                   BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                  Pattern[$CellContext`rest, 
+                   
+                   BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+            CurrentValue[$CellContext`cell$, {
+               TaggingRules, "CG:Organizer", 
+                "TODOCompletedQ"}] = $CellContext`val$; Null]]]]], Background -> 
+       GrayLevel[1]], 
+      Cell[
+       TextData[{
+         CounterBox["SubitemNumbered"], "."}], FontWeight -> "Bold"]}]]],
+ CellMargins->{{105, 0}, {2, 2}},
+ StyleKeyMapping->{
+  "Tab" -> "TODO:SubsubitemNumbered", "*" -> "TODO:SubsubitemNumbered", 
+   "Backspace" -> "TODO:ItemNumbered"},
+ TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
+ LineSpacing->{0.95, 0},
+ FontVariations->{"StrikeThrough"->Dynamic[
+   TrueQ[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]},
+ FontColor->Dynamic[
+   If[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
+    GrayLevel[0.6], 
+    Inherited]],ExpressionUUID->"90f1de47-dd40-4413-b507-041a068b86b4"],
+
+Cell[StyleData["TODO:SubsubitemNumbered", StyleDefinitions -> 
+ StyleData["SubsubitemNumbered"]],
+ CellDingbat->Cell[
+   BoxData[
+    RowBox[{
+      Cell[
+       BoxData[
+        CheckboxBox[
+         Dynamic[
+          With[{$CellContext`todoCell = Nest[ParentCell, 
+              EvaluationCell[], 2]}, 
+           Or[
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "TODOCompletedQ"}]], 
+            TrueQ[
+             
+             CurrentValue[$CellContext`todoCell, {
+              TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]], 
+          Function[$CellContext`val$, 
+           
+           Module[{$CellContext`cell$}, $CellContext`cell$ = 
+             Nest[ParentCell, 
+               EvaluationCell[], 2]; 
+            SetOptions[$CellContext`cell$, TaggingRules -> Replace[
+                CurrentValue[$CellContext`cell$, TaggingRules], {
+                  Pattern[$CellContext`most, 
+                   BlankNullSequence[]], "TODOCompletedQ" -> Blank[], 
+                  Pattern[$CellContext`rest, 
+                   
+                   BlankNullSequence[]]} :> {$CellContext`most, \
+$CellContext`rest}]]; 
+            CurrentValue[$CellContext`cell$, {
+               TaggingRules, "CG:Organizer", 
+                "TODOCompletedQ"}] = $CellContext`val$; Null]]]]], Background -> 
+       GrayLevel[1]], 
+      Cell[
+       TextData[{
+         CounterBox["SubsubitemNumbered"], "."}], FontWeight -> "Bold"]}]]],
+ CellMargins->{{129, 0}, {2, 2}},
+ StyleKeyMapping->{"Backspace" -> "TODO:SubitemNumbered"},
+ TaggingRules->{"CG:Organizer" -> {"TODOCompletedQ" -> False}},
+ LineSpacing->{0.95, 0},
+ FontVariations->{"StrikeThrough"->Dynamic[
+   TrueQ[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}]]]},
+ FontColor->Dynamic[
+   If[
+    CurrentValue[
+     EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
+    GrayLevel[0.6], 
+    Inherited]],ExpressionUUID->"4fe5f050-3ee1-4276-a9b9-48b6e19c2b36"],
 
 Cell[StyleData["Organizer:IconAndLabelButtonTemplate"],
  TemplateBoxOptions->{
@@ -264,7 +476,7 @@ Cell[StyleData["Organizer:IconAndLabelButtonTemplate"],
        "MouseUp", 1} :> ($CellContext`state = "hovered"), PassEventsDown -> 
       True, PassEventsUp -> True, Method -> "Preemptive"}]], 
    DynamicModuleValues :> {}]& \
-)},ExpressionUUID->"cafcb133-6c2e-4eb1-9271-bc61f3736ff6"],
+)},ExpressionUUID->"ca1c071d-1ed4-40c5-9b1e-8a728a319ff4"],
 
 Cell[StyleData["Organizer:IconAndLabelDropdownTemplate"],
  TemplateBoxOptions->{
@@ -296,7 +508,7 @@ Cell[StyleData["Organizer:IconAndLabelDropdownTemplate"],
        "MouseUp", 1} :> ($CellContext`state = "hovered"), PassEventsDown -> 
       True, PassEventsUp -> True, Method -> "Preemptive"}]], 
    DynamicModuleValues :> {}]& \
-)},ExpressionUUID->"e383b39d-b94b-4e73-ab31-3fe22f32743e"],
+)},ExpressionUUID->"e6a9b1d0-0b95-48dc-9b56-744f0431872e"],
 
 Cell[StyleData["Organizer:EmailLinkTemplate"],
  TemplateBoxOptions->{DisplayFunction->(TemplateBox[{
@@ -382,11 +594,11 @@ tIZOjkM1iH+kA86H+QfGRw9PAMHDoXs=
        BaseStyle -> GrayLevel[0.5], ImageSize -> 10, 
         ImageSize -> {1000., 1000.}, PlotRange -> {{0., 1000.}, {0., 1000.}}, 
         AspectRatio -> Automatic}]}, "Superscript"], #2}, 
-   "HyperlinkURL"]& )},ExpressionUUID->"4afdf2c6-674f-44c5-950f-7ce8a0ad7f0b"]
+   "HyperlinkURL"]& )},ExpressionUUID->"0c75e9f1-8b80-4668-b3b8-d55b96aee6cf"]
 },
 FrontEndVersion->"13.3 for Mac OS X ARM (64-bit) (June 3, 2023)",
 StyleDefinitions->"PrivateStylesheetFormatting.nb",
-ExpressionUUID->"0aaff8c8-c18d-4533-b5c0-08f5fa052444"
+ExpressionUUID->"30bda0d6-4d16-4f14-b42f-9befad0a059e"
 ]
 (* End of Notebook Content *)
 
@@ -399,16 +611,25 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 104, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"e7f951b3-5f37-45ec-a9b0-44b3e9a33c87"],
-Cell[665, 22, 125, 0, 70, 70, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"e5710882-27bd-4d6f-8a8b-33adebdd8709"],
-Cell[793, 24, 234, 4, 70, 24, 0, "StyleData", "Input", "All",ExpressionUUID->"6254cb40-5037-4b0d-954d-0362280fec48"],
-Cell[1030, 30, 1737, 43, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"19477cad-99f2-4fa4-bf76-3b6514d94cc7"],
-Cell[2770, 75, 2045, 52, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"7fe77e35-9208-416c-92cc-f02652ed0003"],
-Cell[4818, 129, 2067, 53, 70, 73, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"b9f2c572-eccd-40ac-a49b-7e42756f706f"],
-Cell[6888, 184, 2011, 51, 70, 79, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"9cc69b26-daff-417d-b3bf-3587b3c6c60b"],
-Cell[8902, 237, 1416, 29, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"cafcb133-6c2e-4eb1-9271-bc61f3736ff6"],
-Cell[10321, 268, 1494, 30, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"e383b39d-b94b-4e73-ab31-3fe22f32743e"],
-Cell[11818, 300, 4634, 84, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"4afdf2c6-674f-44c5-950f-7ce8a0ad7f0b"]
+Cell[558, 20, 104, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"27cc06f0-75d2-459e-83bd-01435ad87c13"],
+Cell[665, 22, 125, 0, 70, 70, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"aa22ef9a-53fe-460d-afdb-9b37ccad7627"],
+Cell[793, 24, 264, 4, 70, 24, 0, "StyleData", "Input", "All",ExpressionUUID->"b3597fb6-55ba-4e78-9303-a19c8ef677a6"],
+Cell[1060, 30, 186, 3, 70, 23, 0, "StyleData", "Item", "All",ExpressionUUID->"2d33e2c0-fa28-41c0-a184-de80d0dd9b51"],
+Cell[1249, 35, 309, 5, 70, 26, 0, "StyleData", "Subitem", "All",ExpressionUUID->"0c2920b0-0fa2-456a-b262-81eadabd73d1"],
+Cell[1561, 42, 285, 6, 70, 29, 0, "StyleData", "Subsubitem", "All",ExpressionUUID->"577371bf-8caa-43e3-b964-24be79f1ba4b"],
+Cell[1849, 50, 197, 4, 70, 31, 0, "StyleData", "ItemNumbered", "All",ExpressionUUID->"d3e96abe-cfa6-4ff1-b098-ca1f8f823b26"],
+Cell[2049, 56, 338, 7, 70, 34, 0, "StyleData", "SubitemNumbered", "All",ExpressionUUID->"34875951-e6f2-4913-9b53-c3626a5542c2"],
+Cell[2390, 65, 286, 6, 70, 37, 0, "StyleData", "SubsubitemNumbered", "All",ExpressionUUID->"f7c9a553-c4e6-47e9-9ec7-13579aa99224"],
+Cell[2679, 73, 1768, 44, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"cac398e5-4847-4ad1-a2f8-90a7f37810ea"],
+Cell[4450, 119, 2077, 53, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"ca6437aa-a14a-4494-ab97-3e2c4f8c6610"],
+Cell[6530, 174, 2098, 53, 70, 73, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"76d6e015-90f2-49de-a23c-389da45b0f95"],
+Cell[8631, 229, 2048, 52, 70, 79, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"300487d2-5b01-434d-9757-f545c2dddfc5"],
+Cell[10682, 283, 2056, 52, 70, 85, 1, "StyleData", "TODO:ItemNumbered", "All",ExpressionUUID->"f39c3def-d3bf-42b6-960b-57432ed3ae04"],
+Cell[12741, 337, 2109, 55, 70, 91, 1, "StyleData", "TODO:SubitemNumbered", "All",ExpressionUUID->"90f1de47-dd40-4413-b507-041a068b86b4"],
+Cell[14853, 394, 2044, 53, 70, 97, 1, "StyleData", "TODO:SubsubitemNumbered", "All",ExpressionUUID->"4fe5f050-3ee1-4276-a9b9-48b6e19c2b36"],
+Cell[16900, 449, 1416, 29, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"ca1c071d-1ed4-40c5-9b1e-8a728a319ff4"],
+Cell[18319, 480, 1494, 30, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"e6a9b1d0-0b95-48dc-9b56-744f0431872e"],
+Cell[19816, 512, 4634, 84, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"0c75e9f1-8b80-4668-b3b8-d55b96aee6cf"]
 }
 ]
 *)

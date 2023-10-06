@@ -252,13 +252,76 @@ organizerStylesheetNotebook = Notebook[{
 	(*================================*)
 
 	Cell[StyleData["Input"],
-		StyleKeyMapping -> {
-			"/" -> "ConnorGray/CellInsertionMenu",
-			"[" -> "TODO",
-			"=" -> "WolframAlphaShort",
-			"*" -> "Item",
-			">" -> "ExternalLanguage"
-		}
+		StyleKeyMapping -> Join[
+			(* Avoid hard-coding in duplicate of style key mappings. *)
+			UsingFrontEnd[CurrentValue[{StyleDefinitions, "Input", "StyleKeyMapping"}]],
+			{
+				"/" -> "ConnorGray/CellInsertionMenu",
+				"[" -> "TODO",
+				"." -> "ItemNumbered"
+			}
+		]
+	],
+
+	(*-------------------------------------------------------------------*)
+	(* Modify build in *Item and *ItemNumbered style key mappings:       *)
+	(* - Add '.' as a style key mapping for creating *ItemNumbered cells *)
+	(* - Add '[' as a style key mapping for creating TODO:*Item cells    *)
+	(*-------------------------------------------------------------------*)
+
+	Cell[StyleData["Item"],
+		StyleKeyMapping -> Join[
+			UsingFrontEnd[CurrentValue[{StyleDefinitions, "Item", "StyleKeyMapping"}]],
+			{
+				"." -> "ItemNumbered",
+				"[" -> "TODO:Item"
+			}
+		]
+	],
+	Cell[StyleData["Subitem"],
+		StyleKeyMapping -> Join[
+			UsingFrontEnd[CurrentValue[{StyleDefinitions, "Subitem", "StyleKeyMapping"}]],
+			{
+				"." -> "SubitemNumbered",
+				"[" -> "TODO:Subitem"
+			}
+		]
+	],
+	Cell[StyleData["Subsubitem"],
+		StyleKeyMapping -> Join[
+			UsingFrontEnd[CurrentValue[{StyleDefinitions, "Subsubitem", "StyleKeyMapping"}]],
+			{
+				"." -> "SubsubitemNumbered",
+				"[" -> "TODO:Subsubitem"
+			}
+		]
+	],
+
+	Cell[StyleData["ItemNumbered"],
+		StyleKeyMapping -> Join[
+			UsingFrontEnd[CurrentValue[{StyleDefinitions, "ItemNumbered", "StyleKeyMapping"}]],
+			{
+				"." -> "SubitemNumbered",
+				"[" -> "TODO:ItemNumbered"
+			}
+		]
+	],
+	Cell[StyleData["SubitemNumbered"],
+		StyleKeyMapping -> Join[
+			UsingFrontEnd[CurrentValue[{StyleDefinitions, "SubitemNumbered", "StyleKeyMapping"}]],
+			{
+				"." -> "SubsubitemNumbered",
+				"[" -> "TODO:SubitemNumbered"
+			}
+		]
+	],
+	Cell[StyleData["SubsubitemNumbered"],
+		StyleKeyMapping -> Join[
+			UsingFrontEnd[CurrentValue[{StyleDefinitions, "SubsubitemNumbered", "StyleKeyMapping"}]],
+			{
+				"[" -> "TODO:SubsubitemNumbered"
+			}
+		]
 	],
 
 	(*================================*)
@@ -270,8 +333,15 @@ organizerStylesheetNotebook = Notebook[{
 		"ReturnCreatesNewCell" -> True,
 		(* If the user presses the Tab key or the '*', convert this cell to a
 			"TODO:Item" cell. *)
-		StyleKeyMapping -> {"Tab" -> "TODO:Item", "*" -> "TODO:Item"}
+		StyleKeyMapping -> {
+			"Tab" -> "TODO:Item",
+			"*" -> "TODO:Item",
+			"." -> "TODO:ItemNumbered"
+		}
 	],
+	(*--------------------------------*)
+	(* TODO:*Item Variants            *)
+	(*--------------------------------*)
 	Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Item"] ],
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Item" cell. *)
@@ -285,7 +355,12 @@ organizerStylesheetNotebook = Notebook[{
 		}],
 		CellMargins -> {{81, 0}, {2, 2}},
 
-		StyleKeyMapping -> {"Tab" -> "TODO:Subitem", "*" -> "TODO:Subitem", "Backspace" -> "TODO"},
+		StyleKeyMapping -> {
+			"Tab" -> "TODO:Subitem",
+			"*" -> "TODO:Subitem",
+			"Backspace" -> "TODO",
+			"." -> "TODO:ItemNumbered"
+		},
 
 		todoDefinitions
 	],
@@ -302,7 +377,12 @@ organizerStylesheetNotebook = Notebook[{
 		}],
 		CellMargins -> {{105, 0}, {2, 2}},
 
-		StyleKeyMapping -> {"Tab" -> "TODO:Subsubitem", "*" -> "TODO:Subsubitem", "Backspace" -> "TODO:Item"},
+		StyleKeyMapping -> {
+			"Tab" -> "TODO:Subsubitem",
+			"*" -> "TODO:Subsubitem",
+			"Backspace" -> "TODO:Item",
+			"." -> "TODO:SubitemNumbered"
+		},
 
 		todoDefinitions
 	],
@@ -319,7 +399,69 @@ organizerStylesheetNotebook = Notebook[{
 		}],
 		CellMargins -> {{129, 0}, {2, 2}},
 
-		StyleKeyMapping -> {"Backspace" -> "TODO:Subitem"},
+		StyleKeyMapping -> {
+			"Backspace" -> "TODO:Subitem",
+			"." -> "TODO:SubsubitemNumbered"
+		},
+
+		todoDefinitions
+	],
+	(*--------------------------------*)
+	(* TODO:*ItemNumbered Variants    *)
+	(*--------------------------------*)
+	Cell[StyleData["TODO:ItemNumbered", StyleDefinitions -> StyleData["ItemNumbered"] ],
+		CellDingbat -> Cell @ TextData @ {
+			createCheckboxCell[2],
+			"\[NonBreakingSpace]",
+			"\[NonBreakingSpace]",
+			Cell[
+				TextData[{CounterBox["ItemNumbered"], "."}],
+				FontWeight -> "Bold"
+			]
+		},
+		CellMargins -> {{81, 0}, {2, 2}},
+
+		StyleKeyMapping -> {
+			"Tab" -> "TODO:SubitemNumbered",
+			"*" -> "TODO:SubitemNumbered",
+			"Backspace" -> "TODO"
+		},
+
+		todoDefinitions
+	],
+	Cell[StyleData["TODO:SubitemNumbered", StyleDefinitions -> StyleData["SubitemNumbered"] ],
+		(* The below rules are taken from the Default.nb stylesheet notebook
+			definition for an "Subitem" cell. *)
+		CellDingbat -> Cell @ BoxData @ RowBox[{
+			createCheckboxCell[2],
+			Cell[
+				TextData[{CounterBox["SubitemNumbered"], "."}],
+				FontWeight -> "Bold"
+			]
+		}],
+		CellMargins -> {{105, 0}, {2, 2}},
+
+		StyleKeyMapping -> {
+			"Tab" -> "TODO:SubsubitemNumbered",
+			"*" -> "TODO:SubsubitemNumbered",
+			"Backspace" -> "TODO:ItemNumbered"
+		},
+
+		todoDefinitions
+	],
+	Cell[StyleData["TODO:SubsubitemNumbered", StyleDefinitions -> StyleData["SubsubitemNumbered"] ],
+		(* The below rules are taken from the Default.nb stylesheet notebook
+			definition for an "Subsubitem" cell. *)
+		CellDingbat -> Cell @ BoxData @ RowBox[{
+			createCheckboxCell[2],
+			Cell[
+				TextData[{CounterBox["SubsubitemNumbered"], "."}],
+				FontWeight -> "Bold"
+			]
+		}],
+		CellMargins -> {{129, 0}, {2, 2}},
+
+		StyleKeyMapping -> {"Backspace" -> "TODO:SubitemNumbered"},
 
 		todoDefinitions
 	],
