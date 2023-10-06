@@ -4,6 +4,7 @@ BeginPackage["ConnorGray`Organizer`Notebook`"]
 
 
 InstallNotebookStyles::usage = "InstallNotebookStyles[nb] will set the StyleDefinitions notebook option to the styles used by Organizer."
+$OrganizerStylesheet
 
 InsertCellAfterSelection::usage = "InsertCellAfterSelection[cell] will insert cell after the current selection point in the current evaluation notebook."
 
@@ -282,6 +283,8 @@ MakeTitleBarCellBoxes[
 
 (*====================================*)
 
+SetFallthroughError[SetNotebookTaggingRules]
+
 SetNotebookTaggingRules[
 	nbObj_NotebookObject,
 	documentType_?StringQ
@@ -294,20 +297,18 @@ SetNotebookTaggingRules[
 	]
 ]
 
-SetNotebookTaggingRules[args___] := Throw[Row[{
-	"Unexpected arguments: ", {args}
-}]]
-
 (*====================================*)
 
 InstallNotebookStyles[nb_NotebookObject] := With[{},
 	SetOptions[nb,
-		StyleDefinitions -> FrontEnd`FileName[
-			{"ConnorGray"},
-			"Organizer.nb",
-			CharacterEncoding -> "UTF-8"
-		]
+		StyleDefinitions -> $OrganizerStylesheet
 	];
+]
+
+$OrganizerStylesheet = FrontEnd`FileName[
+	{"ConnorGray"},
+	"Organizer.nb",
+	CharacterEncoding -> "UTF-8"
 ]
 
 (*====================================*)
