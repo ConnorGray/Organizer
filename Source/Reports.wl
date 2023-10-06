@@ -143,6 +143,8 @@ CreateQueuesReport[] := Module[{
 	];
 
 	SelectionMove[First[Cells[nb]], Before, Cell, AutoScroll -> True];
+
+	nb
 ]
 
 
