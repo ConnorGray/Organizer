@@ -4,6 +4,7 @@ BeginPackage["ConnorGray`Organizer`Notebook`"]
 
 
 InstallNotebookStyles::usage = "InstallNotebookStyles[nb] will set the StyleDefinitions notebook option to the styles used by Organizer."
+$OrganizerStylesheet
 
 InsertCellAfterSelection::usage = "InsertCellAfterSelection[cell] will insert cell after the current selection point in the current evaluation notebook."
 
@@ -302,12 +303,14 @@ SetNotebookTaggingRules[args___] := Throw[Row[{
 
 InstallNotebookStyles[nb_NotebookObject] := With[{},
 	SetOptions[nb,
-		StyleDefinitions -> FrontEnd`FileName[
-			{"ConnorGray"},
-			"Organizer.nb",
-			CharacterEncoding -> "UTF-8"
-		]
+		StyleDefinitions -> $OrganizerStylesheet
 	];
+]
+
+$OrganizerStylesheet = FrontEnd`FileName[
+	{"ConnorGray"},
+	"Organizer.nb",
+	CharacterEncoding -> "UTF-8"
 ]
 
 (*====================================*)

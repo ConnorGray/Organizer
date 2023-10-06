@@ -5,6 +5,7 @@ Begin["`Private`"]
 Needs["ConnorGray`Organizer`"] (* For CreateQueuesReport *)
 Needs["ConnorGray`Organizer`Palette`"] (* For CreateQueuesReport *)
 Needs["ConnorGray`Organizer`Errors`"]
+Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Notebook`Log`"]
 
 (**************************************)
@@ -16,8 +17,8 @@ Needs["ConnorGray`Organizer`Notebook`Log`"]
 CreateQueuesReport[] := Module[{
 	projects,
 	settings,
+	cells = {},
 	nb, path,
-	cells,
 	timestamp,
 	workspaceName
 },
@@ -65,8 +66,6 @@ CreateQueuesReport[] := Module[{
 	(* Populate the notebook *)
 	(*-----------------------*)
 
-	nb = CreateNotebook[];
-
 	workspaceName = FileNameTake[RaiseConfirm @ WorkspaceDirectory[], -1];
 
 	timestamp = DateString[Now, {
@@ -74,63 +73,68 @@ CreateQueuesReport[] := Module[{
 		" at ", "Hour12Short", ":", "Minute", "AMPMLowerCase"
 	}];
 
-	NotebookWrite[nb, Cell["All Queues: " <> workspaceName, "Title"]];
-	NotebookWrite[
-		nb,
+	AppendTo[cells, Cell["All Queues: " <> workspaceName, "Title"]];
+	AppendTo[
+		cells,
 		Cell[
 			"Created " <> timestamp,
 			"Subtitle"
 		]
 	];
 
-	(* Add style definitions so that copied TODO cells render properly. *)
-	InstallLogNotebookStyles[nb];
-
-	SetOptions[nb,
-		(* Disable editing. If the user wants to edit these queues, they should do it in
-		the source notebook. *)
-		Editable -> False,
-		(* Add a temporary docked cell warning the user that the notebook is still having
-		content copied into it. This is removed later. *)
-		DockedCells -> {
-			Cell[
-				BoxData @ ToBoxes @ Row[{
-					Style["Generating: ", Italic, GrayLevel[0.2]],
-					Style["All Queues: " <> workspaceName <> ": " <> timestamp]
-				}],
-				FontSize -> 14,
-				FontColor -> GrayLevel[0.2],
-				Background -> Lighter[Orange]
-			]
-		}
-	];
-
-	RaiseConfirm @ SetNotebookTaggingRules[nb, "GeneratedQueueReport"];
-
-	Scan[
-		Function[proj,
+	cells = Join[cells, Map[
+		Function[proj, Module[{
+			queueChapterGroup
+		},
 			path = FileNameJoin[{
 				RaiseConfirm @ CategoryDirectory[],
 				proj,
 				"Log.nb"
 			}];
 
-			cells = CellsFromChapterInNB[path, "Queue"];
-
-			cells = Replace[
-				cells,
-				{Cell["Queue", "Chapter", props___], rest___} :> {Cell["Queue — " <> proj, "Chapter", props], rest}
+			queueChapterGroup = FirstCase[
+				RaiseConfirmMatch[Get[path], _Notebook],
+				Cell @ CellGroupData[
+					{
+						Cell["Queue", "Chapter", chapterOpts___],
+						groupCellsRest___
+					},
+					_
+				] :> (
+					Cell @ CellGroupData[
+						{
+							Cell[
+								(* Include the project name in the Queue chapter
+								   name to distinguish it from the Queue chapter
+								   of all the other included projects. *)
+								"Queue — " <> proj,
+								"Chapter",
+								chapterOpts,
+								WholeCellGroupOpener -> True
+							],
+							groupCellsRest
+						},
+						(* Close the cell group by default so the user can see
+						   all the chapter in the report at once initially. *)
+						Closed
+					]
+				),
+				(* TODO: Issue a warning when a Log notebook doesn't contain
+					a Queue chapter? *)
+				Nothing,
+				Infinity
 			];
 
-			NotebookWrite[nb, cells];
-		],
+			queueChapterGroup
+		]],
 		projects
-	];
+	]];
 
-	(* Remove the warning docked cell -- the notebook is now complete. *)
-	SetOptions[nb,
-		(* Add a temporary docked cell warning the user that the notebook is still having
-		content copied into it. This is removed later. *)
+	nb = NotebookPut[
+		Notebook[cells],
+		(* Disable editing. If the user wants to edit these queues, they should do it in
+		the source notebook. *)
+		Editable -> False,
 		DockedCells -> {
 			Cell[
 				BoxData @ ToBoxes @ Style["All Queues: " <> workspaceName <> ": " <> timestamp],
@@ -139,10 +143,12 @@ CreateQueuesReport[] := Module[{
 				FontColor -> GrayLevel[0.2],
 				Background -> LightBlue
 			]
-		}
+		},
+		(* Add style definitions so that copied TODO cells render properly. *)
+		StyleDefinitions -> $OrganizerStylesheet
 	];
 
-	SelectionMove[First[Cells[nb]], Before, Cell, AutoScroll -> True];
+	RaiseConfirm @ SetNotebookTaggingRules[nb, "GeneratedQueueReport"];
 
 	nb
 ]
