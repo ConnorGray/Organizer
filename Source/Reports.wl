@@ -162,11 +162,11 @@ CreateDailysReport[] := Handle[_Failure] @ Module[{
 	timePeriod,
 	startDate,
 	endDate,
-	nb,
+	cells = {},
 	workspaceName,
 	timestamp,
 	projects,
-	cells
+	nb
 },
 	(*---------------------------------------------------------*)
 	(* Ask the user for the date range and projects to include *)
@@ -263,8 +263,6 @@ CreateDailysReport[] := Handle[_Failure] @ Module[{
 	(* Generate the All Daily's report *)
 	(*---------------------------------*)
 
-	nb = CreateNotebook[];
-
 	workspaceName = FileNameTake[RaiseConfirm @ WorkspaceDirectory[], -1];
 
 	timestamp = DateString[Now, {
@@ -272,23 +270,23 @@ CreateDailysReport[] := Handle[_Failure] @ Module[{
 		" at ", "Hour12Short", ":", "Minute", "AMPMLowerCase"
 	}];
 
-	NotebookWrite[nb, Cell["All Daily's: " <> workspaceName, "Title"]];
-	NotebookWrite[
-		nb,
+	AppendTo[cells, Cell["All Daily's: " <> workspaceName, "Title"]];
+	AppendTo[
+		cells,
 		Cell["Generated " <> timestamp, "Subtitle"]
 	];
-	NotebookWrite[
-		nb,
+	AppendTo[
+		cells,
 		Cell[
 			"Showing " <> TextString[startDate] <> " — " <> TextString[endDate] <> " (" <> timePeriod <> ")",
 			"Subsubtitle"
 		]
 	];
 
-	(* Add style definitions so that copied TODO cells render properly. *)
-	InstallLogNotebookStyles[nb];
-
-	SetOptions[nb,
+	nb = NotebookPut[
+		Notebook[cells],
+		(* Add style definitions so that copied TODO cells render properly. *)
+		StyleDefinitions -> $OrganizerStylesheet,
 		(* Disable editing. If the user wants to edit these queues, they should do it in
 		the source notebook. *)
 		Editable -> False,
@@ -309,7 +307,7 @@ CreateDailysReport[] := Handle[_Failure] @ Module[{
 
 	RaiseConfirm @ SetNotebookTaggingRules[nb, "GeneratedDailysReport"];
 
-	Scan[
+	cells = Flatten @ Map[
 		Function[proj,
 			path = FileNameJoin[{
 				RaiseConfirm @ CategoryDirectory[],
@@ -333,12 +331,14 @@ CreateDailysReport[] := Handle[_Failure] @ Module[{
 
 			RaiseConfirmMatch[cells, {___Cell}];
 
-			NotebookWrite[nb, cells];
-
-			(* NotebookWrite[nb, cells]; *)
+			cells
 		],
 		projects
 	];
+
+	SelectionMove[nb, After, Notebook];
+
+	NotebookWrite[nb, cells];
 
 	(* Remove the warning docked cell -- the notebook is now complete. *)
 	SetOptions[nb,
@@ -367,6 +367,8 @@ CreateDailysReport[] := Handle[_Failure] @ Module[{
 	];
 
 	SelectionMove[First[Cells[nb]], Before, Cell, AutoScroll -> True];
+
+	nb
 ]
 
 filterDailyCellsByInterval[

@@ -283,6 +283,8 @@ MakeTitleBarCellBoxes[
 
 (*====================================*)
 
+SetFallthroughError[SetNotebookTaggingRules]
+
 SetNotebookTaggingRules[
 	nbObj_NotebookObject,
 	documentType_?StringQ
@@ -294,10 +296,6 @@ SetNotebookTaggingRules[
 		}
 	]
 ]
-
-SetNotebookTaggingRules[args___] := Throw[Row[{
-	"Unexpected arguments: ", {args}
-}]]
 
 (*====================================*)
 

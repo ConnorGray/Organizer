@@ -692,33 +692,55 @@ handleStartNewProject[] := HandleUIFailure @ Handle[_Failure] @ Module[{
 (******************************************************************************)
 
 CellsFromChapterInNB[path_?StringQ, chapter : "Queue" | "Daily"] := Module[{
-	cells,
-	chapterCell,
-	isAlreadyOpen
+	nb,
+	chapterCellGroup
 },
-	NotebookProcess[path, Function[nbObj, (
-		chapterCell = Replace[chapter, {
-			"Queue" :> FindQueueChapterCell[nbObj],
-			"Daily" :> FindDailyChapterCell[nbObj],
-			_ :> Raise[
-				OrganizerError,
-				"Failed to read cells from: ``",
-				InputForm[path]
-			]
-		}];
+	(* TODO(polish):
+		If the notebook at `path` is opened and has unsaved changes, those changes
+		won't be reflected in the generated report. *)
+	nb = RaiseConfirmMatch[Get[path], _Notebook];
 
-		GroupSelectionMove[chapterCell, All];
-		cells = NotebookRead /@ SelectedCells[nbObj];
+	(* TODO(robust):
+		Errors for: Multiple matching chapters, no matching, and empty chapter
+		cells that aren't in a group. *)
+	chapterCellGroup = FirstCase[
+		nb,
+		Cell @ CellGroupData[
+			{
+				Cell[chapter, "Chapter", ___],
+				rest___
+			},
+			_
+		],
+		{},
+		Infinity
+	];
 
-		(* Move the selection so that no cells are actually selected. This reduces the
-		likelyhood that the user will accidentally erase selected cells if they switch
-		focus back to the notebook and begin typing, expecting their cursor to be somewhere
-		else. *)
-		SelectionMove[nbObj, After, Cell];
-
-		cells
-	)]]
+	flattenCellGroups[chapterCellGroup]
 ]
+
+(*------------------------------------*)
+
+SetFallthroughError[flattenCellGroups]
+
+(* Returns a flat list of one or more Cells without any cell groups. *)
+flattenCellGroups[cell_Cell] := RaiseConfirmMatch[#, {___Cell}] & @ ConfirmReplace[cell, {
+	Cell[
+		CellGroupData[elems_List, RepeatedNull[_, 1]]
+	] :> (
+		flattenCellGroups[elems]
+	),
+	Cell[Except[_CellGroupData], ___] :> {cell},
+	other_ :> Raise[
+		OrganizerError,
+		"Unexpected cell group structure: ``",
+		other
+	]
+}]
+
+flattenCellGroups[list_List] :=
+	Flatten[Map[flattenCellGroups, list], 1]
+
 
 End[]
 
