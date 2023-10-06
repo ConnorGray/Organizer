@@ -6,6 +6,7 @@ UpdateLogNotebooks
 CreateOrganizerNotebook::usage = "CreateOrganizerNotebook[type, title] creates a new Organizer notebook of the specified type."
 
 CreateQueuesReport::usage = "CreateQueuesReport[] creates a new Queues report from the Log notebooks in the current Workspace > Category."
+CreateDailysReport::usage = "CreateDailysReport[] creates a new Dailys report from the Log notebooks in the current Workspace > Category."
 
 PacletInstall /@ PacletObject["ConnorGray/Organizer"]["Dependencies"]
 
