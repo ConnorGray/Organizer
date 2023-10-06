@@ -15,29 +15,35 @@ Print["INFO: Building using $InstallationDirectory == ", $InstallationDirectory]
 (* NOTE: Setting an explicit `Background -> White` here is required because CellFrameLabels
          inherit their styling from the parent cell, and we don't want the checkbox cell
 		 to have a colored background. *)
-createCheckboxCell[] := Cell[
+createCheckboxCell[
+	nthParent : _?IntegerQ : 1
+] := Cell[
 	BoxData @ ToBoxes @ Checkbox[
 		Dynamic[
-			Or[
-				(* Note: Check for the legacy, un-namespaced "TODOCompletedQ" tagging rule. *)
-				(* TODO:
-					These should only be present in my personal log notebooks; this
-				    legacy tagging rule is not part of any shared release of Organizer.
-					Once I've cleaned these out of my personal notebooks, this workaround
-					should be removed. *)
-				TrueQ @ CurrentValue[
-					ParentCell@EvaluationCell[],
-					{TaggingRules, "TODOCompletedQ"}
-				],
-				TrueQ @ CurrentValue[
-					ParentCell@EvaluationCell[],
-					{TaggingRules, "CG:Organizer", "TODOCompletedQ"}
+			With[{
+				todoCell = Nest[ParentCell, EvaluationCell[], nthParent]
+			},
+				Or[
+					(* Note: Check for the legacy, un-namespaced "TODOCompletedQ" tagging rule. *)
+					(* TODO:
+						These should only be present in my personal log notebooks; this
+						legacy tagging rule is not part of any shared release of Organizer.
+						Once I've cleaned these out of my personal notebooks, this workaround
+						should be removed. *)
+					TrueQ @ CurrentValue[
+						todoCell,
+						{TaggingRules, "TODOCompletedQ"}
+					],
+					TrueQ @ CurrentValue[
+						todoCell,
+						{TaggingRules, "CG:Organizer", "TODOCompletedQ"}
+					]
 				]
 			],
 			Function[val, Module[{
 				cell
 			},
-				cell = ParentCell[EvaluationCell[]];
+				cell = Nest[ParentCell, EvaluationCell[], nthParent];
 
 				(* Remove the legacy, un-namespaced "TODOCompletedQ" tagging rule to ensure
 				   it isn't ambiguous when compared to the namespaced tagging rule. *)
@@ -60,14 +66,23 @@ todoDefinitions = Sequence[
 	TaggingRules -> {"CG:Organizer" -> {"TODOCompletedQ" -> False}},
 	LineSpacing -> {0.95, 0},
 	CellMargins -> {{66, 0}, {2, 2}},
-	CellFrame -> {{2, 0}, {0, 0}},
-	CellFrameColor -> GrayLevel[0.7],
-	CellFrameMargins -> 5,
-	CellFrameLabelMargins -> 3,
-	CellFrameLabels -> {
-		{createCheckboxCell[], None},
-		{None, None}
-	}
+	CellDingbat -> createCheckboxCell[],
+
+	(* Use a light gray font and strike-through if this is a completed TODO. *)
+	FontVariations -> {
+		"StrikeThrough" -> Dynamic @ TrueQ @ CurrentValue[
+			EvaluationCell[],
+			{TaggingRules, "CG:Organizer", "TODOCompletedQ"}
+		]
+	},
+	FontColor -> Dynamic @ If[
+		CurrentValue[
+			EvaluationCell[],
+			{TaggingRules, "CG:Organizer", "TODOCompletedQ"}
+		],
+		GrayLevel[0.6],
+		Inherited
+	]
 ];
 
 (*
@@ -257,58 +272,52 @@ organizerStylesheetNotebook = Notebook[{
 			"TODO:Item" cell. *)
 		StyleKeyMapping -> {"Tab" -> "TODO:Item", "*" -> "TODO:Item"}
 	],
-	Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Text"] ],
-		(* Override the default TODO cell frame. The gray bar looks weird as part
-			of an item. *)
-		CellFrame -> {{0, 0}, {0, 0}},
-
+	Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Item"] ],
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Item" cell. *)
-		CellDingbat -> StyleBox[
-			"\[FilledSmallSquare]",
-			Alignment -> Baseline,
-			RGBColor[0.8, 0.043, 0.008]
-		],
+		CellDingbat -> Cell @ BoxData @ RowBox[{
+			createCheckboxCell[2],
+			StyleBox[
+				"\[FilledSmallSquare]",
+				Alignment -> Baseline,
+				RGBColor[0.8, 0.043, 0.008]
+			]
+		}],
 		CellMargins -> {{81, 0}, {2, 2}},
-		"ReturnCreatesNewCell" -> True,
 
 		StyleKeyMapping -> {"Tab" -> "TODO:Subitem", "*" -> "TODO:Subitem", "Backspace" -> "TODO"},
 
 		todoDefinitions
 	],
-	Cell[StyleData["TODO:Subitem", StyleDefinitions -> StyleData["Text"] ],
-		(* Override the default TODO cell frame. The gray bar looks weird as part
-			of an item. *)
-		CellFrame -> {{0, 0}, {0, 0}},
-
+	Cell[StyleData["TODO:Subitem", StyleDefinitions -> StyleData["Subitem"] ],
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Subitem" cell. *)
-		CellDingbat -> StyleBox[
-			"\[FilledSmallSquare]",
-			Alignment -> Baseline,
-			RGBColor[0.8, 0.043, 0.008]
-		],
+		CellDingbat -> Cell @ BoxData @ RowBox[{
+			createCheckboxCell[2],
+			StyleBox[
+				"\[FilledSmallSquare]",
+				Alignment -> Baseline,
+				RGBColor[0.8, 0.043, 0.008]
+			]
+		}],
 		CellMargins -> {{105, 0}, {2, 2}},
-		"ReturnCreatesNewCell" -> True,
 
 		StyleKeyMapping -> {"Tab" -> "TODO:Subsubitem", "*" -> "TODO:Subsubitem", "Backspace" -> "TODO:Item"},
 
 		todoDefinitions
 	],
-	Cell[StyleData["TODO:Subsubitem", StyleDefinitions -> StyleData["Text"] ],
-		(* Override the default TODO cell frame. The gray bar looks weird as part
-			of an item. *)
-		CellFrame -> {{0, 0}, {0, 0}},
-
+	Cell[StyleData["TODO:Subsubitem", StyleDefinitions -> StyleData["Subsubitem"] ],
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Subsubitem" cell. *)
-		CellDingbat -> StyleBox[
-			"\[FilledSmallSquare]",
-			Alignment -> Baseline,
-			RGBColor[0.6, 0.6, 0.6]
-		],
+		CellDingbat -> Cell @ BoxData @ RowBox[{
+			createCheckboxCell[2],
+			StyleBox[
+				"\[FilledSmallSquare]",
+				Alignment -> Baseline,
+				RGBColor[0.6, 0.6, 0.6]
+			]
+		}],
 		CellMargins -> {{129, 0}, {2, 2}},
-		"ReturnCreatesNewCell" -> True,
 
 		StyleKeyMapping -> {"Backspace" -> "TODO:Subitem"},
 
