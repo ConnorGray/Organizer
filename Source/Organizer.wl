@@ -26,6 +26,7 @@ Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`Notebook`Log`"]
 Needs["ConnorGray`Organizer`Notebook`Tasklist`"]
 Needs["ConnorGray`Organizer`Notebook`Design`"]
+Needs["ConnorGray`Organizer`Notebook`Note`"]
 Needs["ConnorGray`Organizer`Notebook`BugReport`"]
 Needs["ConnorGray`Organizer`Toolbar`"]
 
@@ -64,6 +65,7 @@ CreateOrganizerNotebook[
 		"Tasklist" :> CreateTasklistNotebook[title],
 		"BugReport" :> CreateBugReportNotebook[title],
 		"Design" :> CreateDesignNotebook[title],
+		"Note" :> CreateNoteNotebook[title],
 		_ :> CreateFailure[OrganizerError, "Unknown Organizer notebook type: ``", type]
 	}]
 ]
