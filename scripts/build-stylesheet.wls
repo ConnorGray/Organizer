@@ -426,6 +426,10 @@ organizerStylesheetNotebook = Notebook[{
 	(* TODO:*ItemNumbered Variants    *)
 	(*--------------------------------*)
 	Cell[StyleData["TODO:ItemNumbered", StyleDefinitions -> StyleData["ItemNumbered"] ],
+		(* Override the default TODO cell frame. The gray bar looks weird as part
+		   of an item. *)
+		CellFrame -> {{0, 0}, {0, 0}},
+
 		CellDingbat -> Cell @ TextData @ {
 			createCheckboxCell[2],
 			"\[NonBreakingSpace]",
@@ -446,6 +450,10 @@ organizerStylesheetNotebook = Notebook[{
 		todoDefinitions
 	],
 	Cell[StyleData["TODO:SubitemNumbered", StyleDefinitions -> StyleData["SubitemNumbered"] ],
+		(* Override the default TODO cell frame. The gray bar looks weird as part
+		   of an item. *)
+		CellFrame -> {{0, 0}, {0, 0}},
+
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Subitem" cell. *)
 		CellDingbat -> Cell @ BoxData @ RowBox[{
@@ -466,6 +474,10 @@ organizerStylesheetNotebook = Notebook[{
 		todoDefinitions
 	],
 	Cell[StyleData["TODO:SubsubitemNumbered", StyleDefinitions -> StyleData["SubsubitemNumbered"] ],
+		(* Override the default TODO cell frame. The gray bar looks weird as part
+		   of an item. *)
+		CellFrame -> {{0, 0}, {0, 0}},
+
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Subsubitem" cell. *)
 		CellDingbat -> Cell @ BoxData @ RowBox[{
