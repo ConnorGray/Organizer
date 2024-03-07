@@ -45,6 +45,15 @@ $OrganizerAddedMenus = FrontEnd`AddMenuCommands["NewText", {
 			)],
 			FrontEnd`MenuEvaluator -> Automatic,
 			Method -> "Queued"
+		],
+		MenuItem[
+			"Note Notebook",
+			FrontEnd`KernelExecute[(
+				Needs["ConnorGray`Organizer`" -> None];
+				ConnorGray`Organizer`CreateOrganizerNotebook["Note"]
+			)],
+			FrontEnd`MenuEvaluator -> Automatic,
+			Method -> "Queued"
 		]
 	}]
 }];

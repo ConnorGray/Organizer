@@ -132,6 +132,13 @@ Module[{
 					"Design"
 				]
 			),
+			"New Note" :> (
+				ReleaseHold[loadOrFail];
+				HandleUIFailure @ HandleCreateNewFile[
+					EvaluationNotebook[],
+					"Note"
+				]
+			),
 			"New Bug Report" :> (
 				ReleaseHold[loadOrFail];
 				HandleUIFailure @ HandleCreateNewFile[
