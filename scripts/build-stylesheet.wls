@@ -66,6 +66,10 @@ todoDefinitions = Sequence[
 	TaggingRules -> {"CG:Organizer" -> {"TODOCompletedQ" -> False}},
 	LineSpacing -> {0.95, 0},
 	CellMargins -> {{66, 0}, {2, 2}},
+	CellFrame -> {{2, 0}, {0, 0}},
+	CellFrameColor -> GrayLevel[0.7],
+	CellFrameMargins -> 5,
+	CellFrameLabelMargins -> 3,
 	CellDingbat -> createCheckboxCell[],
 
 	(* Use a light gray font and strike-through if this is a completed TODO. *)
@@ -343,6 +347,10 @@ organizerStylesheetNotebook = Notebook[{
 	(* TODO:*Item Variants            *)
 	(*--------------------------------*)
 	Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Item"] ],
+		(* Override the default TODO cell frame. The gray bar looks weird as part
+		   of an item. *)
+		CellFrame -> {{0, 0}, {0, 0}},
+
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Item" cell. *)
 		CellDingbat -> Cell @ BoxData @ RowBox[{
@@ -365,6 +373,10 @@ organizerStylesheetNotebook = Notebook[{
 		todoDefinitions
 	],
 	Cell[StyleData["TODO:Subitem", StyleDefinitions -> StyleData["Subitem"] ],
+		(* Override the default TODO cell frame. The gray bar looks weird as part
+		   of an item. *)
+		CellFrame -> {{0, 0}, {0, 0}},
+
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Subitem" cell. *)
 		CellDingbat -> Cell @ BoxData @ RowBox[{
@@ -387,6 +399,10 @@ organizerStylesheetNotebook = Notebook[{
 		todoDefinitions
 	],
 	Cell[StyleData["TODO:Subsubitem", StyleDefinitions -> StyleData["Subsubitem"] ],
+		(* Override the default TODO cell frame. The gray bar looks weird as part
+		   of an item. *)
+		CellFrame -> {{0, 0}, {0, 0}},
+
 		(* The below rules are taken from the Default.nb stylesheet notebook
 			definition for an "Subsubitem" cell. *)
 		CellDingbat -> Cell @ BoxData @ RowBox[{
