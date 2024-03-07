@@ -18,27 +18,27 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell[StyleData[StyleDefinitions -> "Default.nb"],ExpressionUUID->"9f8d820f-de42-4d03-ba4f-424784269b63"],
+Cell[StyleData[StyleDefinitions -> "Default.nb"],ExpressionUUID->"dccfb3d9-2015-4a49-a587-dc4e924ba3d5"],
 
-Cell[StyleData[StyleDefinitions -> "ConnorGray/CellInsertionMenu.nb"],ExpressionUUID->"3e40a008-b9a4-48d4-b184-2b4e787f3823"],
+Cell[StyleData[StyleDefinitions -> "ConnorGray/CellInsertionMenu.nb"],ExpressionUUID->"b6531692-90f7-4932-a034-6905e5c9209b"],
 
 Cell[StyleData["Input"],
  StyleKeyMapping->{
   "=" -> "WolframAlphaShort", "*" -> "Item", ">" -> "ExternalLanguageDefault",
     "/" -> "ConnorGray/CellInsertionMenu", "[" -> "TODO", "." -> 
-   "ItemNumbered"},ExpressionUUID->"0176db66-c70a-4164-87da-796d0b4bbfd0"],
+   "ItemNumbered"},ExpressionUUID->"9fae4942-5cda-4c69-9539-cb97f144469b"],
 
 Cell[StyleData["Item"],
  StyleKeyMapping->{
   "Tab" -> "Subitem", "*" -> "Subitem", "." -> "ItemNumbered", "[" -> 
-   "TODO:Item"},ExpressionUUID->"eb240e09-313c-4383-b2df-9cb0b7db83bf"],
+   "TODO:Item"},ExpressionUUID->"a50d926e-8c9c-49d4-872b-ca5d29a3f604"],
 
 Cell[StyleData["Subitem"],
  StyleKeyMapping->{
   "Tab" -> "Subsubitem", "*" -> "Subsubitem", "Backspace" -> 
    "Item", $CellContext`KeyEvent["Tab", $CellContext`Modifiers -> {"Shift"}] -> 
    "Item", "." -> "SubitemNumbered", "[" -> 
-   "TODO:Subitem"},ExpressionUUID->"33948065-ec85-4560-9bab-c9809ab65048"],
+   "TODO:Subitem"},ExpressionUUID->"16b7bd54-503f-47cd-a5e2-001e307ce6af"],
 
 Cell[StyleData["Subsubitem"],
  StyleKeyMapping->{
@@ -46,13 +46,13 @@ Cell[StyleData["Subsubitem"],
    "Subitem", $CellContext`KeyEvent[
     "Tab", $CellContext`Modifiers -> {"Shift"}] -> "Subitem", "." -> 
    "SubsubitemNumbered", "[" -> 
-   "TODO:Subsubitem"},ExpressionUUID->"5a30a5a2-410d-47ff-aebf-70315bc855a5"],
+   "TODO:Subsubitem"},ExpressionUUID->"024cd461-7aa0-435f-aa92-2946d5b3b71c"],
 
 Cell[StyleData["ItemNumbered"],
  StyleKeyMapping->{
   "Tab" -> "SubitemNumbered", "." -> "SubitemNumbered", "[" -> 
-   "TODO:ItemNumbered"},ExpressionUUID->"0c9f8e3c-cb6d-4e23-9d4f-\
-dfdfa3f335fe"],
+   "TODO:ItemNumbered"},ExpressionUUID->"00a52b71-c1e1-4dc3-bbc2-\
+b43e4c174733"],
 
 Cell[StyleData["SubitemNumbered"],
  StyleKeyMapping->{
@@ -60,16 +60,16 @@ Cell[StyleData["SubitemNumbered"],
    "ItemNumbered", $CellContext`KeyEvent[
     "Tab", $CellContext`Modifiers -> {"Shift"}] -> "ItemNumbered", "." -> 
    "SubsubitemNumbered", "[" -> 
-   "TODO:SubitemNumbered"},ExpressionUUID->"019ffac8-d7a9-4e77-adb3-\
-5aed7044f53f"],
+   "TODO:SubitemNumbered"},ExpressionUUID->"684a41e6-3f6c-40c9-ae96-\
+f9be62155932"],
 
 Cell[StyleData["SubsubitemNumbered"],
  StyleKeyMapping->{
   "Backspace" -> 
    "SubitemNumbered", $CellContext`KeyEvent[
     "Tab", $CellContext`Modifiers -> {"Shift"}] -> "SubitemNumbered", "[" -> 
-   "TODO:SubsubitemNumbered"},ExpressionUUID->"4fdec1ac-ea46-424b-84cc-\
-99c5e7c48101"],
+   "TODO:SubsubitemNumbered"},ExpressionUUID->"60501c55-8afb-4a04-ab87-\
+9e880a10b5c4"],
 
 Cell[StyleData["TODO", StyleDefinitions -> StyleData["Text"]],
  CellFrame->{{2, 0}, {0, 0}},
@@ -119,7 +119,7 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"add76708-ccaa-4d43-840a-63c6f621338d"],
+    Inherited]],ExpressionUUID->"93b0566d-ec1b-4e59-ad7c-30960b55be1b"],
 
 Cell[StyleData["TODO:Item", StyleDefinitions -> StyleData["Item"]],
  CellFrame->{{0, 0}, {0, 0}},
@@ -178,7 +178,7 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"af100b54-4846-4d33-9771-bcdb78be2086"],
+    Inherited]],ExpressionUUID->"a3d33641-5e41-431a-97ac-7d9a8e938d0b"],
 
 Cell[StyleData["TODO:Subitem", StyleDefinitions -> StyleData["Subitem"]],
  CellFrame->{{0, 0}, {0, 0}},
@@ -237,7 +237,7 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"96299ff5-a510-4fa7-b2e7-6b041ea301fa"],
+    Inherited]],ExpressionUUID->"8ff97967-87b0-4f50-a133-4ca4770062c4"],
 
 Cell[StyleData["TODO:Subsubitem", StyleDefinitions -> StyleData["Subsubitem"]],
  CellFrame->{{0, 0}, {0, 0}},
@@ -295,11 +295,11 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"892dabfd-d7c8-4afd-8a3f-d5c0756aafd2"],
+    Inherited]],ExpressionUUID->"a9005331-07aa-44f9-803a-a829cebc9c72"],
 
 Cell[StyleData["TODO:ItemNumbered", StyleDefinitions -> 
  StyleData["ItemNumbered"]],
- CellFrame->{{2, 0}, {0, 0}},
+ CellFrame->{{0, 0}, {0, 0}},
  CellDingbat->Cell[
    TextData[{
      Cell[
@@ -353,11 +353,11 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"c08e1028-69a6-4675-a634-a28e4b584d4f"],
+    Inherited]],ExpressionUUID->"a02a7cdb-7fc2-4c33-9a96-40bb7025a2dc"],
 
 Cell[StyleData["TODO:SubitemNumbered", StyleDefinitions -> 
  StyleData["SubitemNumbered"]],
- CellFrame->{{2, 0}, {0, 0}},
+ CellFrame->{{0, 0}, {0, 0}},
  CellDingbat->Cell[
    BoxData[
     RowBox[{
@@ -414,11 +414,11 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"c6652691-cb61-4c4f-9604-962713af864a"],
+    Inherited]],ExpressionUUID->"70c2f40d-4e31-43b3-abfa-d67f86555f17"],
 
 Cell[StyleData["TODO:SubsubitemNumbered", StyleDefinitions -> 
  StyleData["SubsubitemNumbered"]],
- CellFrame->{{2, 0}, {0, 0}},
+ CellFrame->{{0, 0}, {0, 0}},
  CellDingbat->Cell[
    BoxData[
     RowBox[{
@@ -473,7 +473,7 @@ $CellContext`rest}]];
     CurrentValue[
      EvaluationCell[], {TaggingRules, "CG:Organizer", "TODOCompletedQ"}], 
     GrayLevel[0.6], 
-    Inherited]],ExpressionUUID->"02be5816-1471-4203-9524-86b420a734d6"],
+    Inherited]],ExpressionUUID->"66f16520-b613-4ad5-ba6b-f8ab84b7341a"],
 
 Cell[StyleData["Organizer:IconAndLabelButtonTemplate"],
  TemplateBoxOptions->{
@@ -504,7 +504,7 @@ Cell[StyleData["Organizer:IconAndLabelButtonTemplate"],
        "MouseUp", 1} :> ($CellContext`state = "hovered"), PassEventsDown -> 
       True, PassEventsUp -> True, Method -> "Preemptive"}]], 
    DynamicModuleValues :> {}]& \
-)},ExpressionUUID->"19555667-faa9-4917-b83d-ee825b8fed10"],
+)},ExpressionUUID->"d5e200be-bc66-4d2b-999e-0ea01a6a54d8"],
 
 Cell[StyleData["Organizer:IconAndLabelDropdownTemplate"],
  TemplateBoxOptions->{
@@ -536,7 +536,7 @@ Cell[StyleData["Organizer:IconAndLabelDropdownTemplate"],
        "MouseUp", 1} :> ($CellContext`state = "hovered"), PassEventsDown -> 
       True, PassEventsUp -> True, Method -> "Preemptive"}]], 
    DynamicModuleValues :> {}]& \
-)},ExpressionUUID->"ba1dff94-dd61-4c53-bb2a-732f8f056e24"],
+)},ExpressionUUID->"0ec3ae2e-fb8a-46ba-be28-d4ef72dc7547"],
 
 Cell[StyleData["Organizer:EmailLinkTemplate"],
  TemplateBoxOptions->{DisplayFunction->(TemplateBox[{
@@ -622,11 +622,11 @@ tIZOjkM1iH+kA86H+QfGRw9PAMHDoXs=
        BaseStyle -> GrayLevel[0.5], ImageSize -> 10, 
         ImageSize -> {1000., 1000.}, PlotRange -> {{0., 1000.}, {0., 1000.}}, 
         AspectRatio -> Automatic}]}, "Superscript"], #2}, 
-   "HyperlinkURL"]& )},ExpressionUUID->"2a781a2f-adea-48cd-9aa5-8f1b9157d86e"]
+   "HyperlinkURL"]& )},ExpressionUUID->"78e73db4-d589-443d-9b37-7aa654cf7628"]
 },
 FrontEndVersion->"13.3 for Mac OS X ARM (64-bit) (June 3, 2023)",
 StyleDefinitions->"PrivateStylesheetFormatting.nb",
-ExpressionUUID->"70bd7cbb-419c-4cef-9a0c-794d196461e2"
+ExpressionUUID->"7475b6d6-b0ec-4334-a15e-7ddb2b385c76"
 ]
 (* End of Notebook Content *)
 
@@ -639,25 +639,25 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 104, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"9f8d820f-de42-4d03-ba4f-424784269b63"],
-Cell[665, 22, 125, 0, 70, 70, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"3e40a008-b9a4-48d4-b184-2b4e787f3823"],
-Cell[793, 24, 264, 4, 70, 24, 0, "StyleData", "Input", "All",ExpressionUUID->"0176db66-c70a-4164-87da-796d0b4bbfd0"],
-Cell[1060, 30, 186, 3, 70, 23, 0, "StyleData", "Item", "All",ExpressionUUID->"eb240e09-313c-4383-b2df-9cb0b7db83bf"],
-Cell[1249, 35, 309, 5, 70, 26, 0, "StyleData", "Subitem", "All",ExpressionUUID->"33948065-ec85-4560-9bab-c9809ab65048"],
-Cell[1561, 42, 285, 6, 70, 29, 0, "StyleData", "Subsubitem", "All",ExpressionUUID->"5a30a5a2-410d-47ff-aebf-70315bc855a5"],
-Cell[1849, 50, 197, 4, 70, 31, 0, "StyleData", "ItemNumbered", "All",ExpressionUUID->"0c9f8e3c-cb6d-4e23-9d4f-dfdfa3f335fe"],
-Cell[2049, 56, 338, 7, 70, 34, 0, "StyleData", "SubitemNumbered", "All",ExpressionUUID->"019ffac8-d7a9-4e77-adb3-5aed7044f53f"],
-Cell[2390, 65, 286, 6, 70, 37, 0, "StyleData", "SubsubitemNumbered", "All",ExpressionUUID->"4fdec1ac-ea46-424b-84cc-99c5e7c48101"],
-Cell[2679, 73, 1880, 48, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"add76708-ccaa-4d43-840a-63c6f621338d"],
-Cell[4562, 123, 2189, 57, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"af100b54-4846-4d33-9771-bcdb78be2086"],
-Cell[6754, 182, 2210, 57, 70, 73, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"96299ff5-a510-4fa7-b2e7-6b041ea301fa"],
-Cell[8967, 241, 2160, 56, 70, 79, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"892dabfd-d7c8-4afd-8a3f-d5c0756aafd2"],
-Cell[11130, 299, 2168, 56, 70, 85, 1, "StyleData", "TODO:ItemNumbered", "All",ExpressionUUID->"c08e1028-69a6-4675-a634-a28e4b584d4f"],
-Cell[13301, 357, 2221, 59, 70, 91, 1, "StyleData", "TODO:SubitemNumbered", "All",ExpressionUUID->"c6652691-cb61-4c4f-9604-962713af864a"],
-Cell[15525, 418, 2156, 57, 70, 97, 1, "StyleData", "TODO:SubsubitemNumbered", "All",ExpressionUUID->"02be5816-1471-4203-9524-86b420a734d6"],
-Cell[17684, 477, 1416, 29, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"19555667-faa9-4917-b83d-ee825b8fed10"],
-Cell[19103, 508, 1494, 30, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"ba1dff94-dd61-4c53-bb2a-732f8f056e24"],
-Cell[20600, 540, 4634, 84, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"2a781a2f-adea-48cd-9aa5-8f1b9157d86e"]
+Cell[558, 20, 104, 0, 70, 49, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"dccfb3d9-2015-4a49-a587-dc4e924ba3d5"],
+Cell[665, 22, 125, 0, 70, 70, 0, "StyleData", "StyleDefinitions", "",ExpressionUUID->"b6531692-90f7-4932-a034-6905e5c9209b"],
+Cell[793, 24, 264, 4, 70, 24, 0, "StyleData", "Input", "All",ExpressionUUID->"9fae4942-5cda-4c69-9539-cb97f144469b"],
+Cell[1060, 30, 186, 3, 70, 23, 0, "StyleData", "Item", "All",ExpressionUUID->"a50d926e-8c9c-49d4-872b-ca5d29a3f604"],
+Cell[1249, 35, 309, 5, 70, 26, 0, "StyleData", "Subitem", "All",ExpressionUUID->"16b7bd54-503f-47cd-a5e2-001e307ce6af"],
+Cell[1561, 42, 285, 6, 70, 29, 0, "StyleData", "Subsubitem", "All",ExpressionUUID->"024cd461-7aa0-435f-aa92-2946d5b3b71c"],
+Cell[1849, 50, 197, 4, 70, 31, 0, "StyleData", "ItemNumbered", "All",ExpressionUUID->"00a52b71-c1e1-4dc3-bbc2-b43e4c174733"],
+Cell[2049, 56, 338, 7, 70, 34, 0, "StyleData", "SubitemNumbered", "All",ExpressionUUID->"684a41e6-3f6c-40c9-ae96-f9be62155932"],
+Cell[2390, 65, 286, 6, 70, 37, 0, "StyleData", "SubsubitemNumbered", "All",ExpressionUUID->"60501c55-8afb-4a04-ab87-9e880a10b5c4"],
+Cell[2679, 73, 1880, 48, 70, 62, 0, "StyleData", "TODO", "All",ExpressionUUID->"93b0566d-ec1b-4e59-ad7c-30960b55be1b"],
+Cell[4562, 123, 2189, 57, 70, 67, 0, "StyleData", "TODO:Item", "All",ExpressionUUID->"a3d33641-5e41-431a-97ac-7d9a8e938d0b"],
+Cell[6754, 182, 2210, 57, 70, 73, 0, "StyleData", "TODO:Subitem", "All",ExpressionUUID->"8ff97967-87b0-4f50-a133-4ca4770062c4"],
+Cell[8967, 241, 2160, 56, 70, 79, 0, "StyleData", "TODO:Subsubitem", "All",ExpressionUUID->"a9005331-07aa-44f9-803a-a829cebc9c72"],
+Cell[11130, 299, 2168, 56, 70, 85, 1, "StyleData", "TODO:ItemNumbered", "All",ExpressionUUID->"a02a7cdb-7fc2-4c33-9a96-40bb7025a2dc"],
+Cell[13301, 357, 2221, 59, 70, 91, 1, "StyleData", "TODO:SubitemNumbered", "All",ExpressionUUID->"70c2f40d-4e31-43b3-abfa-d67f86555f17"],
+Cell[15525, 418, 2156, 57, 70, 97, 1, "StyleData", "TODO:SubsubitemNumbered", "All",ExpressionUUID->"66f16520-b613-4ad5-ba6b-f8ab84b7341a"],
+Cell[17684, 477, 1416, 29, 70, 55, 0, "StyleData", "Organizer:IconAndLabelButtonTemplate", "All",ExpressionUUID->"d5e200be-bc66-4d2b-999e-0ea01a6a54d8"],
+Cell[19103, 508, 1494, 30, 70, 57, 0, "StyleData", "Organizer:IconAndLabelDropdownTemplate", "All",ExpressionUUID->"0ec3ae2e-fb8a-46ba-be28-d4ef72dc7547"],
+Cell[20600, 540, 4634, 84, 70, 46, 0, "StyleData", "Organizer:EmailLinkTemplate", "All",ExpressionUUID->"78e73db4-d589-443d-9b37-7aa654cf7628"]
 }
 ]
 *)
