@@ -449,8 +449,9 @@ getBrowserHyperlink[] := Module[{safariData, chromeData, data, pair, hyperlink},
 	];
 
 	hyperlink = Hyperlink[
-		Style[shortenURLLabel[pair["Title"]], 12],
-		pair["URL"]
+		shortenURLLabel[pair["Title"]],
+		pair["URL"],
+		BaseStyle -> "Text"
 	];
 
 	Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"]
