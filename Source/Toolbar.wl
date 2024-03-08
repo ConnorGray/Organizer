@@ -449,8 +449,9 @@ getBrowserHyperlink[] := Module[{safariData, chromeData, data, pair, hyperlink},
 	];
 
 	hyperlink = Hyperlink[
-		Style[shortenURLLabel[pair["Title"]], 12],
-		pair["URL"]
+		shortenURLLabel[pair["Title"]],
+		pair["URL"],
+		BaseStyle -> "Text"
 	];
 
 	Cell[BoxData @ ToBoxes @ hyperlink, "Subitem"]
@@ -462,9 +463,20 @@ parseKeyValueLine[line_?StringQ] := Module[{},
 	StringReplace[
 		line,
 		StartOfString ~~ key:Repeated[LetterCharacter] ~~ ": " ~~ value___
-			:> Return[key -> value, Module]
+			:> Return[key -> fixKnownCharacterEncodingIssues[value], Module]
 	]
 ]
+
+(*====================================*)
+
+SetFallthroughError[fixKnownCharacterEncodingIssues]
+
+fixKnownCharacterEncodingIssues[string_?StringQ] := (
+	StringReplace[string, {
+		"\[CapitalAHat]\[CenterDot]" -> "\[CenterDot]",
+		"\[AHat]\.80\.94" -> "\[LongDash]"
+	}]
+)
 
 (*====================================*)
 (* Link Button Utilities              *)

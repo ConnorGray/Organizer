@@ -539,7 +539,7 @@ organizerStylesheetNotebook = Notebook[{
 								}
 							], *)
 							TemplateBox[
-								{StyleBox[#1, 12], icon},
+								{StyleBox[#1, "Text"], icon},
 								"Superscript"
 							],
 							#2
