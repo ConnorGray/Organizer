@@ -145,10 +145,9 @@ CreateQueuesReport[] := Module[{
 			]
 		},
 		(* Add style definitions so that copied TODO cells render properly. *)
-		StyleDefinitions -> $OrganizerStylesheet
+		StyleDefinitions -> $OrganizerStylesheet,
+		TaggingRules -> MakeNotebookTaggingRules["GeneratedQueueReport"]
 	];
-
-	RaiseConfirm @ SetNotebookTaggingRules[nb, "GeneratedQueueReport"];
 
 	nb
 ]
@@ -287,6 +286,7 @@ CreateDailysReport[] := Handle[_Failure] @ Module[{
 		Notebook[cells],
 		(* Add style definitions so that copied TODO cells render properly. *)
 		StyleDefinitions -> $OrganizerStylesheet,
+		TaggingRules -> MakeNotebookTaggingRules["GeneratedDailysReport"],
 		(* Disable editing. If the user wants to edit these queues, they should do it in
 		the source notebook. *)
 		Editable -> False,
@@ -304,8 +304,6 @@ CreateDailysReport[] := Handle[_Failure] @ Module[{
 			]
 		}
 	];
-
-	RaiseConfirm @ SetNotebookTaggingRules[nb, "GeneratedDailysReport"];
 
 	cells = Flatten @ Map[
 		Function[proj,

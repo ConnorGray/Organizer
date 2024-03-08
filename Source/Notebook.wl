@@ -21,6 +21,7 @@ WriteTodoAndSelect
 InsertTodoAfterSelection::usage = "InsertTodoAfterSelection[] insters a new TODO cell after the current selection point in the current selected notebook."
 
 SetNotebookTaggingRules
+MakeNotebookTaggingRules
 
 Begin["`Private`"]
 
@@ -169,7 +170,10 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 SetFallthroughError[CreateOrganizerNotebookFromSettings]
 
 CreateOrganizerNotebookFromSettings[
-	nb_Notebook,
+	Notebook[
+		cells_List,
+		optionsSeq___?OptionQ
+	],
 	title_?StringQ,
 	doctype_?StringQ,
 	doctypeLabel_?StringQ,
@@ -184,10 +188,17 @@ CreateOrganizerNotebookFromSettings[
 		background
 	];
 
-	nbObj = NotebookPut[nb, Visible -> False];
+	nbObj = NotebookPut[
+		Notebook[
+			cells,
+			optionsSeq,
+			(* Add standard Organizer notebook *)
+			TaggingRules -> MakeNotebookTaggingRules[doctype]
+		],
+		Visible -> False
+	];
 
 	RaiseConfirm @ InstallNotebookStyles[nbObj];
-	RaiseConfirm @ SetNotebookTaggingRules[nbObj, doctype];
 	SetOptions[nbObj, DockedCells -> dockedCells];
 
 	SetOptions[nbObj, Visible -> True];
@@ -326,11 +337,21 @@ SetNotebookTaggingRules[
 ] := Module[{},
 	SetOptions[
 		nbObj,
-		TaggingRules -> {
-			"CG:Organizer" -> {"DocumentType" -> documentType}
-		}
+		TaggingRules -> MakeNotebookTaggingRules[documentType]
 	]
 ]
+
+(*====================================*)
+
+SetFallthroughError[MakeNotebookTaggingRules]
+
+MakeNotebookTaggingRules[
+	documentType_?StringQ
+] := (
+	{
+		"CG:Organizer" -> {"DocumentType" -> documentType}
+	}
+)
 
 (*====================================*)
 

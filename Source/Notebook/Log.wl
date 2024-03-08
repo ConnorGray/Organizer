@@ -40,14 +40,14 @@ CreateLogNotebook[projName_?StringQ] := Handle[_Failure] @ Module[{
 		Cell[DateString[Now, {"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"],
 
 		Cell["Queue", "Chapter", Deletable -> False, Editable -> False]
-	}];
+	},
+		TaggingRules -> MakeNotebookTaggingRules["Log"]
+	];
 
 	nbObj = NotebookPut[nb, Visible -> False];
 
 	RaiseConfirm @ InstallLogNotebookStyles[nbObj];
 	RaiseConfirm @ InstallLogNotebookDockedCells[nbObj, projName];
-
-	RaiseConfirm @ SetNotebookTaggingRules[nbObj, "Log"];
 
 	SetOptions[nbObj, Visible -> True];
 
