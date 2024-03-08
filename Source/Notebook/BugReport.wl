@@ -15,8 +15,7 @@ Needs["ConnorGray`Organizer`Toolbar`"]
 Needs["ConnorGray`Organizer`Utils`"]
 
 CreateBugReportNotebook[title_?StringQ] := Handle[_Failure] @ Module[{
-	nb,
-	nbObj
+	nb
 },
 	nb = Notebook[
 		{
@@ -50,30 +49,12 @@ CreateBugReportNotebook[title_?StringQ] := Handle[_Failure] @ Module[{
 		WindowTitle -> title
 	];
 
-	nbObj = NotebookPut[nb, Visible -> False];
-
-	RaiseConfirm @ InstallNotebookStyles[nbObj];
-	RaiseConfirm @ installBugReportDockedCells[nbObj, title];
-	RaiseConfirm @ SetNotebookTaggingRules[nbObj, "BugReport"];
-
-	SetOptions[nbObj, Visible -> True];
-
-	nbObj
-]
-
-(*======================================*)
-
-installBugReportDockedCells[
-	nbObj_NotebookObject,
-	title_?StringQ
-] := With[{},
-	SetOptions[
-		nbObj,
-		DockedCells -> MakeOrganizerDockedCells[
-			title,
-			"Bug Report",
-			$BugReportNotebookBackground
-		]
+	CreateOrganizerNotebookFromSettings[
+		nb,
+		title,
+		"BugReport",
+		"Bug Report",
+		$BugReportNotebookBackground
 	]
 ]
 

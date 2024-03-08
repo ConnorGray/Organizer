@@ -16,44 +16,28 @@ Needs["ConnorGray`Organizer`Toolbar`"]
 Needs["ConnorGray`Organizer`Utils`"]
 
 
-CreateNoteNotebook[listName_?StringQ] := Handle[_Failure] @ Module[{
-	nbObj
+CreateNoteNotebook[title_?StringQ] := Handle[_Failure] @ Module[{
+	nb
 },
-	nbObj = CreateNotebook[];
-
-	NotebookWrite[nbObj, Cell[listName, "Title"] ];
-	NotebookWrite[
-		nbObj,
+	nb = Notebook[{
+		Cell[title, "Title"],
 		Cell[
-			"Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day", ", ", "Year"}],
+			"Created " <> DateString[
+				Now,
+				{"DayName", " ", "MonthName", " ", "Day", ", ", "Year"}
+			],
 			"Subtitle"
 		]
-	];
+	}];
 
-	RaiseConfirm @ InstallNotebookStyles[nbObj];
-	RaiseConfirm @ InstallNoteDockedCells[nbObj, listName];
-
-	RaiseConfirm @ SetNotebookTaggingRules[nbObj, "Note"];
-
-	nbObj
-]
-
-(*======================================*)
-
-InstallNoteDockedCells[
-	nbObj_NotebookObject,
-	listName_?StringQ
-] := With[{},
-	SetOptions[
-		nbObj,
-		DockedCells -> MakeOrganizerDockedCells[
-			listName,
-			"Note",
-			$NoteNotebookBackground
-		]
+	CreateOrganizerNotebookFromSettings[
+		nb,
+		title,
+		"Note",
+		"Note",
+		$NoteNotebookBackground
 	]
 ]
-
 
 
 End[]

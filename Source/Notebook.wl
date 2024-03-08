@@ -3,6 +3,8 @@
 BeginPackage["ConnorGray`Organizer`Notebook`"]
 
 
+CreateOrganizerNotebookFromSettings
+
 InstallNotebookStyles::usage = "InstallNotebookStyles[nb] will set the StyleDefinitions notebook option to the styles used by Organizer."
 $OrganizerStylesheet
 
@@ -19,6 +21,7 @@ WriteTodoAndSelect
 InsertTodoAfterSelection::usage = "InsertTodoAfterSelection[] insters a new TODO cell after the current selection point in the current selected notebook."
 
 SetNotebookTaggingRules
+MakeNotebookTaggingRules
 
 Begin["`Private`"]
 
@@ -161,6 +164,47 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 ]
 
 (*====================================*)
+(* Notebook Construction              *)
+(*====================================*)
+
+SetFallthroughError[CreateOrganizerNotebookFromSettings]
+
+CreateOrganizerNotebookFromSettings[
+	Notebook[
+		cells_List,
+		optionsSeq___?OptionQ
+	],
+	title_?StringQ,
+	doctype_?StringQ,
+	doctypeLabel_?StringQ,
+	background_
+] := Module[{
+	nbObj,
+	dockedCells
+},
+	dockedCells = RaiseConfirm @ MakeOrganizerDockedCells[
+		title,
+		doctypeLabel,
+		background
+	];
+
+	nbObj = NotebookPut[
+		Notebook[
+			cells,
+			optionsSeq,
+			(* Add standard Organizer notebook options *)
+			StyleDefinitions -> $OrganizerStylesheet,
+			TaggingRules -> MakeNotebookTaggingRules[doctype],
+			DockedCells -> dockedCells
+		]
+	];
+
+	RaiseConfirmMatch[nbObj, _NotebookObject];
+
+	nbObj
+]
+
+(*====================================*)
 
 MakeOrganizerDockedCells[
 	title_,
@@ -291,11 +335,21 @@ SetNotebookTaggingRules[
 ] := Module[{},
 	SetOptions[
 		nbObj,
-		TaggingRules -> {
-			"CG:Organizer" -> {"DocumentType" -> documentType}
-		}
+		TaggingRules -> MakeNotebookTaggingRules[documentType]
 	]
 ]
+
+(*====================================*)
+
+SetFallthroughError[MakeNotebookTaggingRules]
+
+MakeNotebookTaggingRules[
+	documentType_?StringQ
+] := (
+	{
+		"CG:Organizer" -> {"DocumentType" -> documentType}
+	}
+)
 
 (*====================================*)
 
