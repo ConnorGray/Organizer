@@ -9,6 +9,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.7.2] — 2024-03-08
+
+### Added
+
+* Added new numbered item TODO cells. Typing `[` as the first character in an
+  `"ItemNumbered"` cell will transform it into a `"TODO:ItemNumbered"` cell. ([#57])
+
+* Add new `.` style key mapping. Typing `.` as the first character in a `"TODO"`
+  or `"TODO:Item"` cell will transform it into a `"TODO:ItemNumbered"` cell. ([#57])
+
+* Added support for a new 'Note' notebook type. ([#60])
+
+### Changed
+
+* Reposition TODO cell checkbox to stay vertically aligned against the top
+  edge of the cell, instead of being vertically centered. ([#56], [#61], [#62])
+
+  This makes the TODO checkbox visually behave like the "▪"︎ bullet shown in Item
+  cells. 🎉
+
+* Inline the `Workspace ...` switching buttons into the command palette dropdown
+  to avoid extra unnecessary clicks. ([#58])
+
+* 20x speedup in report generation by avoiding expensive `NotebookWrite`
+  operations. What previously could take 10-20s now takes <1 second. ([#59])
+
+* Avoid showing "incomplete" new notebooks that are still under construction to
+  the user. This is analogous to the visual effect of an "unstyled flash"
+  problem of web technologies. ([#63])
+
+* Improved Web Page and Email links to use "Text" styling instead of default
+  monospaced box formatting.
+
+### Fixed
+
+* Added workaround for encoding issue that would cause junk characters to appear
+  in Web Page and Email links that contained a "•" or "—" character. ([#64])
+
+
+
 ## [0.7.1] — 2023-09-06
 
 ### Added
@@ -71,11 +111,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- v0.7.1 -->
 [#55]: https://github.com/ConnorGray/Organizer/pull/55
 
+<!-- v0.7.2 -->
+[#56]: https://github.com/ConnorGray/Organizer/pull/56
+[#57]: https://github.com/ConnorGray/Organizer/pull/57
+[#58]: https://github.com/ConnorGray/Organizer/pull/58
+[#59]: https://github.com/ConnorGray/Organizer/pull/59
+[#60]: https://github.com/ConnorGray/Organizer/pull/60
+[#61]: https://github.com/ConnorGray/Organizer/pull/61
+[#62]: https://github.com/ConnorGray/Organizer/pull/62
+[#63]: https://github.com/ConnorGray/Organizer/pull/63
+[#64]: https://github.com/ConnorGray/Organizer/pull/64
+
 <!-- Unreleased -->
 
 <!-- This needs to be updated for each tagged release. -->
-[Unreleased]: https://github.com/ConnorGray/Organizer/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/ConnorGray/Organizer/compare/v0.7.2...HEAD
 
+[0.7.2]: https://github.com/ConnorGray/Organizer/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/ConnorGray/Organizer/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/ConnorGray/Organizer/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ConnorGray/Organizer/compare/v0.5.0...v0.6.0
