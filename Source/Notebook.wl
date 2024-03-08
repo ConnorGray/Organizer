@@ -192,16 +192,14 @@ CreateOrganizerNotebookFromSettings[
 		Notebook[
 			cells,
 			optionsSeq,
-			(* Add standard Organizer notebook *)
-			TaggingRules -> MakeNotebookTaggingRules[doctype]
-		],
-		Visible -> False
+			(* Add standard Organizer notebook options *)
+			StyleDefinitions -> $OrganizerStylesheet,
+			TaggingRules -> MakeNotebookTaggingRules[doctype],
+			DockedCells -> dockedCells
+		]
 	];
 
-	RaiseConfirm @ InstallNotebookStyles[nbObj];
-	SetOptions[nbObj, DockedCells -> dockedCells];
-
-	SetOptions[nbObj, Visible -> True];
+	RaiseConfirmMatch[nbObj, _NotebookObject];
 
 	nbObj
 ]
