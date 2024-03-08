@@ -20,33 +20,38 @@ Needs["ConnorGray`Organizer`Notebook`"]
 Needs["ConnorGray`Organizer`LogNotebookRuntime`"]
 
 CreateLogNotebook[projName_?StringQ] := Handle[_Failure] @ Module[{
-	logNB
+	nb,
+	nbObj
 },
-	logNB = CreateNotebook[];
-
-	NotebookWrite[logNB, Cell[projName, "Title"] ];
-	NotebookWrite[
-		logNB,
+	nb = Notebook[{
+		Cell[projName, "Title"],
 		Cell[
-			"Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day", ", ", "Year"}],
+			"Created " <> DateString[
+				Now,
+				{"DayName", " ", "MonthName", " ", "Day", ", ", "Year"}
+			],
 			"Subtitle"
-		]
-	];
+		],
 
-	NotebookWrite[logNB, Cell["Context", "Chapter", Deletable -> False, Editable -> False] ];
+		Cell["Context", "Chapter", Deletable -> False, Editable -> False],
 
-	NotebookWrite[logNB, Cell["Daily", "Chapter", Deletable -> False, Editable -> False] ];
-	NotebookWrite[logNB, Cell[DateString[Now, {"MonthName", " ", "Year"}], "Subsection"] ];
-	NotebookWrite[logNB, Cell[DateString[Now, {"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"] ];
+		Cell["Daily", "Chapter", Deletable -> False, Editable -> False],
+		Cell[DateString[Now, {"MonthName", " ", "Year"}], "Subsection"],
+		Cell[DateString[Now, {"DayName", ", ", "MonthName", " ", "Day"}], "Subsubsection"],
 
-	NotebookWrite[logNB, Cell["Queue", "Chapter", Deletable -> False, Editable -> False] ];
+		Cell["Queue", "Chapter", Deletable -> False, Editable -> False]
+	}];
 
-	RaiseConfirm @ InstallLogNotebookStyles[logNB];
-	RaiseConfirm @ InstallLogNotebookDockedCells[logNB, projName];
+	nbObj = NotebookPut[nb, Visible -> False];
 
-	RaiseConfirm @ SetNotebookTaggingRules[logNB, "Log"];
+	RaiseConfirm @ InstallLogNotebookStyles[nbObj];
+	RaiseConfirm @ InstallLogNotebookDockedCells[nbObj, projName];
 
-	logNB
+	RaiseConfirm @ SetNotebookTaggingRules[nbObj, "Log"];
+
+	SetOptions[nbObj, Visible -> True];
+
+	nbObj
 ]
 
 (*----------------------------------------------------------------------------*)

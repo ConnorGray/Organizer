@@ -17,44 +17,28 @@ Needs["ConnorGray`Organizer`Toolbar`"]
 Needs["ConnorGray`Organizer`Utils`"]
 
 
-CreateDesignNotebook[listName_?StringQ] := Handle[_Failure] @ Module[{
-	nbObj
+CreateDesignNotebook[title_?StringQ] := Handle[_Failure] @ Module[{
+	nb
 },
-	nbObj = CreateNotebook[];
-
-	NotebookWrite[nbObj, Cell[listName, "Title"] ];
-	NotebookWrite[
-		nbObj,
+	nb = Notebook[{
+		Cell[title, "Title"],
 		Cell[
-			"Created " <> DateString[Now, {"DayName", " ", "MonthName", " ", "Day", ", ", "Year"}],
+			"Created " <> DateString[
+				Now,
+				{"DayName", " ", "MonthName", " ", "Day", ", ", "Year"}
+			],
 			"Subtitle"
 		]
-	];
+	}];
 
-	RaiseConfirm @ InstallNotebookStyles[nbObj];
-	RaiseConfirm @ InstallDesignDockedCells[nbObj, listName];
-
-	RaiseConfirm @ SetNotebookTaggingRules[nbObj, "Design"];
-
-	nbObj
-]
-
-(*======================================*)
-
-InstallDesignDockedCells[
-	nbObj_NotebookObject,
-	listName_?StringQ
-] := With[{},
-	SetOptions[
-		nbObj,
-		DockedCells -> MakeOrganizerDockedCells[
-			listName,
-			"Design",
-			$DesignNotebookBackground
-		]
+	CreateOrganizerNotebookFromSettings[
+		nb,
+		title,
+		"Design",
+		"Design",
+		$DesignNotebookBackground
 	]
 ]
-
 
 
 End[]

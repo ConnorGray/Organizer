@@ -3,6 +3,8 @@
 BeginPackage["ConnorGray`Organizer`Notebook`"]
 
 
+CreateOrganizerNotebookFromSettings
+
 InstallNotebookStyles::usage = "InstallNotebookStyles[nb] will set the StyleDefinitions notebook option to the styles used by Organizer."
 $OrganizerStylesheet
 
@@ -158,6 +160,39 @@ replaceWithInertTodoCellAndSelect[content_?StringQ] := Module[{cell},
 
 	NotebookWrite[EvaluationCell[], cell, All];
 	SelectionMove[SelectedNotebook[], After, CellContents]
+]
+
+(*====================================*)
+(* Notebook Construction              *)
+(*====================================*)
+
+SetFallthroughError[CreateOrganizerNotebookFromSettings]
+
+CreateOrganizerNotebookFromSettings[
+	nb_Notebook,
+	title_?StringQ,
+	doctype_?StringQ,
+	doctypeLabel_?StringQ,
+	background_
+] := Module[{
+	nbObj,
+	dockedCells
+},
+	dockedCells = RaiseConfirm @ MakeOrganizerDockedCells[
+		title,
+		doctypeLabel,
+		background
+	];
+
+	nbObj = NotebookPut[nb, Visible -> False];
+
+	RaiseConfirm @ InstallNotebookStyles[nbObj];
+	RaiseConfirm @ SetNotebookTaggingRules[nbObj, doctype];
+	SetOptions[nbObj, DockedCells -> dockedCells];
+
+	SetOptions[nbObj, Visible -> True];
+
+	nbObj
 ]
 
 (*====================================*)
